@@ -23,38 +23,21 @@
  <tr>
   <th> # </th>
   <th> Объект </th>
-  <th> Подобъект </th>
   <th> Направление </th>
   <th> Поставщик </th>
   <th> Номер </th>
   <th> Дата </th>
-  <th> Сумма </th>
  </tr>
-<form action="{% url scan.views.scan_list %}" method="POST">
-{% csrf_token %}
- <tr>
-  <th/>
-  <th> {{ form.place }} <br/> {{ form.place.errors }} </th>
-  <th>  </th>
-  <th> {{ form.depart }} <br/> {{ form.depart.errors }} </th>
-  <th> {{ form.supplier }} <br/> {{ form.supplier.errors }} </th>
-  <th> {{ form.billno }} <br/> {{ form.billno.errors }} </th>
-  <th> {{ form.billdate }} <br/> {{ form.billdate.errors }} </th>
-  <th> {% include "button/filter.html" %} </th>
- </tr>
-</form>
  </thead>
  <tbody>
 {% for object in object_list %}
  <tr>
   <td> <a href="{% url scan.views.scan_view object.pk %}"> {{ object.pk }} </a> </td>
-  <td> {{ object.place }} </td>
-  <td> {{ object.subject|default:"---" }} </td>
+  <td> {{ object.project }} </td>
   <td> {% if object.depart %} {{ object.depart }} {% else %} --- {% endif %} </td>
   <td> {{ object.supplier }} </td>
   <td> {{ object.no }} </td>
   <td> {{ object.date|date:"d.m.y" }} </td>
-  <td> {{ object.sum|default:"---" }} </td>
  </tr>
 {% endfor %}
 </table>

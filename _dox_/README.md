@@ -1,53 +1,25 @@
-State icons:
-    * Draft: "draft" (Edit)
-    * OnWay: onway
-    * OnPay: $
-    * Done: V
-    * Rejected: Trash
+Depends:
+* python-django14
+* httpd
+* mod_wsgi
+* memcached
+* python-memcached
+* python-pillow (PIL)
+* poppler-utils (pdfimages)
+* ghostscript (gs)
 
-OnCreate:
-	- selected Place = 1
-else:
-	- get selected Place (<select name="place" id="id_place">)
-- clear Subject (<select name="subject" id="id_subject">*</select>
-- Fill w/ set #Place (<option value="1">Компрессорная</option>)
+0.0.2 to 0.0.3:
+* svn up
+* ./manage.py syncdb
+* ./manage.py loaddata 0.0.3.json
 
-= Done =
-* +DB struct change:
-	* +core.models.FileSeqItem.file: PrimaryKey
-	* +scan.model.Scan.events: json?
-	* +bills.model.Bill.fileseq: FK => 1-2-1 PrimaryKey
-	* +bills.model.Route.state: delete
-	* +bills.model.Route.action: delete
-	* +bills.model.State: delete
-* +Place=>Subject dynafilter
-* +summs
-* +remake Scan
-* +fixtures (JSON, w/ auth.user)
-* +0.0.3=>0.1.0 converter
-
-= misc =
-http://habrahabr.ru/post/220295/
-
-= Test =
-+Draft > Edit > Delete
-+Draft > OnWay > Reject > Delete
-+Draft > OnWay > Reject > Draft >
-+Draft > OnWay > OnPay > Done
-+Draft > OnWay > OnPay > Dup
-+Draft > OnWay > OnPay > Done? > +Draft? > Edit > Draft? > OnWay? > Reject? > Draft? > OnWay? > OnPay > Done
-
-= browsers =
-+ firefox
-+ qupzilla
-+ chrome
-+ rekonq
-+ konqueror
-+ opera
-+ arora
-+ midori
-* epiphany
-* dwb
-* kazehakase
-* kazehakase-webkit
-x Mosaic
+HowTo:
+* Все видят всех (круговая порука)
+* Цвета:
+** Белый - всё чики
+** Желтый - никто не брался
+** Красный - брался, но неправильно указано подобъект
+** Редактировать - только свои
+* Ограничения:
+** Поле "Подобъект" - следите за руками
+** Page size == 25 строк

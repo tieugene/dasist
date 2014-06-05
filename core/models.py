@@ -130,7 +130,7 @@ class	FileSeq(models.Model):
 		verbose_name_plural     = u'Последовательности файлов'
 
 class	FileSeqItem(models.Model):
-	file	= models.OneToOneField(File, primary_key=True, verbose_name=u'Файл')
+	file	= models.OneToOneField(File, null=False, blank=False, verbose_name=u'Файл')
 	fileseq	= models.ForeignKey(FileSeq, null=False, blank=False, verbose_name=u'Последовательность файлов')
 	order	= models.PositiveSmallIntegerField(null=False, blank=False, verbose_name=u'#')
 

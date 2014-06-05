@@ -1,0 +1,16 @@
+{% extends "addon/base.html" %}
+{% block body_main %}
+   <form action="" method="POST">
+	{% csrf_token %}
+	<table border="1">
+		<caption> {% if object %} Редактировать {% else %} Новый {% endif %} счет </caption>
+		<tr> <th colspan="2"> Было: </th> </tr>
+			<tr> <th> Объект </th> <td> {{ object.project }} </td> </tr>
+			<tr> <th> Направление </th> <td> {{ object.depart|default:"---" }} </td> </tr>
+		<tr> <th colspan="2"> Стало: </th> </tr>
+		{{ form.as_table }}
+	</table>
+	<button type="submit"> Записать </button>
+	<a href="{% url addon.views.addon_list %}"> <button type="button"> Отказаться </button> </a>
+   </form>
+{% endblock %}

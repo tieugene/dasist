@@ -1,13 +1,5 @@
 {% extends "bills/base.html" %}
-{% block meta %} <meta http-equiv="refresh" content="300"> {% endblock %}
-{% block css %}
- tr.bill td {
-  cursor:pointer;
-  padding-top: 0;
-  padding-bottom: 0;
-  white-space: nowrap;
- }
-{% endblock %}
+{% block meta %} <meta http-equiv="refresh" content="60"> {% endblock %}
 {% block body_main %}
 <table border="0"> <tr>
 {% if canadd %}
@@ -53,21 +45,18 @@
 <table>
  <thead>
  <tr>
-  <th/>
   <th> # </th>
   <th> Объект </th>
-  <th> Подобъект </th>
   <th> Направление </th>
   <th> Поставщик </th>
-  <th> Плательщик </th>
-  <th> К оплате </th>
   <th> Исполнитель </th>
   <th> Подписант </th>
+  <th> Состояние </th>
  </tr>
  </thead>
  <tbody>
 {% for object in object_list %}
- <tr class="bill" bgcolor="{{object.get_state_color}}"
+ <tr bgcolor="{{object.get_state_color}}"
  {% if object.rpoint %}
   {% ifequal object.rpoint.approve.pk user.pk %}
    style="font-weight:bold"
@@ -77,17 +66,14 @@
    {% endifequal %}
   {% endifequal %}
  {% endif %}
-onclick="window.document.location='{% url bills.views.bill_view object.pk %}'">
-  <td> <img src="{{ STATIC_URL }}img/32/{{ object.state.get_icon }}" width="16px" height="16px" title="{{ object.get_state_name }}"/> </td>
-  <td> {{ object.pk }} </td>
-  <td> {{ object.place }} </td>
-  <td> {{ object.subject|default:"---" }} </td>
+>
+  <td> <a href="{% url bills.views.bill_view object.pk %}"> {{ object.pk }} </a> </td>
+  <td> {{ object.project }} </td>
   <td> {% if object.depart %} {{ object.depart }} {% else %} --- {% endif %} </td>
   <td> {{ object.supplier }} </td>
-  <td> {{ object.payer|default:"---" }} </td>
-  <td align="right"> {{ object.topaysum|stringformat:"d" }} </td>
-  <td> {{ object.assign.user.last_name }} </td>
+  <td> {{ object.assign.get_fio }} </td>
   <td> {% if object.rpoint %} {{ object.rpoint.get_str }} {% else %} --- {% endif %} </td>
+  <td> {{ object.get_state_name }} </td>
  </tr>
 {% endfor %}
 </table>

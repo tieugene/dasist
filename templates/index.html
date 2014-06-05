@@ -8,21 +8,18 @@ $("#tm_index").addClass("active");
 <p>
  <a href="{% url scan.views.scan_list %}"> <button type="button"> Сканы </button> </a>
  <a href="{% url bills.views.bill_list %}"> <button type="button"> Счета </button> </a>
+ <a href="{% url addon.views.addon_list %}"> <button type="button"> AddOn </button> </a>
 </p>
  {% if user.is_superuser %}
+<p>
+ <button type="button"> Заявки </button>
+ <button type="button"> ХелпДеск </button>
+</p>
 <p>
  <a href="{% url core.views.file_list %}"> <button type="button"> Файлы </button> </a>
  <a href="{% url core.views.fileseq_list %}"> <button type="button"> Последовательности </button> </a>
 </p>
-<p>
- Не переключайтесь:
- <button type="button" disabled="disabled"> Заявки </button>
- <button type="button" disabled="disabled"> ХелпДеск </button>
- <button type="button" disabled="disabled"> Сертификаты </button>
- <button type="button" disabled="disabled"> Аудиенция </button>
-</p>
  {% endif %}
-<p> ТЕСТ !!! </p>
 {% else %}
 Залогиньтесь
 {% endif %}

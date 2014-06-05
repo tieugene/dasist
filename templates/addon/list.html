@@ -1,0 +1,43 @@
+{% extends "addon/base.html" %}
+{% block meta %} <meta http-equiv="refresh" content="60"> {% endblock %}
+{% block body_main %}
+<table border="0"> <tr>
+<td>
+{% include "paginator.html" %}
+</td>
+</tr> </table>
+<table>
+ <thead>
+ <tr>
+  <th> &nbsp; </th>
+  <th> # </th>
+  <th> Объект[, подобъект] </th>
+  <th> Направление </th>
+  <th> Исполнитель </th>
+ </tr>
+ </thead>
+ <tbody>
+{% for object in object_list %}
+ <tr style="padding: 0; margin: 0" bgcolor="
+ {% if object.addon %}
+  {% if object.addon.subject %}
+   {% ifequal object.addon.subject.place.pk object.addon.place.pk %}
+    white
+   {% else %}
+    red
+   {% endifequal %}
+  {% else %}
+   white
+  {% endif %}
+ {% else %}
+  yellow
+ {% endif %}">
+  <td> <a href="{% url addon.views.addon_edit object.pk %}"> <img src="{{ STATIC_URL }}img/16/document-edit.png" alt="edit"> </a> </td>
+  <td> <a href="{% url bills.views.bill_view object.pk %}"> {{ object.pk }} </a> </td>
+  <td> {{ object.project }} <br/> {{ object.addon.place.name }}{% if object.addon.subject %}, {{ object.addon.subject.name }}{% endif %}</td>
+  <td> {{ object.depart }} <br/> {{ object.addon.depart }} </td>
+  <td> {{ object.assign.get_fio }} </td>
+ </tr>
+{% endfor %}
+</table>
+{% endblock %}

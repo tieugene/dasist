@@ -15,11 +15,11 @@ class   ApproverInLine(admin.TabularInline):
         model           = Approver
         extra           = 1
 
-class   SubjectInLine(admin.TabularInline):
-        model           = Subject
-        extra           = 1
-
 # 2. odmins
+class	StateAdmin(admin.ModelAdmin):
+	ordering	= ('id',)
+	list_display	= ('id', 'name')
+
 class	RoleAdmin(admin.ModelAdmin):
 	ordering	= ('id',)
 	list_display	= ('id', 'name')
@@ -33,32 +33,12 @@ class	ApproverAdmin(admin.ModelAdmin):
 		return ('%s %s' % (obj.user.last_name, obj.user.first_name))
 	fio.short_description = 'ФИО'
 
-class	PlaceAdmin(admin.ModelAdmin):
-	ordering	= ('id',)
-	list_display	= ('id', 'name')
-	inlines		= (SubjectInLine,)
-
-class	DepartmentAdmin(admin.ModelAdmin):
-	ordering	= ('id',)
-	list_display	= ('id', 'name')
-
-class	PayerAdmin(admin.ModelAdmin):
-	ordering	= ('id',)
-	list_display	= ('id', 'name')
-
 class	BillAdmin(admin.ModelAdmin):
-	ordering	= ('fileseq',)
-	list_display	= ('fileseq', 'place', 'subject', 'depart', 'supplier', 'assign', 'rpoint', 'state',)
+	ordering	= ('id',)
+	list_display	= ('id', 'project', 'depart', 'supplier', 'assign', 'rpoint', 'done',)
 	inlines		= (RouteInLine, EventInLine,)
 
-class	StateAdmin(admin.ModelAdmin):
-	ordering	= ('id',)
-	list_display	= ('id', 'name',)
-
+admin.site.register(State,	StateAdmin)
 admin.site.register(Role,	RoleAdmin)
 admin.site.register(Approver,	ApproverAdmin)
-admin.site.register(Place,	PlaceAdmin)
-admin.site.register(Department,	DepartmentAdmin)
-admin.site.register(Payer,	PayerAdmin)
 admin.site.register(Bill,	BillAdmin)
-admin.site.register(State,	StateAdmin)
