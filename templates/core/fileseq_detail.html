@@ -1,0 +1,7 @@
+{% extends "bills/base.html" %}
+{% block body_main %}
+{% for img in object.fileseqitem_set.all %}
+ <!--img src="{% url core.views.file_get img.pk %}"/-->
+ <a href="{% url core.views.file_get img.pk %}" data-lightbox="roadtrip" title="{{ img.file.name }}">{{ img.file.name }}</a>
+{% endfor %}
+{% endblock %}

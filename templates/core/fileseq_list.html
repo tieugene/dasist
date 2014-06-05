@@ -1,0 +1,7 @@
+{% extends "core/base.html" %}
+{% block body_main %}
+
+{% for object in object_list %}
+ <span style="border: 1px solid gray"> <a href="{% url core.views.fileseq_view object.pk %}"> {{ object.pk }} </a> </span>
+{% endfor %}
+{% endblock %}
