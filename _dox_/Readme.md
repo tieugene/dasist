@@ -1,0 +1,9 @@
+Requires:
+python-2.7.5
+python-flask-0.9
+python-flask-classy-0.6.3
+python-flask-debugtoolbar-0.8
+python-flask-sqlalchemy-0.16
+python-flask-wtf-0.8
+python-sqlalchemy-0.8.3
+python-wtforms-1.0.2

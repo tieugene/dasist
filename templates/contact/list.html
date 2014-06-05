@@ -1,0 +1,10 @@
+{% extends "contact/base.html" %}
+{% block content %}
+Contact list:
+<ul>
+{% for item in items %}
+	<li> <a href="{{ url_for('contact.view', id=item.id) }}"> {{ item }} </a> </li>
+{% endfor %}
+</ul>
+<p> <a href="{{ url_for('contact.add') }}"> New </a> </p>
+{% endblock %}

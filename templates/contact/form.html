@@ -1,0 +1,89 @@
+{% extends "contact/base.html" %}
+{% from "__formhelper.html" import render_field %}
+<!-- http://habrahabr.ru/post/144104/ -->
+{% block head_js %}
+<script type="text/javascript">
+        function toggleContactAddress(n) {
+		console.log("change: "+n.checked);
+		if (n.checked) {
+		} else {
+		}
+		//$(n).parent().parent().remove();
+		// TODO: replce ids and names
+        };
+        function delNewContactAddress(n) {
+		//console.log("del:");
+		$(n).parent().parent().remove();
+		// TODO: replce ids and names
+        };
+        function addContactAddress() {
+		parent = $('#contactaddresses');
+		i = parent.children().length;
+		a = $('<tr> <td/> <td> <input id="newaddresses-'+i+'-value" name="newaddresses-'+i+'-value" type="text"> </td> <td> <button type="button" onClick="delNewContactAddress(this);"> x </button> </td> </tr>');
+		a.appendTo(parent);
+        };
+</script>
+{% endblock %}
+{% if formerrors %} {{ form.errors }} {% endif %}
+{% block content %}
+<form method=post action=".">
+{{ form.hidden_tag() }}
+  <table border="1">
+    {{ render_field(form.lastname) }}
+    {{ render_field(form.firstname) }}
+    {{ render_field(form.midname) }}
+    {{ render_field(form.birthdate) }}
+    <tr>
+      <th valign="top"> Адреса: </th>
+      <td>
+        <table>
+	  <!--thead> <tr> <th/> <th> Адрес </th> <th/> </tr> </thead-->
+	  <tbody id="contactaddresses">
+	  {% for address in form.addresses %}
+            <tr>
+	      <td> <input id="{{address.id}}-id" name="{{address.id}}-id" type="hidden" value="{{address.data.id}}"> </td>
+	      <td style="text-decoration: line-through"> <strike> {{ address.value }} </strike>
+                {% if address.value.errors %}
+                  <ul class=errors>
+		    {% for error in address.value.errors %}
+		      <li> {{ error }} </li>
+		    {% endfor %}
+		  </ul>
+                {% endif %}
+	      </td>
+	      <td valign="top"> <input id="addresses-{{address.id}}-todel" name="addresses-{{address.id}}-todel" type="checkbox" value="{% if address.todel.data %}y{% else %}n{% endif %}" onChange="toggleContactAddress(this);"> </td>
+	    </tr>
+          {% endfor %}
+          {% for address in form.newaddresses %}
+            <tr>
+	      <td/>
+	      <td> {{ address.value }}
+                {% if address.value.errors %}
+                  <ul class=errors>
+		    {% for error in address.value.errors %}
+		      <li> {{ error }} </li>
+		    {% endfor %}
+		  </ul>
+                {% endif %}
+	      </td>
+	      <td valign="top"> <button type="button" onClick="delNewContactAddress(this);"> x </button> </td>
+	    </tr>
+          {% endfor %}
+	  </tbody>
+        </table>
+	<button type="button" onClick='addContactAddress();'> + </button>
+      </td>
+    </tr>
+    {# render_field(form.newaddress) #}
+  </table>
+  <p>
+	<button type="submit"> Save </button>
+	{% if id %}
+	  <a href="{{ url_for('contact.view', id=id) }}">
+	{% else %}
+	  <a href="{{ url_for('contact.index') }}">
+	{% endif %}
+	<button type="button"> Cancel </button> </a>
+  </p>
+</form>
+{% endblock %}
