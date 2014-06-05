@@ -1,6 +1,5 @@
-import os, sys, locale
-
-locale.setlocale(locale.LC_TIME,'ru_RU.utf8')
+import os
+import sys
 
 sys.path.append('/usr/share/dasist')
 os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
