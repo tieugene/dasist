@@ -1,0 +1,10 @@
+Исполнитель: Cancel, Save, Send
+Подписатель: Accept, Reject
+Бухгалтер: Оплачено, Reject
+
+So, pages:
+* list (/) - GET; ACL: assign|approve=user
+* add (/c/) - GET/POST; ACL: assign, Cancel > list; save > view (Draft)
+* view (/<id>/r/) - GET; ACL: assign|approv
+* edit (/<id>/u/) - GET/POST; ACL: assign+draft;
+* resume (/<id>/y|n/) - POST; assign/reject w/ option comment (POST)
