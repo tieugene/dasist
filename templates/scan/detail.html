@@ -12,7 +12,7 @@
  <tr> <th> Направление </th> <td> {{ object.depart }} </td> </tr>
  <tr> <th> Плательщик </th> <td> {{ object.payer|default:"---" }} </td> </tr>
  <tr> <th> Поставщик </th> <td> {{ object.supplier }} </td> </tr>
- <tr> <th> Счет </th> <td> № {{ object.no }} от {{ object.date }} на сумму {{ object.sum }} </td> </tr>
+ <tr> <th> Счет </th> <td> № {{ object.no }} от {{ object.date|date:"d.m.y" }} на {{ object.sum }} руб. </td> </tr>
  <tr>
   <td> Оригинал: </td>
   <td> <ol style="margin: 0">
@@ -51,4 +51,7 @@
 </td>
 </tr>
 </table>
+{% if user.is_superuser %}
+<a href="{% url scan.views.scan_edit object.pk %}"> {% include "button/edit.html" %} </a>
+{% endif %}
 {% endblock %}

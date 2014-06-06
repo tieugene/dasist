@@ -6,10 +6,20 @@
    <form enctype="multipart/form-data" action="" method="POST">
 	{% csrf_token %}
 	<table border="1">
-		<caption> Новый скан </caption>
 		{{ form.as_table }}
+ <tr>
+  <td> Оригинал: </td>
+  <td> <ol style="margin: 0">
+   {% for img in object.fileseq.fileseqitem_set.all %}
+    <li>
+     <a href="{% url core.views.file_get img.pk %}" data-lightbox="roadtrip" title="{{ img.file.name }}">{{ img.file.name }}</a>
+     <a href="{% url core.views.file_get img.pk %}"> <img src="{{ STATIC_URL }}img/16/png.png" title="Download"/> </a>
+    </li>
+   {% endfor %}
+  </ol> </td>
+ </tr>
 	</table>
 	<button type="submit"> Записать </button>
-	<a href="{% url scan.views.scan_list %}"> <button type="button"> Отказаться </button> </a>
+	<a href="{% url scan.views.scan_view object.pk %}"> <button type="button"> Отказаться </button> </a>
    </form>
 {% endblock %}
