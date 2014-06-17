@@ -197,6 +197,7 @@ def	scan_replace_depart(request):
 
 @login_required
 def	scan_replace_place(request):
+	msg = ''
 	if request.method == 'POST':
 		form = forms.ReplacePlaceForm(request.POST)
 		if form.is_valid():
