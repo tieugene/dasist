@@ -558,7 +558,7 @@ def	bill_view(request, id):
 		'restart':	# assignee & (Rejected*|Done?)
 			(user.is_superuser or ((bill.assign == approver) and (bill_state_id in set([3, 8, 9])))),
 		'arch':		# assignee & Done
-			(user.is_superuser or ((bill.assign == approver) and (bill_state_id == 5))),
+			(user.is_superuser or (((bill.assign == approver) or user.is_staff) and (bill_state_id == 5))),
 	}
 	# Accepting (Вперед, Согласовано, В оплате, Исполнено)
 	buttons['accept'] = 0
@@ -650,7 +650,7 @@ def	bill_toscan(request, id):
 	bill = get_object_or_404(models.Bill, pk=int(id))
 	#bill = models.Bill.objects.get(pk=int(id))
 	if (request.user.is_superuser) or (\
-	   (bill.assign.user.pk == request.user.pk) and\
+	   ((bill.assign.user.pk == request.user.pk) or request.user.is_staff) and\
 	   (bill.get_state_id() == 5)):
 		scan = Scan.objects.create(
 			fileseq	= bill.fileseq,
