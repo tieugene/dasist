@@ -442,6 +442,14 @@ def	bill_reedit(request, id):
 		'object': bill,
 	}))
 
+def	__emailto(request, emails, bill_id, subj):
+	if (emails):
+		utils.send_mail(
+			emails,
+			'%s: %d' % (subj, bill_id),
+			request.build_absolute_uri(reverse('bills.views.bill_view', kwargs={'id': bill_id})),
+		)
+
 def	__mailto(request, bill):
 	'''
 	Sends emails to people:
@@ -449,13 +457,6 @@ def	__mailto(request, bill):
 	- Accept/Reject - to assignee
 	@param bill:Bill
 	'''
-	def	__emailto(emails, bill_id, subj):
-		if (emails):
-			utils.send_mail(
-				emails,
-				'%s: %d' % (subj, bill_id),
-				request.build_absolute_uri(reverse('bills.views.bill_view', kwargs={'id': bill_id})),
-			)
 	state = bill.get_state_id()
 	if (state in set([2, 7])):	# OnWay
 		subj = 'Новый счет на подпись'
@@ -465,13 +466,14 @@ def	__mailto(request, bill):
 			emails = list()
 			for i in bill.rpoint.role.approver_set.all():
 				emails.append(i.user.email)
-		__emailto(emails, bill.pk, subj)
+		__emailto(request, emails, bill.pk, subj)
 	elif (state in set([3, 8])):	# Reject
-		__emailto([bill.assign.user.email], bill.pk, 'Счет завернут')
+		__emailto(request, [bill.assign.user.email], bill.pk, 'Счет завернут')
+		#if (state == 3) and (bill.rpoint.)
 	elif (state == 5):		# Accepted
-		__emailto([bill.assign.user.email], bill.pk, 'Счет оплачен')
-	elif (state == 9):		# Accepted
-		__emailto([bill.assign.user.email], bill.pk, 'Счет частично оплачен')
+		__emailto(request, [bill.assign.user.email], bill.pk, 'Счет оплачен')
+	elif (state == 9):		# Accepted?
+		__emailto(request, [bill.assign.user.email], bill.pk, 'Счет частично оплачен')
 
 @login_required
 @transaction.commit_on_success
@@ -537,12 +539,14 @@ def	bill_view(request, id):
 							else:
 								bill.set_state_id(9)
 					else:		# Reject
-						bill.rpoint = None
 						if (bill_state_id == 2):
-							# TODO: duplication
+							if (bill.rpoint.role.pk == 6):	# 2. accounter
+								# TODO: duplication
+								__emailto(request, [settings.EMAIL_DUP,], bill.pk, 'Счет дублирован')
 							bill.set_state_id(3)
 						else:	# 7
 							bill.set_state_id(8)
+						bill.rpoint = None
 					bill.save()
 					if (bill.get_state_id() == 5):	# That's all
 						bill.rpoint = bill.route_set.all().delete()
@@ -569,7 +573,7 @@ def	bill_view(request, id):
 		if (approver.role.pk != 6):		# not Accounter
 			if ((bill.rpoint.approve == None) and (bill.rpoint.role == approver.role)) or \
 			   ((bill.rpoint.approve != None) and (bill.rpoint.approve == approver)):
-				buttons['accept'] = 2		# Согласовано
+				buttons['accept'] = 2	# Согласовано
 		else:					# Accounter
 			buttons['accept'] = 3		# В оплате
 	elif (bill_state_id == 4):			# OnPay
