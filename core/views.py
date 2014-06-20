@@ -85,3 +85,12 @@ def	fileseq_del(request, id):
 	'''
 	models.FileSeq.objects.get(pk=int(id)).delete()
 	return redirect('core.views.fileseq_list')
+
+@login_required
+def	fileseqitem_del(request, id):
+	'''
+	'''
+	fsi = models.FileSeqItem.objects.get(pk=int(id))
+	fs = fsi.fileseq
+	fs.del_file(int(id))
+	return redirect('core.views.fileseq_view', fs.pk)

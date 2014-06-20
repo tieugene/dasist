@@ -5,7 +5,7 @@ from django.conf import settings
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.files.base import ContentFile
-from django.db.models.signals import pre_delete
+from django.db.models.signals import pre_delete, post_delete
 from django.dispatch.dispatcher import receiver
 
 # 2. 3rd parties
@@ -128,6 +128,18 @@ class	FileSeq(models.Model):
 		'''
 		'''
 		FileSeqItem(file=f, fileseq=self, order=self.files.count()+1).save()
+
+	def	del_file(self, id):
+		'''
+
+		'''
+		fsi = self.fileseqitem_set.get(file=id)
+		ord = fsi.order
+		fsi.file.delete()
+		#self.fileseqitem_set.all().order_by('order').filter(order__gt=ord).update(order=order-1)
+		for i in self.fileseqitem_set.all().order_by('order').filter(order__gt=ord):
+			i.order=i.order-1
+			i.save()
 
 	class   Meta:
 		#unique_together		= (('scan', 'type', 'name'),)

@@ -1,8 +1,12 @@
 {% extends "core/fileseq_base.html" %}
 {% block body_main %}
 <ul>
-{% for img in object.files.all %}
- <li> <a href="{% url core.views.file_view img.pk %}"> {{ img.name }} </a> </li>
+{% for img in object.fileseqitem_set.all %}
+ <li>
+	{{ img.order }}
+	<a href="{% url core.views.file_view img.file.pk %}"> {{ img.file.name }} </a>
+	<a href="{% url core.views.fileseqitem_del img.pk %}"> {% include "button/delete.html" %} </a>
+ </li>
 {% endfor %}
 </ul>
 <a href="{% url core.views.fileseq_del object.pk %}"> {% include "button/delete.html" %} </a>
