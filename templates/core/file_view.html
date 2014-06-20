@@ -1,4 +1,4 @@
-{% extends "core/base.html" %}
+{% extends "core/file_base.html" %}
 {% block body_main %}
 <table width="auto" border="1">
  <tbody>
@@ -8,8 +8,11 @@
   <tr> <th> Ctime </th> <td> {{ object.ctime }} </td> </tr>
   <tr> <th> Size </th> <td> {{ object.size }} </td> </tr>
   <tr> <th> MD5 </th> <td> {{ object.md5 }} </td> </tr>
+  <tr> <th> Fileseq </th> <td> {% if object.fileseqitem %} <a href="{% url core.views.fileseq_view object.fileseqitem.fileseq.pk %}"> {{ object.fileseqitem.fileseq.pk }} </a> {% else %} - {% endif %} </td> </tr>
  </tbody>
 </table>
-<a href="{% url core.views.file_get object.pk %}"> <button type="button"> Download </button> </a>
+<a href="{% url core.views.file_get object.pk %}"> {% include "button/download.html" %} </a>
 <a href="{% url core.views.file_preview object.pk %}"> <button type="button"> Show </button> </a>
+<a href="{% url core.views.file_get object.pk %}" data-lightbox="roadtrip" title="{{ object.file.name }}"> <button type="button"> Preview </button> </a>
+<a href="{% url core.views.file_del object.pk %}"> {% include "button/delete.html" %} </a>
 {% endblock %}

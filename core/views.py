@@ -13,7 +13,7 @@ from django.template import RequestContext, Context, loader
 # 4. my
 import models
 
-PAGE_SIZE = 20
+PAGE_SIZE = 25
 
 @login_required
 def	file_list(request):
@@ -50,6 +50,13 @@ def	file_get(request, id):
 	return response
 
 @login_required
+def	file_del(request, id):
+	'''
+	'''
+	models.File.objects.get(pk=int(id)).delete()
+	return redirect('core.views.file_list')
+
+@login_required
 def	fileseq_list(request):
 	'''
 	'''
@@ -71,3 +78,10 @@ def	fileseq_view(request, id):
                 object_id = id,
 		template_name = 'core/fileseq_detail.html',
         )
+
+@login_required
+def	fileseq_del(request, id):
+	'''
+	'''
+	models.FileSeq.objects.get(pk=int(id)).delete()
+	return redirect('core.views.fileseq_list')

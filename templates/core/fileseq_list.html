@@ -1,7 +1,9 @@
-{% extends "core/base.html" %}
+{% extends "core/fileseq_base.html" %}
 {% block body_main %}
-
+{% include "paginator.html" %}
+<ul>
 {% for object in object_list %}
- <span style="border: 1px solid gray"> <a href="{% url core.views.fileseq_view object.pk %}"> {{ object.pk }} </a> </span>
+ <li> <a href="{% url core.views.fileseq_view object.pk %}"> {{ object.pk }} ({{ object.files.count }}) </a> </li>
 {% endfor %}
+</ul>
 {% endblock %}

@@ -5,6 +5,8 @@ from django.conf import settings
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.files.base import ContentFile
+from django.db.models.signals import pre_delete
+from django.dispatch.dispatcher import receiver
 
 # 2. 3rd parties
 #from sortedm2m.fields import SortedManyToManyField
@@ -95,6 +97,10 @@ class	File(RenameFilesModel):
 		verbose_name            = u'Файл'
 		verbose_name_plural     = u'Файлы'
 
+@receiver(pre_delete, sender=File)
+def _file_delete(sender, instance, **kwargs):
+	os.unlink(instance.get_path())
+
 class	FileSeq(models.Model):
 	'''
 	File sequence
@@ -128,6 +134,11 @@ class	FileSeq(models.Model):
 		ordering                = ('id',)
 		verbose_name            = u'Последовательность файлов'
 		verbose_name_plural     = u'Последовательности файлов'
+
+
+@receiver(pre_delete, sender=FileSeq)
+def	_fileseq_delete(sender, instance, **kwargs):
+	instance.files.all().delete()
 
 class	FileSeqItem(models.Model):
 	file	= models.OneToOneField(File, primary_key=True, verbose_name=u'Файл')
