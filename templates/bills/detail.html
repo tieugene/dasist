@@ -83,7 +83,7 @@
   {% for i in object.events.all %}
   <tr>
    <td valign="top"> <img {% if i.resume %} src="{{ STATIC_URL }}img/32/dialog-ok.png" title="OK" {% else %} src="{{ STATIC_URL }}img/32/dialog-cancel.png" title="Canceled" {% endif %} width="16px" height="16px"/> </td>
-   <td valign="top"> {{ i.ctime|date:"d.m.y H:i:s" }} </td>
+   <td valign="top"> {{ i.ctime|date:"d.m H:i" }} </td>
    <td valign="top"> {{ i.approve.user.last_name }} </td>
    <td valign="top"> <pre style="margin: 0"> {{ i.comment }} </pre> </td>
   </tr>
