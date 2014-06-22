@@ -31,3 +31,8 @@
 + scan: clean_spaces
 + scan: replace_depart
 + scan: search/replace place/subj
+
+2014-06-22:
+* New SVN
+* Accounter can move bill to scan
+* some UI chages
