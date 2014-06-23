@@ -7,6 +7,7 @@ from django.contrib.auth.models import User
 from django.core.files.base import ContentFile
 from django.db.models.signals import pre_delete, post_delete
 from django.dispatch.dispatcher import receiver
+from django.db import transaction
 
 # 2. 3rd parties
 #from sortedm2m.fields import SortedManyToManyField
@@ -166,8 +167,15 @@ class	FileSeqItem(models.Model):
 	#def	delete(self):
 	#	pass
 
-	#def	swap(self, sibling):
-	#	pass
+	@transaction.commit_on_success
+	def	swap(self, sibling):
+		new_fsi = self.fileseq.fileseqitem_set.get(order=sibling)
+		old_order = self.order
+		new_order = new_fsi.order
+		new_fsi.order = old_order
+		new_fsi.save()
+		self.order = new_order
+		self.save()
 
 	def	is_first(self):
 		return self.order == 1

@@ -56,16 +56,24 @@
  </td> </tr>
  <tr>
   <td> Оригинал: </td>
-  <td> <ol style="margin: 0">
-   {% for img in object.fileseq.fileseqitem_set.all %}
-    <li>
+  <td> <table border="0">
+   {% for img in object.fileseq.list_items.all %}
+    <tr> <td>
+     {{ img.order }}
      <a href="{% url core.views.file_get img.pk %}" data-lightbox="roadtrip"> <img src="{{ STATIC_URL }}img/32/png.png" title="{{ img.file.name }}"/> </a>
      <!--a href="#" onClick="window.open('{% url core.views.file_get img.pk %}', '_blank', 'toolbar=0, location=0, directories=0, status=0, scrollbars=0, resizable=0, copyhistory=0, menuBar=0, width=500, height=500');return(false)"> <img src="{{ STATIC_URL }}img/16/png.png" title="{{ img.file.name }}"/> </a-->
      <a href="{% url core.views.file_get img.pk %}"> <img src="{{ STATIC_URL }}img/32/download.png" title="Скачать"/> </a>
      <input type="image" src="{{ STATIC_URL }}img/32/document-print.png" onClick="printimg('{% url core.views.file_get img.pk %}', '{{ img.pk }}');"/>
-    </li>
+     {% if button.edit %}
+	<a href="{% url bills.views.bill_img_del img.pk %}"> {% include "button/delete.html" %} </a>
+     </td><td>
+	{% if not img.is_first %} <a href="{% url bills.views.bill_img_up img.file.pk %}"> <button type="button"> <img src="{{ STATIC_URL }}img/up.png" alt="up"/> </button> </a> <br/> {% endif %}
+	{% if not img.is_last %} <a href="{% url bills.views.bill_img_dn img.file.pk %}"> <button type="button"> <img src="{{ STATIC_URL }}img/down.png" alt="down"/> </button> </a> {% endif %}
+     </td>
+     {% endif %}
+    </tr>
    {% endfor %}
-  </ol> </td>
+  </table> </td>
  </tr>
  </tbody>
 </table>

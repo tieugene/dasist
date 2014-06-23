@@ -126,13 +126,7 @@ def	fileseqitem_move_up(request, id):
 	fs = fsi.fileseq
 	order = fsi.order
 	if order > 1:
-		new_order = fsi.order-1
-		new_fsi = fs.fileseqitem_set.get(order=new_order)
-		#fsi.order = 0
-		new_fsi.order = order
-		new_fsi.save()
-		fsi.order = new_order
-		fsi.save()
+		fsi.swap(fsi.order-1)
 	return redirect('core.views.fileseq_view', fs.pk)
 
 @login_required
@@ -144,10 +138,5 @@ def	fileseqitem_move_down(request, id):
 	fs = fsi.fileseq
 	order = fsi.order
 	if fs.files.count() > order:
-		new_order = fsi.order+1
-		new_fsi = fs.fileseqitem_set.get(order=new_order)
-		new_fsi.order = order
-		new_fsi.save()
-		fsi.order = new_order
-		fsi.save()
+		fsi.swap(fsi.order+1)
 	return redirect('core.views.fileseq_view', fs.pk)

@@ -36,7 +36,7 @@ from PIL import Image as PIL_Image
 
 # 4. my
 import models, forms, utils
-from core.models import File, FileSeq
+from core.models import File, FileSeq, FileSeqItem
 from scan.models import Scan, Event
 
 PAGE_SIZE = 20
@@ -694,13 +694,24 @@ def	bill_toscan(request, id):
 		return redirect('bills.views.bill_view', bill.pk)
 
 @login_required
-def	bill_add_file(request, id):
-	bill = get_object_or_404(models.Bill, pk=int(id))
-	if (request.method == 'POST'):
-		form = forms.BillAddForm(request.POST, request.FILES)
-		if form.is_valid():
-			file = request.FILES.get('file', None)
-			if (file):
-				fileseq = bill.fileseq
-				__update_fileseq(file, fileseq, form.cleaned_data['rawpdf'])	# unicode error
-	return redirect('bills.views.bill_view', bill.pk)
+def	bill_img_del(request, id):
+	fsi = FileSeqItem.objects.get(pk=int(id))
+	fs = fsi.fileseq
+	fs.del_file(int(id))
+	return redirect('bills.views.bill_view', fs.pk)
+
+@login_required
+@transaction.commit_on_success
+def	bill_img_up(request, id):
+	fsi = FileSeqItem.objects.get(pk=int(id))
+	if not fsi.is_first():
+		fsi.swap(fsi.order-1)
+	return redirect('bills.views.bill_view', fsi.fileseq.pk)
+
+@login_required
+@transaction.commit_on_success
+def	bill_img_dn(request, id):
+	fsi = FileSeqItem.objects.get(pk=int(id))
+	if not fsi.is_last():
+		fsi.swap(fsi.order+1)
+	return redirect('bills.views.bill_view', fsi.fileseq.pk)

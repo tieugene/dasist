@@ -105,7 +105,7 @@ class	FilterStateForm(forms.Form):
 	dead	= forms.BooleanField(label='Завернуты',	required = False)
 
 class	BillAddFileForm(forms.Form):
-	file		= forms.FileField(label=u'Файл', required=False)
+	file		= forms.FileField(label=u'Файл')
 	rawpdf		= forms.BooleanField(label=u'Конвертировать PDF', required=False)
 
 	def clean_file(self):
