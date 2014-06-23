@@ -38,5 +38,5 @@
 * some UI chages
 * FileSeq: del item and self
 
-2014-06-22:
+2014-06-23:
 * FileSeq: add, move_up, move_down item

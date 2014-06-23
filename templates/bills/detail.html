@@ -105,6 +105,22 @@
 {% if button.restart %}	<a href="{% url bills.views.bill_restart object.pk %}">	{% include "button/restart.html" %} </a> {% endif %}
 {% if user.is_superuser %} <a href="{% url bills.views.mailto object.pk %}"> {% include "button/mailto.html" %} </a> {% endif %}
 </p>
+{% if upload_form %}
+<form enctype="multipart/form-data" action="" method="POST">
+	{% csrf_token %}
+	<table> <tr>
+	<td>
+	<table border="0">
+		{{ upload_form.as_table }}
+	</table>
+	</td>
+	<td>
+	<button type="submit"> <img src="{{ STATIC_URL }}img/32/upload.png" alt="upload"/> </button>
+	</td>
+	<input type="hidden" name="action" value="upload">
+	</tr> </table>
+</form>
+{% endif %}
 {% if form %} {# was if canaccept #}
  <form action="" method="POST">
 	{% csrf_token %}
@@ -134,6 +150,7 @@
   </button>
  {% endif %}
  </p>
+ <input type="hidden" name="action" value="resume">
  </form>
 {% endif %}
 {% if err %} <p> Error: {{ err }} </p> {% endif %}

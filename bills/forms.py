@@ -103,3 +103,13 @@ class	FilterStateForm(forms.Form):
 	onpay	= forms.BooleanField(label='В оплате',	required = False)
 	done	= forms.BooleanField(label='Исполнены',	required = False)
 	dead	= forms.BooleanField(label='Завернуты',	required = False)
+
+class	BillAddFileForm(forms.Form):
+	file		= forms.FileField(label=u'Файл', required=False)
+	rawpdf		= forms.BooleanField(label=u'Конвертировать PDF', required=False)
+
+	def clean_file(self):
+		file = self.cleaned_data['file']
+		if (not isinstance(file, FieldFile)) and (file.content_type not in mime_available):
+			raise forms.ValidationError('File must be PNG, TIF, JPG or PDF!')
+		return None

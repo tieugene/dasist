@@ -477,7 +477,7 @@ def	__mailto(request, bill):
 
 @login_required
 @transaction.commit_on_success
-def	bill_view(request, id):
+def	bill_view(request, id, upload_form=None):
 	'''
 	View/Accept/Reject bill
 	ACL: (assignee & Draft & Route ok) | (approver & OnWay)
@@ -490,8 +490,17 @@ def	bill_view(request, id):
 	approver = models.Approver.objects.get(user=user)
 	bill_state_id = bill.get_state_id()
 	form = None
+	upload_form = None
 	err = ''
 	if (request.method == 'POST'):
+	    if request.POST['action'] == 'upload':
+		upload_form = forms.BillAddFileForm(request.POST, request.FILES)
+		if upload_form.is_valid():
+			file = request.FILES.get('file', None)
+			if (file):
+				fileseq = bill.fileseq
+				__update_fileseq(file, fileseq, upload_form.cleaned_data['rawpdf'])	# unicode error
+	    else:
 		#if (request.POST['resume'] in set(['accept', 'reject'])) and (\
 		#   ((bill_state_id == 1) and (approver == bill.assign)) or\
 		#   (((bill_state_id == 2) or (bill_state_id == 3)) and ( \
@@ -552,6 +561,9 @@ def	bill_view(request, id):
 						bill.rpoint = bill.route_set.all().delete()
 					__mailto(request, bill)
 					return redirect('bills.views.bill_list')
+	else:
+		if (user.is_superuser or ((bill.assign == approver) and (bill_state_id in set([1, 6])))):
+			upload_form = forms.BillAddFileForm()
 	if (form == None):
 		form = forms.ResumeForm()
 	buttons = {
@@ -592,6 +604,7 @@ def	bill_view(request, id):
 	return render_to_response('bills/detail.html', context_instance=RequestContext(request, {
 		'object': bill,
 		'form': form if (buttons['accept'] or buttons['reject']) else None,
+		'upload_form': upload_form,
 		'err': err,
 		'button': buttons,
 	}))
@@ -679,3 +692,15 @@ def	bill_toscan(request, id):
 		return redirect('bills.views.bill_list')
 	else:
 		return redirect('bills.views.bill_view', bill.pk)
+
+@login_required
+def	bill_add_file(request, id):
+	bill = get_object_or_404(models.Bill, pk=int(id))
+	if (request.method == 'POST'):
+		form = forms.BillAddForm(request.POST, request.FILES)
+		if form.is_valid():
+			file = request.FILES.get('file', None)
+			if (file):
+				fileseq = bill.fileseq
+				__update_fileseq(file, fileseq, form.cleaned_data['rawpdf'])	# unicode error
+	return redirect('bills.views.bill_view', bill.pk)
