@@ -141,6 +141,9 @@ class	FileSeq(models.Model):
 			i.order=i.order-1
 			i.save()
 
+	def	list_items(self):
+		return self.fileseqitem_set.all().order_by('order')
+
 	class   Meta:
 		#unique_together		= (('scan', 'type', 'name'),)
 		ordering                = ('id',)
@@ -165,6 +168,12 @@ class	FileSeqItem(models.Model):
 
 	#def	swap(self, sibling):
 	#	pass
+
+	def	is_first(self):
+		return self.order == 1
+
+	def	is_last(self):
+		return self.order == self.fileseq.files.count()
 
 	class   Meta:
 		ordering                = ('file', 'order',)

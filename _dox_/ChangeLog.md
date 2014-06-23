@@ -37,3 +37,6 @@
 * Accounter can move bill to scan
 * some UI chages
 * FileSeq: del item and self
+
+2014-06-22:
+* FileSeq: add, move_up, move_down item

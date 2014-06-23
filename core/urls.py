@@ -16,4 +16,6 @@ urlpatterns = patterns('core.views',
 	url(r'^fs/(?P<id>\d+)/d/$',	'fileseq_del'),
 	#url(r'^fs/(?P<id>\d+)/af/$',	'fileseq_add_file'),
 	url(r'^fsi/(?P<id>\d+)/d/$',	'fileseqitem_del'),
+	url(r'^fsi/(?P<id>\d+)/up/$',	'fileseqitem_move_up'),
+	url(r'^fsi/(?P<id>\d+)/down/$',	'fileseqitem_move_down'),
 )

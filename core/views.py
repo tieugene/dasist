@@ -9,6 +9,7 @@ from django.http import HttpResponse
 from django.views.generic.list_detail import object_list, object_detail
 from django.shortcuts import render_to_response, render, redirect
 from django.template import RequestContext, Context, loader
+from django.db import transaction
 
 # 4. my
 import models, forms
@@ -114,4 +115,39 @@ def	fileseqitem_del(request, id):
 	fsi = models.FileSeqItem.objects.get(pk=int(id))
 	fs = fsi.fileseq
 	fs.del_file(int(id))
+	return redirect('core.views.fileseq_view', fs.pk)
+
+@login_required
+@transaction.commit_on_success
+def	fileseqitem_move_up(request, id):
+	'''
+	'''
+	fsi = models.FileSeqItem.objects.get(pk=int(id))
+	fs = fsi.fileseq
+	order = fsi.order
+	if order > 1:
+		new_order = fsi.order-1
+		new_fsi = fs.fileseqitem_set.get(order=new_order)
+		#fsi.order = 0
+		new_fsi.order = order
+		new_fsi.save()
+		fsi.order = new_order
+		fsi.save()
+	return redirect('core.views.fileseq_view', fs.pk)
+
+@login_required
+@transaction.commit_on_success
+def	fileseqitem_move_down(request, id):
+	'''
+	'''
+	fsi = models.FileSeqItem.objects.get(pk=int(id))
+	fs = fsi.fileseq
+	order = fsi.order
+	if fs.files.count() > order:
+		new_order = fsi.order+1
+		new_fsi = fs.fileseqitem_set.get(order=new_order)
+		new_fsi.order = order
+		new_fsi.save()
+		fsi.order = new_order
+		fsi.save()
 	return redirect('core.views.fileseq_view', fs.pk)
