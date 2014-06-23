@@ -36,3 +36,4 @@
 * New SVN
 * Accounter can move bill to scan
 * some UI chages
+* FileSeq: del item and self

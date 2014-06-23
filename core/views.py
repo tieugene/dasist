@@ -11,7 +11,7 @@ from django.shortcuts import render_to_response, render, redirect
 from django.template import RequestContext, Context, loader
 
 # 4. my
-import models
+import models, forms
 
 PAGE_SIZE = 25
 
@@ -72,11 +72,22 @@ def	fileseq_list(request):
 def	fileseq_view(request, id):
 	'''
 	'''
+	if request.method == 'POST':
+		form = forms.FileSeqItemAddForm(request.POST, request.FILES)
+		if form.is_valid():
+			if 'file' in request.FILES:
+				fileseq = models.FileSeq.objects.get(pk=int(id))
+				file = models.File(file=request.FILES['file'])
+				file.save()
+				fileseq.add_file(file)
         return  object_detail (
                 request,
                 queryset = models.FileSeq.objects.all(),
                 object_id = id,
 		template_name = 'core/fileseq_detail.html',
+		extra_context = {
+			'form': forms.FileSeqItemAddForm()
+		}
         )
 
 @login_required
@@ -85,6 +96,16 @@ def	fileseq_del(request, id):
 	'''
 	models.FileSeq.objects.get(pk=int(id)).delete()
 	return redirect('core.views.fileseq_list')
+
+@login_required
+def	fileseq_add_file(request, id):
+	'''
+	'''
+	form = forms.BillAddForm()
+	return render_to_response('core/fileseq_detail.html', context_instance=RequestContext(request, {
+		'form': form,
+		'places': models.Place.objects.all(),
+	}))
 
 @login_required
 def	fileseqitem_del(request, id):

@@ -1,5 +1,6 @@
 {% extends "core/fileseq_base.html" %}
 {% block body_main %}
+{{ form.media }}
 <ul>
 {% for img in object.fileseqitem_set.all %}
  <li>
@@ -9,5 +10,12 @@
  </li>
 {% endfor %}
 </ul>
+<form enctype="multipart/form-data" action="" method="POST">
+	{% csrf_token %}
+	<table border="0"> <tr>
+	<td> {{ form.as_p }} </td>
+	<td> <button type="submit"> Добавить </button> </td>
+	</tr> </table>
+</form>
 <a href="{% url core.views.fileseq_del object.pk %}"> {% include "button/delete.html" %} </a>
 {% endblock %}
