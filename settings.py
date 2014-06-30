@@ -34,7 +34,6 @@ DECIMAL_SEPARATOR = ','
 MEDIA_ROOT = '/mnt/shares/tmp/bills'
 MEDIA_URL = ''
 
-STATIC_ROOT = ''	#os.path.join(PROJECT_DIR, 'static'),
 #STATIC_ROOT = os.path.join(PROJECT_DIR, 'static'),
 
 ADMIN_MEDIA_PREFIX = '/static/admin/'
@@ -43,6 +42,7 @@ SECRET_KEY = 'justforme'
 
 TEMPLATE_DIRS = (
     os.path.join(PROJECT_DIR, 'templates'),
+    '/tmp',
 )
 
 TEMPLATE_LOADERS = (
@@ -69,6 +69,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
 )
 
+STATIC_ROOT = ''	#os.path.join(PROJECT_DIR, 'static'),
 
 STATIC_URL = '/static/'
 

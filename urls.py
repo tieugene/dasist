@@ -25,4 +25,4 @@ urlpatterns = patterns('',
 	url(dajaxice_config.dajaxice_url, include('dajaxice.urls')),
 )
 
-#urlpatterns += staticfiles_urlpatterns()
+urlpatterns += staticfiles_urlpatterns()
