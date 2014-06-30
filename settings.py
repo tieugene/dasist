@@ -37,23 +37,13 @@ MEDIA_URL = ''
 STATIC_ROOT = ''	#os.path.join(PROJECT_DIR, 'static'),
 #STATIC_ROOT = os.path.join(PROJECT_DIR, 'static'),
 
-STATIC_URL = '/static/'
-
 ADMIN_MEDIA_PREFIX = '/static/admin/'
 
-STATICFILES_DIRS = (
-    os.path.join(PROJECT_DIR, 'static'),
-
-)
-
-STATICFILES_FINDERS = (
-    'django.contrib.staticfiles.finders.FileSystemFinder',
-    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-    #'django.contrib.staticfiles.finders.DefaultStorageFinder',
-    'dajaxice.finders.DajaxiceFinder',
-)
-
 SECRET_KEY = 'justforme'
+
+TEMPLATE_DIRS = (
+    os.path.join(PROJECT_DIR, 'templates'),
+)
 
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
@@ -79,11 +69,22 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
 )
 
-ROOT_URLCONF = 'urls'
 
-TEMPLATE_DIRS = (
-    os.path.join(PROJECT_DIR, 'templates'),
+STATIC_URL = '/static/'
+
+STATICFILES_DIRS = (
+    os.path.join(PROJECT_DIR, 'static'),
+
 )
+
+STATICFILES_FINDERS = (
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    #'django.contrib.staticfiles.finders.DefaultStorageFinder',
+    'dajaxice.finders.DajaxiceFinder',
+)
+
+ROOT_URLCONF = 'urls'
 
 INSTALLED_APPS = (
     'django.contrib.auth',
