@@ -49,7 +49,7 @@ STATICFILES_DIRS = (
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-    'django.contrib.staticfiles.finders.DefaultStorageFinder',
+    #'django.contrib.staticfiles.finders.DefaultStorageFinder',
     'dajaxice.finders.DajaxiceFinder',
 )
 
@@ -119,7 +119,7 @@ LOGGING = {
     }
 }
 
-DAJAXICE_MEDIA_PREFIX='dajaxice'
+#DAJAXICE_MEDIA_PREFIX='dajaxice'
 #DAJAXICE_FUNCTIONS = ('scan.ajax.subject',)
 
 BILLS_ROOT = '/mnt/shares/tmp/bills'
