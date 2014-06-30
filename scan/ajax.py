@@ -1,6 +1,8 @@
 from dajax.core import Dajax
 from dajaxice.decorators import dajaxice_register
 
+import models
+
 @dajaxice_register
 def updatecombo(request, option):
     dajax = Dajax()
@@ -13,3 +15,15 @@ def updatecombo(request, option):
 
     dajax.assign('#combo2', 'innerHTML', ''.join(out))
     return dajax.json()
+
+@dajaxice_register
+def updatesubj(request, place):
+	dajax = Dajax()
+	out = []
+	if (place):
+		out.append('<option value="">---</option>')
+		for i in models.Scan.objects.filter(place=place).order_by('subject').distinct().values_list('subject', flat=True):
+			if i:
+				out.append('<option value="%s">%s</option>' % (i, i))
+	dajax.assign('#id_subject', 'innerHTML', ''.join(out))
+	return dajax.json()

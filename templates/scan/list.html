@@ -1,4 +1,12 @@
 {% extends "scan/base.html" %}
+{% block js %}
+<script type="text/javascript">
+$(document).ready(function() {
+	//$('#id_test').change(function(){Dajaxice.scan.updatecombo(Dajax.process, {'option':this.value});});
+	$('#id_place').change(function(){Dajaxice.scan.updatesubj(Dajax.process, {'place':this.value});});
+});
+</script>
+{% endblock %}
 {% block body_main %}
 <table border="0">
 <tr>
@@ -35,7 +43,13 @@
  <tr>
   <th/>
   <th> {{ form.place }} <br/> {{ form.place.errors }} </th>
-  <th>  </th>
+  <th> <select name="subject" id="id_subject">
+	{% if subjs %}
+		{% for k, v in subjs %}
+		<option value="{{k}}" {% ifequal subj k %}selected="selected"{% endifequal %}>{{v}}</option>
+		{% endfor %}
+	{% endif %}
+  </select> </th>
   <th> {{ form.depart }} <br/> {{ form.depart.errors }} </th>
   <th> {{ form.supplier }} <br/> {{ form.supplier.errors }} </th>
   <th> {{ form.billno }} <br/> {{ form.billno.errors }} </th>
@@ -58,13 +72,4 @@
  </tr>
 {% endfor %}
 </table>
-
-<select onchange="Dajaxice.scan.updatecombo(Dajax.process, {'option':this.value})" size="1">
-    <option value="0">Select...</option>
-    <option value="0">Spain</option>
-    <option value="1">France</option>
-    <option value="2">United Kingdom</option>
-</select>
-<select id="combo2" onchange="" size="1"></select>
-
 {% endblock %}

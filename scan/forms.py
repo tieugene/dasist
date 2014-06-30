@@ -11,8 +11,8 @@ EMPTY_VALUE = [('', '---'),]
 class	FilterScanListForm(forms.Form):
 	#place		= forms.ChoiceField(choices=Scan.objects.order_by('place').distinct().values_list('place', 'place'), label=u'Объект', required=False)
 	place		= forms.ChoiceField(choices=EMPTY_VALUE + list(Scan.objects.order_by('place').distinct().values_list('place', 'place')), label=u'Объект', required=False)
-#	#subject
-	depart		= forms.ChoiceField(choices=EMPTY_VALUE + list(Scan.objects.order_by('depart').distinct().values_list('depart', 'depart')), label=u'Направление', required=False)
+	subject		= forms.ChoiceField(choices=EMPTY_VALUE + list(Scan.objects.order_by('subject').distinct().values_list('subject', 'subject')), label=u'Подобъект', required=False)
+	depart		= forms.ChoiceField(choices=EMPTY_VALUE + list(Scan.objects.order_by('depart').distinct().exclude(depart=None).values_list('depart', 'depart')), label=u'Направление', required=False)
 	supplier	= forms.CharField(max_length=64, label=u'Поставщик', required=False)
 	billno		= forms.CharField(max_length=64, label=u'Номер счета', required=False)
 	billdate	= forms.DateField(label=u'Дата счета', required=False, widget=forms.TextInput(attrs={'size':8}))

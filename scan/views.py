@@ -39,6 +39,7 @@ def	scan_list(request):
 	# 3. get values
 	filter = {
 		'place':	request.session.get('scan_place', None),
+		'subject':	request.session.get('scan_subject', None),
 		'depart':	request.session.get('scan_depart', None),
 		'supplier':	request.session.get('scan_supplier', None),
 		'billno':	request.session.get('scan_billno', None),
@@ -51,6 +52,7 @@ def	scan_list(request):
 			# 4.1. get values
 			filter = {
 				'place':	form.cleaned_data['place'],
+				'subject':	form.cleaned_data['subject'],
 				'depart':	form.cleaned_data['depart'],
 				'supplier':	form.cleaned_data['supplier'],
 				'billno':	form.cleaned_data['billno'],
@@ -58,6 +60,7 @@ def	scan_list(request):
 			}
 			# 4.2. set session values
 			request.session['scan_place'] =		filter['place']
+			request.session['scan_subject'] =	filter['subject']
 			request.session['scan_depart'] =	filter['depart']
 			request.session['scan_supplier'] =	filter['supplier']
 			request.session['scan_billno'] =	filter['billno']
@@ -69,6 +72,7 @@ def	scan_list(request):
 		# 3.2.2. gen form
 		form = forms.FilterScanListForm(initial={
 			'place':	filter['place'],
+			'subject':	filter['subject'],
 			'depart':	filter['depart'],
 			'supplier':	filter['supplier'],
 			'billno':	filter['billno'],
@@ -77,8 +81,14 @@ def	scan_list(request):
 	# 6. filter
 	#print 'Place:', filter['place']
 	q = models.Scan.objects.all()
+	subjs = []
+	subj = None
 	if filter['place']:
 		q = q.filter(place=filter['place'])
+		subjs = forms.EMPTY_VALUE + list(q.order_by('subject').distinct().exclude(subject=None).values_list('subject', 'subject'))
+		if filter['subject']:
+			subj = filter['subject']
+			q = q.filter(subject=filter['subject'])
 	if filter['depart']:
 		q = q.filter(depart=filter['depart'])
 	if filter['supplier']:
@@ -96,6 +106,8 @@ def	scan_list(request):
 		extra_context = {
 			'lpp': lpp,
 			'form': form,
+			'subjs': subjs,
+			'subj': subj,
 		}
 	)
 
