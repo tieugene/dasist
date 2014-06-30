@@ -119,7 +119,7 @@ LOGGING = {
     }
 }
 
-#DAJAXICE_MEDIA_PREFIX='dajaxice'
+DAJAXICE_MEDIA_PREFIX='dajaxice'
 #DAJAXICE_FUNCTIONS = ('scan.ajax.subject',)
 
 BILLS_ROOT = '/mnt/shares/tmp/bills'

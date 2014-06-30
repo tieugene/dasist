@@ -24,7 +24,7 @@ urlpatterns = patterns('',
 	url(r'^bills/',		include('bills.urls')),
 	url(r'^scan/',		include('scan.urls')),
 	url(r'^about$',		'views.about'),
-	#(r'^%s/' % settings.DAJAXICE_MEDIA_PREFIX, include('dajaxice.urls')),
+	(r'^%s/' % settings.DAJAXICE_MEDIA_PREFIX, include('dajaxice.urls')),
 	url(dajaxice_config.dajaxice_url, include('dajaxice.urls')),
 )
 
