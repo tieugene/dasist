@@ -1,5 +1,4 @@
 {% load static %}
-{% load dajaxice_templatetags %}
 {# load adminmedia #}
 {% get_static_prefix as STATIC_URL %}
 {# / #}
@@ -14,6 +13,7 @@
 	<link type="text/css" href="{{ STATIC_URL }}css/fieldset.css" rel="stylesheet"/>
 	<script type="text/javascript" src="{{ STATIC_URL }}js/jquery.min.js"></script>
 	<script type="text/javascript" src="{{ STATIC_URL }}js/lightbox.min.js"></script>
+	{% load dajaxice_templatetags %}
 	{% dajaxice_js_import %}
 	<!--script type="text/javascript" src="{{ STATIC_URL }}js/dajaxice.core.js"></script-->
 	<script type="text/javascript" src="{{ STATIC_URL }}js/jquery.dajax.core.js"></script>
@@ -22,7 +22,7 @@
 	<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}admin/css/widgets.css" />
 	<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/thumbnails.css" />
 	<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/lightbox.css" />
-	<script type="text/javascript">window.__admin_media_prefix__ = "{{ STATIC_URL }}/admin/";</script>
+	<script type="text/javascript">window.__admin_media_prefix__ = "{{ STATIC_URL }}admin/";</script>
 	<!--script type="text/javascript" src="/admin/jsi18n/"></script-->
 	<script type="text/javascript" src="{{ STATIC_URL }}admin/js/core.js"></script>
 	<!-- /admin -->
