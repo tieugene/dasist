@@ -40,4 +40,4 @@
 
 2014-06-23:
 * FileSeq: add, move_up, move_down item
-* Bills: add, move_up, move_down item
+* Bills: add, del, move_up, move_down item

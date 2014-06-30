@@ -1,6 +1,7 @@
 {% load static %}
 {# load adminmedia #}
 {% get_static_prefix as STATIC_URL %}
+{% load dajaxice_templatetags %}
 {# / #}
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
@@ -13,6 +14,8 @@
 	<link type="text/css" href="{{ STATIC_URL }}css/fieldset.css" rel="stylesheet"/>
 	<script type="text/javascript" src="{{ STATIC_URL }}js/jquery.min.js"></script>
 	<script type="text/javascript" src="{{ STATIC_URL }}js/lightbox.min.js"></script>
+	{% dajaxice_js_import %}
+	<script type="text/javascript" src="{{ STATIC_URL }}js/jquery.dajax.core.js"></script>
 	<!-- admin -->
 	<link rel="stylesheet" type="text/css" href="/static/admin/css/forms.css" />
 	<link rel="stylesheet" type="text/css" href="/static/admin/css/widgets.css" />

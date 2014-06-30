@@ -1,9 +1,5 @@
-State icons:
-    * Draft: "draft" (Edit)
-    * OnWay: onway
-    * OnPay: $
-    * Done: V
-    * Rejected: Trash
+Requires:
+	* python-django-dajax
 
 OnCreate:
 	- selected Place = 1
@@ -28,14 +24,6 @@ else:
 
 = misc =
 http://habrahabr.ru/post/220295/
-
-= Test =
-+Draft > Edit > Delete
-+Draft > OnWay > Reject > Delete
-+Draft > OnWay > Reject > Draft >
-+Draft > OnWay > OnPay > Done
-+Draft > OnWay > OnPay > Dup
-+Draft > OnWay > OnPay > Done? > +Draft? > Edit > Draft? > OnWay? > Reject? > Draft? > OnWay? > OnPay > Done
 
 = browsers =
 + firefox
