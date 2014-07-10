@@ -3,7 +3,7 @@
 dasist.core.urls
 '''
 
-from django.conf.urls.defaults import *
+from django.conf.urls import patterns, url
 
 urlpatterns = patterns('core.views',
 	url(r'^f/$',			'file_list'),

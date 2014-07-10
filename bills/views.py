@@ -12,8 +12,10 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponse
 from django.shortcuts import render_to_response, render, redirect, get_object_or_404
 from django.template import RequestContext, Context, loader
-from django.views.generic.simple import direct_to_template, redirect_to
-from django.views.generic.list_detail import object_list, object_detail
+#from django.views.generic.simple import direct_to_template
+from django.views.generic.base import TemplateView
+#from django.views.generic.list_detail import object_list
+from django.views.generic.list import ListView
 from django.utils.datastructures import SortedDict
 from django.db.models import F, Q
 from django.core.files.storage import default_storage	# MEDIA_ROOT

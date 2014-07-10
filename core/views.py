@@ -6,7 +6,9 @@
 #from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
-from django.views.generic.list_detail import object_list, object_detail
+#from django.views.generic.list_detail import object_list, object_detail
+from django.views.generic.list import ListView
+from django.views.generic.detail import DetailView
 from django.shortcuts import render_to_response, render, redirect
 from django.template import RequestContext, Context, loader
 from django.db import transaction

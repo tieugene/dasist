@@ -10,8 +10,9 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponse
 from django.shortcuts import render_to_response, render, redirect
 from django.template import RequestContext, Context, loader
-from django.views.generic.simple import direct_to_template, redirect_to
-from django.views.generic.list_detail import object_list, object_detail
+#from django.views.generic.list_detail import object_list, object_detail
+from django.views.generic import ListView
+from django.views.generic import DetailView
 from django.utils.datastructures import SortedDict
 from django.db.models import F
 from django.core.files.storage import default_storage	# MEDIA_ROOT
@@ -27,6 +28,13 @@ from core.models import File, FileSeq
 
 reload(sys)
 sys.setdefaultencoding('utf-8')
+
+class	ScanList(ListView):
+    extra_context = {}
+    def get_context_data(self, **kwargs):
+        context = super(ScanList, self).get_context_data(**kwargs)
+        context.update(self.extra_context)
+        return context
 
 @login_required
 def	scan_list(request):
@@ -97,6 +105,14 @@ def	scan_list(request):
 		q = q.filter(no=filter['billno'])
 	if filter['billdate']:
 		q = q.filter(date=filter['billdate'])
+	# try
+	object_list = ListView.as_view(
+		queryset = q,
+		paginate_by = lpp,
+		template_name = 'scan/list.html',
+	)
+	return object_list(request)
+	# /try
 	return  object_list (
 		request,
 		queryset = q,

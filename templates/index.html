@@ -6,13 +6,13 @@ $("#tm_index").addClass("active");
 <center>
 {% if user.is_authenticated %}
 <p>
- <a href="{% url scan.views.scan_list %}"> <button type="button"> Сканы </button> </a>
- <a href="{% url bills.views.bill_list %}"> <button type="button"> Счета </button> </a>
+ <a href="{% url 'scan.views.scan_list' %}"> <button type="button"> Сканы </button> </a>
+ <a href="{% url 'bills.views.bill_list' %}"> <button type="button"> Счета </button> </a>
 </p>
  {% if user.is_superuser %}
 <p>
- <a href="{% url core.views.file_list %}"> <button type="button"> Файлы </button> </a>
- <a href="{% url core.views.fileseq_list %}"> <button type="button"> Последовательности </button> </a>
+ <a href="{% url 'core.views.file_list' %}"> <button type="button"> Файлы </button> </a>
+ <a href="{% url 'core.views.fileseq_list' %}"> <button type="button"> Последовательности </button> </a>
 </p>
 <p>
  Не переключайтесь:

@@ -17,11 +17,11 @@ $(document).ready(function() {
  <label for="lpp">Строк:</label>
  <!--select onchange="document.location=this.options[this.selectedIndex].value"-->
  <select onchange="document.location=this.options[this.selectedIndex].value">
-  <option value="{% url scan.views.scan_set_lpp 10 %}" {% ifequal lpp 10 %}selected{% endifequal %}>10</option>
-  <option value="{% url scan.views.scan_set_lpp 15 %}" {% ifequal lpp 15 %}selected{% endifequal %}>15</option>
-  <option value="{% url scan.views.scan_set_lpp 20 %}" {% ifequal lpp 20 %}selected{% endifequal %}>20</option>
-  <option value="{% url scan.views.scan_set_lpp 25 %}" {% ifequal lpp 25 %}selected{% endifequal %}>25</option>
-  <option value="{% url scan.views.scan_set_lpp 50 %}" {% ifequal lpp 50 %}selected{% endifequal %}>50</option>
+  <option value="{% url 'scan.views.scan_set_lpp' 10 %}" {% ifequal lpp 10 %}selected{% endifequal %}>10</option>
+  <option value="{% url 'scan.views.scan_set_lpp' 15 %}" {% ifequal lpp 15 %}selected{% endifequal %}>15</option>
+  <option value="{% url 'scan.views.scan_set_lpp' 20 %}" {% ifequal lpp 20 %}selected{% endifequal %}>20</option>
+  <option value="{% url 'scan.views.scan_set_lpp' 25 %}" {% ifequal lpp 25 %}selected{% endifequal %}>25</option>
+  <option value="{% url 'scan.views.scan_set_lpp' 50 %}" {% ifequal lpp 50 %}selected{% endifequal %}>50</option>
  </select>
 </td>
 </tr>
@@ -38,7 +38,7 @@ $(document).ready(function() {
   <th> Дата </th>
   <th> Сумма </th>
  </tr>
-<form action="{% url scan.views.scan_list %}" method="POST">
+<form action="{% url 'scan.views.scan_list' %}" method="POST">
 {% csrf_token %}
  <tr>
   <th/>
@@ -61,7 +61,7 @@ $(document).ready(function() {
  <tbody>
 {% for object in object_list %}
  <tr>
-  <td> <a href="{% url scan.views.scan_view object.pk %}"> {{ object.pk }} </a> </td>
+  <td> <a href="{% url 'scan.views.scan_view' object.pk %}"> {{ object.pk }} </a> </td>
   <td> {{ object.place }} </td>
   <td> {{ object.subject|default:"---" }} </td>
   <td> {% if object.depart %} {{ object.depart }} {% else %} --- {% endif %} </td>

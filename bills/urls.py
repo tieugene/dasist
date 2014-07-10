@@ -3,7 +3,7 @@
 lansite.apps.core.urls
 '''
 
-from django.conf.urls.defaults import *
+from django.conf.urls import patterns, url
 
 urlpatterns = patterns('bills.views',
 	url(r'^$',			'bill_list'),	# GET; ACL: assign|approve=user
