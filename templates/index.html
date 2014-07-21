@@ -6,7 +6,7 @@ $("#tm_index").addClass("active");
 <center>
 {% if user.is_authenticated %}
 <p>
- <a href="{% url 'scan.views.scan_list' %}"> <button type="button"> Сканы </button> </a>
+ <a href="{% url 'scan_list' %}"> <button type="button"> Сканы </button> </a>
  <a href="{% url 'bills.views.bill_list' %}"> <button type="button"> Счета </button> </a>
 </p>
  {% if user.is_superuser %}

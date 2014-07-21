@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 '''
+scan.views
 '''
 
 # 1. django
@@ -11,11 +12,11 @@ from django.http import HttpResponse
 from django.shortcuts import render_to_response, render, redirect
 from django.template import RequestContext, Context, loader
 #from django.views.generic.list_detail import object_list, object_detail
-from django.views.generic import ListView
-from django.views.generic import DetailView
+from django.views.generic import ListView, DetailView
 from django.utils.datastructures import SortedDict
 from django.db.models import F
 from django.core.files.storage import default_storage	# MEDIA_ROOT
+from django.utils.decorators import method_decorator
 
 # 2. system
 import os, sys, imp, pprint, tempfile, subprocess, shutil
@@ -29,12 +30,49 @@ from core.models import File, FileSeq
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
+class	ScanDetail(DetailView):
+	model = models.Scan
+	template_name = 'scan/detail.html'
+
 class	ScanList(ListView):
-    extra_context = {}
-    def get_context_data(self, **kwargs):
-        context = super(ScanList, self).get_context_data(**kwargs)
-        context.update(self.extra_context)
-        return context
+	template_name = 'scan/list.html'
+	filter = {
+		'place':	None,
+		'subject':	None,
+		'depart':	None,
+		'supplier':	None,
+		'billno':	None,
+		'billdate':	None,
+	}
+
+	#@method_decorator(login_required())
+	#def	dispatch(self, request, *args, **kwargs):
+	#	print 'ScanList dispatch'
+	#	return super(ScanList, self).dispatch(request, *args, **kwargs)
+
+	def	get_queryset(self):
+		print 'ScanList get_queryset'
+		return models.Scan.objects.all()
+
+	def	get_context_data(self, **kwargs):
+		print 'ScanList get_context_data'
+		context = super(ScanList, self).get_context_data(**kwargs)
+		context['lpp']	= 25
+		context['form']	= form = forms.FilterScanListForm()
+		context['subjs']= []
+		context['subj']	= None
+		return context
+
+	#def	post(self, request, *args, **kwargs):
+	#	'''
+	#	'ScanList' object has no attribute 'object_list'
+	#	'''
+	#	print 'ScanList post'
+	#	return self.render_to_response(self.get_context_data(), **kwargs)
+
+	#def	get(self, request, **kwargs):
+	#	print 'ScanList get'
+	#	return self.render_to_response(self.get_context_data(), **kwargs)
 
 @login_required
 def	scan_list(request):
@@ -106,12 +144,7 @@ def	scan_list(request):
 	if filter['billdate']:
 		q = q.filter(date=filter['billdate'])
 	# try
-	object_list = ListView.as_view(
-		queryset = q,
-		paginate_by = lpp,
-		template_name = 'scan/list.html',
-	)
-	return object_list(request)
+	return ListView.as_view(queryset = q, paginate_by = lpp, template_name = 'scan/list.html',)(request)
 	# /try
 	return  object_list (
 		request,
@@ -148,15 +181,6 @@ def	scan_edit(request, id):
 		'form': form,
 		'object': scan,
 	}))
-
-@login_required
-def	scan_view(request, id):
-	return  object_detail (
-		request,
-		queryset = models.Scan.objects.all(),
-		object_id = id,
-		template_name = 'scan/detail.html',
-	)
 
 @login_required
 def	scan_delete(request, id):

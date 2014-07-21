@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 '''
+core.views
 '''
 
 # 1. django

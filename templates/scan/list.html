@@ -38,7 +38,7 @@ $(document).ready(function() {
   <th> Дата </th>
   <th> Сумма </th>
  </tr>
-<form action="{% url 'scan.views.scan_list' %}" method="POST">
+<form action="{% url 'scan_list' %}" method="POST">
 {% csrf_token %}
  <tr>
   <th/>
@@ -61,7 +61,7 @@ $(document).ready(function() {
  <tbody>
 {% for object in object_list %}
  <tr>
-  <td> <a href="{% url 'scan.views.scan_view' object.pk %}"> {{ object.pk }} </a> </td>
+  <td> <a href="{% url 'scan_view' object.pk %}"> {{ object.pk }} </a> </td>
   <td> {{ object.place }} </td>
   <td> {{ object.subject|default:"---" }} </td>
   <td> {% if object.depart %} {{ object.depart }} {% else %} --- {% endif %} </td>
