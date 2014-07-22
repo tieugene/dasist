@@ -36,6 +36,7 @@ class	ScanDetail(DetailView):
 
 class	ScanList(ListView):
 	template_name = 'scan/list.html'
+	paginate_by = 25
 	filter = {
 		'place':	None,
 		'subject':	None,
@@ -44,126 +45,70 @@ class	ScanList(ListView):
 		'billno':	None,
 		'billdate':	None,
 	}
-
-	#@method_decorator(login_required())
-	#def	dispatch(self, request, *args, **kwargs):
-	#	print 'ScanList dispatch'
-	#	return super(ScanList, self).dispatch(request, *args, **kwargs)
-
-	def	get_queryset(self):
-		print 'ScanList get_queryset'
-		return models.Scan.objects.all()
-
-	def	get_context_data(self, **kwargs):
-		print 'ScanList get_context_data'
-		context = super(ScanList, self).get_context_data(**kwargs)
-		context['lpp']	= 25
-		context['form']	= form = forms.FilterScanListForm()
-		context['subjs']= []
-		context['subj']	= None
-		return context
-
-	#def	post(self, request, *args, **kwargs):
-	#	'''
-	#	'ScanList' object has no attribute 'object_list'
-	#	'''
-	#	print 'ScanList post'
-	#	return self.render_to_response(self.get_context_data(), **kwargs)
-
-	#def	get(self, request, **kwargs):
-	#	print 'ScanList get'
-	#	return self.render_to_response(self.get_context_data(), **kwargs)
-
-@login_required
-def	scan_list(request):
-	'''
-	'''
-	# 1. pre
-	user = request.user
-	# 2. lpp
-	lpp = int(request.session.get('lpp', 20))
-	# 3. get values
-	filter = {
-		'place':	request.session.get('scan_place', None),
-		'subject':	request.session.get('scan_subject', None),
-		'depart':	request.session.get('scan_depart', None),
-		'supplier':	request.session.get('scan_supplier', None),
-		'billno':	request.session.get('scan_billno', None),
-		'billdate':	request.session.get('scan_billdate', None),
-	}
-	# 4. set filter values
-	if request.method == 'POST':
-		form = forms.FilterScanListForm(request.POST)
-		if form.is_valid():
-			# 4.1. get values
-			filter = {
-				'place':	form.cleaned_data['place'],
-				'subject':	form.cleaned_data['subject'],
-				'depart':	form.cleaned_data['depart'],
-				'supplier':	form.cleaned_data['supplier'],
-				'billno':	form.cleaned_data['billno'],
-				'billdate':	form.cleaned_data['billdate'],
-			}
-			# 4.2. set session values
-			request.session['scan_place'] =		filter['place']
-			request.session['scan_subject'] =	filter['subject']
-			request.session['scan_depart'] =	filter['depart']
-			request.session['scan_supplier'] =	filter['supplier']
-			request.session['scan_billno'] =	filter['billno']
-			request.session['scan_billdate'] =	filter['billdate']
-		else:
-			print 'Invalid form'
-	# 5. set default form values
-	else:
-		# 3.2.2. gen form
-		form = forms.FilterScanListForm(initial={
-			'place':	filter['place'],
-			'subject':	filter['subject'],
-			'depart':	filter['depart'],
-			'supplier':	filter['supplier'],
-			'billno':	filter['billno'],
-			'billdate':	filter['billdate'],
-		})
-	# 6. filter
-	#print 'Place:', filter['place']
-	q = models.Scan.objects.all()
 	subjs = []
 	subj = None
-	if filter['place']:
-		q = q.filter(place=filter['place'])
-		subjs = forms.EMPTY_VALUE + list(q.order_by('subject').distinct().exclude(subject=None).values_list('subject', 'subject'))
-		if filter['subject']:
-			subj = filter['subject']
-			q = q.filter(subject=filter['subject'])
-	if filter['depart']:
-		q = q.filter(depart=filter['depart'])
-	if filter['supplier']:
-		q = q.filter(supplier=filter['supplier'])
-	if filter['billno']:
-		q = q.filter(no=filter['billno'])
-	if filter['billdate']:
-		q = q.filter(date=filter['billdate'])
-	# try
-	return ListView.as_view(queryset = q, paginate_by = lpp, template_name = 'scan/list.html',)(request)
-	# /try
-	return  object_list (
-		request,
-		queryset = q,
-		paginate_by = lpp,
-		page = int(request.GET.get('page', '1')),
-		template_name = 'scan/list.html',
-		extra_context = {
-			'lpp': lpp,
-			'form': form,
-			'subjs': subjs,
-			'subj': subj,
-		}
-	)
+
+	def	get_queryset(self):
+		#print 'ScanList get_queryset'
+		# 1. handle session
+		self.paginate_by = self.request.session.get('lpp', 25)
+		self.filter['place'] =		self.request.session.get('scan_place', None)
+		self.filter['subject'] =	self.request.session.get('scan_subject', None)
+		self.filter['depart'] =		self.request.session.get('scan_depart', None)
+		self.filter['supplier'] =	self.request.session.get('scan_supplier', None)
+		self.filter['billno'] =		self.request.session.get('scan_billno', None)
+		self.filter['billdate'] =	self.request.session.get('scan_billdate', None)
+		# 2. create query
+		q = models.Scan.objects.all()
+		if self.filter['place']:
+			q = q.filter(place=self.filter['place'])
+			self.subjs = forms.EMPTY_VALUE + list(q.order_by('subject').distinct().exclude(subject=None).values_list('subject', 'subject'))
+			if self.filter['subject']:
+				self.subj = self.filter['subject']
+				q = q.filter(subject=self.filter['subject'])
+		if self.filter['depart']:
+			q = q.filter(depart=self.filter['depart'])
+		if self.filter['supplier']:
+			q = q.filter(supplier=self.filter['supplier'])
+		if self.filter['billno']:
+			q = q.filter(no=self.filter['billno'])
+		if self.filter['billdate']:
+			q = q.filter(date=self.filter['billdate'])
+		return q
+
+	def	get_context_data(self, **kwargs):
+		#print 'ScanList get_context_data'
+		context = super(ScanList, self).get_context_data(**kwargs)
+		context['lpp']	= self.paginate_by
+		context['form']	= forms.FilterScanListForm(initial={
+			'place':	self.filter['place'],
+			'subject':	self.filter['subject'],
+			'depart':	self.filter['depart'],
+			'supplier':	self.filter['supplier'],
+			'billno':	self.filter['billno'],
+			'billdate':	self.filter['billdate'],
+		})
+		context['subjs']= self.subjs
+		context['subj']	= self.subj
+		return context
 
 @login_required
 def	scan_set_lpp(request, lpp):
-	request.session['lpp'] = lpp
-	return redirect('scan.views.scan_list')
+	request.session['lpp'] = int(lpp)
+	return redirect('scan_list')
+
+@login_required
+def	scan_set_filter(request):
+	form = forms.FilterScanListForm(request.POST)
+	if form.is_valid():
+		filter = form.cleaned_data
+		request.session['scan_place'] =		filter['place']
+		request.session['scan_subject'] =	filter['subject']
+		request.session['scan_depart'] =	filter['depart']
+		request.session['scan_supplier'] =	filter['supplier']
+		request.session['scan_billno'] =	filter['billno']
+		request.session['scan_billdate'] =	filter['billdate']
+	return redirect('scan_list')
 
 @login_required
 def	scan_edit(request, id):

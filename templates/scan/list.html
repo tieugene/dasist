@@ -38,7 +38,7 @@ $(document).ready(function() {
   <th> Дата </th>
   <th> Сумма </th>
  </tr>
-<form action="{% url 'scan_list' %}" method="POST">
+<form action="{% url 'scan.views.scan_set_filter' %}" method="POST">
 {% csrf_token %}
  <tr>
   <th/>
