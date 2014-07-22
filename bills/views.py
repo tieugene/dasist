@@ -15,7 +15,6 @@ from django.shortcuts import render_to_response, render, redirect, get_object_or
 from django.template import RequestContext, Context, loader
 #from django.views.generic.simple import direct_to_template
 from django.views.generic.base import TemplateView
-#from django.views.generic.list_detail import object_list
 from django.views.generic.list import ListView
 from django.utils.datastructures import SortedDict
 from django.db.models import F, Q

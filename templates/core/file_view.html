@@ -8,7 +8,7 @@
   <tr> <th> Ctime </th> <td> {{ object.ctime }} </td> </tr>
   <tr> <th> Size </th> <td> {{ object.size }} </td> </tr>
   <tr> <th> MD5 </th> <td> {{ object.md5 }} </td> </tr>
-  <tr> <th> Fileseq </th> <td> {% if object.fileseqitem %} <a href="{% url 'core.views.fileseq_view' object.fileseqitem.fileseq.pk %}"> {{ object.fileseqitem.fileseq.pk }} </a> {% else %} - {% endif %} </td> </tr>
+  <tr> <th> Fileseq </th> <td> {% if object.fileseqitem %} <a href="{% url 'fileseq_view' object.fileseqitem.fileseq.pk %}"> {{ object.fileseqitem.fileseq.pk }} </a> {% else %} - {% endif %} </td> </tr>
  </tbody>
 </table>
 <a href="{% url 'core.views.file_get' object.pk %}"> {% include "button/download.html" %} </a>

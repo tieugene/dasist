@@ -4,21 +4,21 @@
 <table border="0">
 {% for img in object.list_items %}
  <tr>
-	<td> {{ img.order }} <a href="{% url core.views.file_view img.file.pk %}"> {{ img.file.name }} </a> </td>
-	<td> <a href="{% url core.views.fileseqitem_del img.pk %}"> {% include "button/delete.html" %} </a> </td>
+	<td> {{ img.order }} <a href="{% url 'file_view' img.file.pk %}"> {{ img.file.name }} </a> </td>
+	<td> <a href="{% url 'core.views.fileseqitem_del' img.pk %}"> {% include "button/delete.html" %} </a> </td>
 	<td>
-		{% if not img.is_first %} <a href="{% url core.views.fileseqitem_move_up img.file.pk %}"> <button type="button"> <img src="{{ STATIC_URL }}img/up.png" alt="up"/> </button> </a> <br/> {% endif %}
-		{% if not img.is_last %} <a href="{% url core.views.fileseqitem_move_down img.file.pk %}"> <button type="button"> <img src="{{ STATIC_URL }}img/down.png" alt="down"/> </button> </a> {% endif %}
+		{% if not img.is_first %} <a href="{% url 'core.views.fileseqitem_move_up' img.file.pk %}"> <button type="button"> <img src="{{ STATIC_URL }}img/up.png" alt="up"/> </button> </a> <br/> {% endif %}
+		{% if not img.is_last %} <a href="{% url 'core.views.fileseqitem_move_down' img.file.pk %}"> <button type="button"> <img src="{{ STATIC_URL }}img/down.png" alt="down"/> </button> </a> {% endif %}
 	</td>
  </tr>
 {% endfor %}
 </table>
-<form enctype="multipart/form-data" action="" method="POST">
+<form enctype="multipart/form-data" action="{% url 'core.views.fileseq_add_file' object.pk %}" method="POST">
 	{% csrf_token %}
 	<table border="0"> <tr>
 	<td> {{ form.as_p }} </td>
 	<td> <button type="submit"> <img src="{{ STATIC_URL }}img/32/upload.png" alt="upload"/> </button> </td>
 	</tr> </table>
 </form>
-<a href="{% url core.views.fileseq_del object.pk %}"> {% include "button/delete.html" %} </a>
+<a href="{% url 'core.views.fileseq_del' object.pk %}"> {% include "button/delete.html" %} </a>
 {% endblock %}

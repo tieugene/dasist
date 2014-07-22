@@ -12,7 +12,7 @@ $("#tm_index").addClass("active");
  {% if user.is_superuser %}
 <p>
  <a href="{% url 'file_list' %}"> <button type="button"> Файлы </button> </a>
- <a href="{% url 'core.views.fileseq_list' %}"> <button type="button"> Последовательности </button> </a>
+ <a href="{% url 'fileseq_list' %}"> <button type="button"> Последовательности </button> </a>
 </p>
 <p>
  Не переключайтесь:
