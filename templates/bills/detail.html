@@ -60,15 +60,14 @@
    {% for img in object.fileseq.list_items.all %}
     <tr> <td>
      {{ img.order }}
-     <a href="{% url core.views.file_get img.pk %}" data-lightbox="roadtrip"> <img src="{{ STATIC_URL }}img/32/png.png" title="{{ img.file.name }}"/> </a>
-     <!--a href="#" onClick="window.open('{% url core.views.file_get img.pk %}', '_blank', 'toolbar=0, location=0, directories=0, status=0, scrollbars=0, resizable=0, copyhistory=0, menuBar=0, width=500, height=500');return(false)"> <img src="{{ STATIC_URL }}img/16/png.png" title="{{ img.file.name }}"/> </a-->
-     <a href="{% url core.views.file_get img.pk %}"> <img src="{{ STATIC_URL }}img/32/download.png" title="Скачать"/> </a>
-     <input type="image" src="{{ STATIC_URL }}img/32/document-print.png" onClick="printimg('{% url core.views.file_get img.pk %}', '{{ img.pk }}');"/>
+     <a href="{% url 'core.views.file_get' img.pk %}" data-lightbox="roadtrip"> <img src="{{ STATIC_URL }}img/32/png.png" title="{{ img.file.name }}"/> </a>
+     <a href="{% url 'core.views.file_get' img.pk %}"> <img src="{{ STATIC_URL }}img/32/download.png" title="Скачать"/> </a>
+     <input type="image" src="{{ STATIC_URL }}img/32/document-print.png" onClick="printimg('{% url 'core.views.file_get' img.pk %}', '{{ img.pk }}');"/>
      {% if button.edit %}
-	<a href="{% url bills.views.bill_img_del img.pk %}"> {% include "button/delete.html" %} </a>
+	<a href="{% url 'bills.views.bill_img_del' img.pk %}"> {% include "button/delete.html" %} </a>
      </td><td>
-	{% if not img.is_first %} <a href="{% url bills.views.bill_img_up img.file.pk %}"> <button type="button"> <img src="{{ STATIC_URL }}img/up.png" alt="up"/> </button> </a> <br/> {% endif %}
-	{% if not img.is_last %} <a href="{% url bills.views.bill_img_dn img.file.pk %}"> <button type="button"> <img src="{{ STATIC_URL }}img/down.png" alt="down"/> </button> </a> {% endif %}
+	{% if not img.is_first %} <a href="{% url 'bills.views.bill_img_up' img.file.pk %}"> <button type="button"> <img src="{{ STATIC_URL }}img/up.png" alt="up"/> </button> </a> <br/> {% endif %}
+	{% if not img.is_last  %} <a href="{% url 'bills.views.bill_img_dn' img.file.pk %}"> <button type="button"> <img src="{{ STATIC_URL }}img/down.png" alt="down"/> </button> </a> {% endif %}
      </td>
      {% endif %}
     </tr>
@@ -101,17 +100,17 @@
 </fieldset>
 
 <p style="margin: 0">
-{% if button.arch %}	<a href="{% url bills.views.bill_toscan object.pk %}">	{% include "button/arch.html" %} </a> {% endif %}
+{% if button.arch %}	<a href="{% url 'bills.views.bill_toscan' object.pk %}">	{% include "button/arch.html" %} </a> {% endif %}
 {% if button.edit %}
  {% if object.state.pk == 1 %}
-	<a href="{% url bills.views.bill_edit object.pk %}"> {% include "button/edit.html" %} </a>
+	<a href="{% url 'bills.views.bill_edit' object.pk %}"> {% include "button/edit.html" %} </a>
  {% else %}
-	<a href="{% url bills.views.bill_reedit object.pk %}"> {% include "button/edit.html" %} </a>
+	<a href="{% url 'bills.views.bill_reedit' object.pk %}"> {% include "button/edit.html" %} </a>
  {% endif %}
 {% endif %}
-{% if button.del %}	<a href="{% url bills.views.bill_delete object.pk %}">	{% include "button/delete.html" %} </a> {% endif %}
-{% if button.restart %}	<a href="{% url bills.views.bill_restart object.pk %}">	{% include "button/restart.html" %} </a> {% endif %}
-{% if user.is_superuser %} <a href="{% url bills.views.mailto object.pk %}"> {% include "button/mailto.html" %} </a> {% endif %}
+{% if button.del %}	<a href="{% url 'bills.views.bill_delete' object.pk %}">	{% include "button/delete.html" %} </a> {% endif %}
+{% if button.restart %}	<a href="{% url 'bills.views.bill_restart' object.pk %}">	{% include "button/restart.html" %} </a> {% endif %}
+{% if user.is_superuser %} <a href="{% url 'bills.views.mailto' object.pk %}"> {% include "button/mailto.html" %} </a> {% endif %}
 </p>
 {% if upload_form %}
 <form enctype="multipart/form-data" action="" method="POST">

@@ -35,7 +35,7 @@
 </head>
 <body>
 <div id="topmenu">
-	<div id="tm_index" class=""> <a href="{% url 'bills.views.bill_list' %}"> <img src="{{ STATIC_URL }}img/16/icon-home.png" alt="Главная" title="Главная"/> </a> </div>
+	<div id="tm_index" class=""> <a href="{% url 'bill_list' %}"> <img src="{{ STATIC_URL }}img/16/icon-home.png" alt="Главная" title="Главная"/> </a> </div>
 	<div style="width: 100%"> <b> <a href="{% url 'index' %}"> Das Ist: </a> {% block menu_title %} ... {% endblock %} </b> </div>
 	{% if user.is_authenticated %}
 		<div> {{ user.username }} : </div>

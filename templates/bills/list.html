@@ -22,23 +22,23 @@
  <label for="lpp">Строк:</label>
  <!--select onchange="document.location=this.options[this.selectedIndex].value"-->
  <select onchange="document.location=this.options[this.selectedIndex].value">
-  <option value="{% url bills.views.bill_set_lpp 10 %}" {% ifequal lpp 10 %}selected{% endifequal %}>10</option>
-  <option value="{% url bills.views.bill_set_lpp 15 %}" {% ifequal lpp 15 %}selected{% endifequal %}>15</option>
-  <option value="{% url bills.views.bill_set_lpp 20 %}" {% ifequal lpp 20 %}selected{% endifequal %}>20</option>
-  <option value="{% url bills.views.bill_set_lpp 25 %}" {% ifequal lpp 25 %}selected{% endifequal %}>25</option>
-  <option value="{% url bills.views.bill_set_lpp 50 %}" {% ifequal lpp 50 %}selected{% endifequal %}>50</option>
+  <option value="{% url 'bills.views.bill_set_lpp' 10 %}" {% ifequal lpp 10 %}selected{% endifequal %}>10</option>
+  <option value="{% url 'bills.views.bill_set_lpp' 15 %}" {% ifequal lpp 15 %}selected{% endifequal %}>15</option>
+  <option value="{% url 'bills.views.bill_set_lpp' 20 %}" {% ifequal lpp 20 %}selected{% endifequal %}>20</option>
+  <option value="{% url 'bills.views.bill_set_lpp' 25 %}" {% ifequal lpp 25 %}selected{% endifequal %}>25</option>
+  <option value="{% url 'bills.views.bill_set_lpp' 50 %}" {% ifequal lpp 50 %}selected{% endifequal %}>50</option>
  </select>
 </td>
 <td nowrap> Открыть:
  {% ifequal mode 1 %}
- <a href="{% url bills.views.bill_set_mode 2 %}"> <button type="button" class="rounded" title="Входящие"> Входящие </button> </a>
+ <a href="{% url 'bills.views.bill_set_mode' 2 %}"> <button type="button" class="rounded" title="Входящие"> Входящие </button> </a>
  {% else %}
- <a href="{% url bills.views.bill_set_mode 1 %}"> <button type="button" class="rounded" title="Все"> Все </button> </a>
+ <a href="{% url 'bills.views.bill_set_mode' 1 %}"> <button type="button" class="rounded" title="Все"> Все </button> </a>
  {% endifequal %}
 </td>
 {% if fsform %}
 <td nowrap>
-<form action="{% url bills.views.bill_filter_state %}" method="POST">
+<form action="{% url 'bills.views.bill_filter_state' %}" method="POST">
 {% csrf_token %}
  {{ fsform.draft }} {{ fsform.draft.label }} |
  {{ fsform.onway }} {{ fsform.onway.label }} |
@@ -77,7 +77,7 @@
    {% endifequal %}
   {% endifequal %}
  {% endif %}
-onclick="window.document.location='{% url bills.views.bill_view object.pk %}'">
+onclick="window.document.location='{% url 'bills.views.bill_view' object.pk %}'">
   <td> <img src="{{ STATIC_URL }}img/32/{{ object.state.get_icon }}" width="16px" height="16px" title="{{ object.get_state_name }}"/> </td>
   <td> {{ object.pk }} </td>
   <td> {{ object.place }} </td>

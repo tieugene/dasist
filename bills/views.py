@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 '''
 bills.views
-TODO:
-* get_object_or_404(
 '''
 
 # 1. django
@@ -13,9 +11,7 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponse
 from django.shortcuts import render_to_response, render, redirect, get_object_or_404
 from django.template import RequestContext, Context, loader
-#from django.views.generic.simple import direct_to_template
-from django.views.generic.base import TemplateView
-from django.views.generic.list import ListView
+from django.views.generic import ListView, DetailView
 from django.utils.datastructures import SortedDict
 from django.db.models import F, Q
 from django.core.files.storage import default_storage	# MEDIA_ROOT
@@ -41,13 +37,13 @@ import models, forms, utils
 from core.models import File, FileSeq, FileSeqItem
 from scan.models import Scan, Event
 
-PAGE_SIZE = 20
+PAGE_SIZE = 25
 FSNAME = 'fstate'	# 0..3
 
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
-def	__set_filter_state(q, s):
+def	_set_filter_state(q, s):
 	'''
 	q - original QuerySet (all)
 	s - state (0..31; dead|done|onpay|onway|draft)
@@ -65,17 +61,54 @@ def	__set_filter_state(q, s):
 		retvalue = retvalue.exclude(state__in = [1, 6])
 	return retvalue
 
+class	BillList(ListView):
+	template_name = 'bills/list.html'
+	paginate_by = PAGE_SIZE
+	# custom:
+	user = None
+	role = None
+	approver = None
+	canadd = False
+	mode = None
+	fsfilter = None
+
+	def	get_queryset(self):
+		# 1. vars
+		self.paginate_by = self.request.session.get('lpp', 25)
+		self.user = self.request.user
+		self.approver = models.Approver.objects.get(user=self.user)
+		self.mode = self.request.session.get('mode', None)
+		# 2. query
+		q = models.Bill.objects.all().order_by('-pk')
+		self.fsfilter = self.request.session.get(FSNAME, None)# int 0..15: dropped|done|onway|draft
+		if (self.fsfilter == None):
+			self.fsfilter = 31
+			self.request.session[FSNAME] = self.fsfilter
+		else:
+			self.fsfilter = int(self.fsfilter)
+		q = _set_filter_state(q, self.fsfilter)
+		return q
+
+	def	get_context_data(self, **kwargs):
+		context = super(BillList, self).get_context_data(**kwargs)
+		context['lpp']		= self.paginate_by
+		context['role']		= self.role
+		context['canadd']	= self.canadd
+		context['mode']		= self.mode
+		context['fsform']	= forms.FilterStateForm()
+		return context
+
+
 @login_required
 def	bill_list(request):
 	'''
 	List of bills
 	ACL: user=assign|approve|root
 	'''
+	queryset = models.Bill.objects.all().order_by('-pk')
 	# 1. pre
 	user = request.user
 	approver = models.Approver.objects.get(user=user)
-	#print approver.role.pk == 1
-	queryset = models.Bill.objects.all().order_by('-pk')
 	# 2. mode (1=All, 2=Inbound)
 	mode = request.session.get('mode', None)
 	if (mode == None):
@@ -103,8 +136,6 @@ def	bill_list(request):
 			fsfilter = int(fsfilter)
 		queryset = __set_filter_state(queryset, fsfilter)
 		# 3. go
-		#if not request.user.is_superuser:
-		#	queryset = queryset.filter(assign=request.user)
 		fsform = forms.FilterStateForm(initial={
 			'dead'	:bool(fsfilter&1),
 			'done'	:bool(fsfilter&2),
@@ -134,11 +165,11 @@ def	bill_list(request):
 		page = int(request.GET.get('page', '1')),
 		template_name = 'bills/list.html',
 		extra_context = {
-			'canadd': approver.canadd,
-			'fsform': fsform,
 			'lpp': lpp,
-			'mode': mode,
 			'role': approver.role,
+			'canadd': approver.canadd,
+			'mode': mode,
+			'fsform': fsform,
 		}
 	)
 
@@ -159,12 +190,12 @@ def	bill_filter_state(request):
 			int(fsform.cleaned_data['draft']) * 16
 		#print 'Filter:', fsfilter
 		request.session[FSNAME] = fsfilter
-	return redirect('bills.views.bill_list')
+	return redirect('bill_list')
 
 @login_required
 def	bill_set_lpp(request, lpp):
 	request.session['lpp'] = lpp
-	return redirect('bills.views.bill_list')
+	return redirect('bill_list')
 
 @login_required
 def	bill_set_mode(request, mode):
