@@ -7,9 +7,7 @@ core.views
 #from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
-#from django.views.generic.list_detail import object_list, object_detail
-from django.views.generic.list import ListView
-from django.views.generic.detail import DetailView
+from django.views.generic import ListView, DetailView
 from django.shortcuts import render_to_response, render, redirect
 from django.template import RequestContext, Context, loader
 from django.db import transaction
@@ -19,24 +17,14 @@ import models, forms
 
 PAGE_SIZE = 25
 
-@login_required
-def	file_list(request):
-	return  object_list (
-		request,
-		queryset = models.File.objects.all(),
-		paginate_by = PAGE_SIZE,
-		page = int(request.GET.get('page', '1')),
-		template_name = 'core/file_list.html',
-	)
+class	FileList(ListView):
+	model = models.File
+	template_name = 'core/file_list.html'
+	paginate_by = PAGE_SIZE
 
-@login_required
-def	file_view(request, id):
-        return  object_detail (
-                request,
-                queryset = models.File.objects.all(),
-                object_id = id,
-                template_name = 'core/file_view.html',
-        )
+class	FileDetail(DetailView):
+	model = models.File
+	template_name = 'core/file_view.html'
 
 @login_required
 def	file_preview(request, id):

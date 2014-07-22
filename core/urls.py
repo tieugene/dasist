@@ -4,10 +4,15 @@ dasist.core.urls
 '''
 
 from django.conf.urls import patterns, url
+from django.contrib.auth.decorators import login_required
+
+import views
 
 urlpatterns = patterns('core.views',
-	url(r'^f/$',			'file_list'),
-	url(r'^f/(?P<id>\d+)/r/$',	'file_view'),
+	#url(r'^f/$',			'file_list'),
+	#url(r'^f/(?P<pk>\d+)/r/$',	'file_view'),
+	url(r'^f/$',			login_required(views.FileList.as_view()), name='file_list'),
+	url(r'^f/(?P<pk>\d+)/r/$',	login_required(views.FileDetail.as_view()), name='file_view'),
 	url(r'^f/(?P<id>\d+)/g/$',	'file_get'),
 	url(r'^f/(?P<id>\d+)/d/$',	'file_del'),
 	url(r'^f/(?P<id>\d+)/v/$',	'file_preview'),

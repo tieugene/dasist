@@ -11,7 +11,6 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponse
 from django.shortcuts import render_to_response, render, redirect
 from django.template import RequestContext, Context, loader
-#from django.views.generic.list_detail import object_list, object_detail
 from django.views.generic import ListView, DetailView
 from django.utils.datastructures import SortedDict
 from django.db.models import F

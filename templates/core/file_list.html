@@ -15,10 +15,10 @@
 {% for object in object_list %}
  <tr>
   <td> {{ object.pk }} </td>
-  <td> <a href="{% url core.views.file_view object.pk %}"> {{ object.name }} </a> </td>
+  <td> <a href="{% url 'file_view' object.pk %}"> {{ object.name }} </a> </td>
   <td> {{ object.ctime|date:"y.m.d H:i:d" }} </td>
   <td> {{ object.size }} </td>
-  <td> {% if object.fileseqitem %} <a href="{% url core.views.fileseq_view object.fileseqitem.fileseq.pk %}"> {{ object.fileseqitem.fileseq.pk }} </a> {% else %} - {% endif %} </td>
+  <td> {% if object.fileseqitem %} <a href="{% url 'core.views.fileseq_view' object.fileseqitem.fileseq.pk %}"> {{ object.fileseqitem.fileseq.pk }} </a> {% else %} - {% endif %} </td>
  </tr>
 {% endfor %}
 </tbody>
