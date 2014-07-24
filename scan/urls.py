@@ -3,7 +3,7 @@
 dasist.scan.urls
 '''
 
-from django.conf.urls.defaults import *
+from django.conf.urls import patterns
 
 urlpatterns = patterns('scan.views',
 	url(r'^$',			'scan_list'),
