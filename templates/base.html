@@ -1,0 +1,57 @@
+{% load static %}
+{# load adminmedia #}
+{% get_static_prefix as STATIC_URL %}
+{# / #}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	{% block meta %} {% endblock %}
+	<title> Das Ist {% block title %} ... {% endblock %} </title>
+	<link type="text/css" href="{{ STATIC_URL }}css/base.css" rel="stylesheet">
+	<link type="text/css" href="{{ STATIC_URL }}css/colors.css" rel="stylesheet"/>
+	<link type="text/css" href="{{ STATIC_URL }}css/fieldset.css" rel="stylesheet"/>
+	<script type="text/javascript" src="{{ STATIC_URL }}js/jquery.min.js"></script>
+	<script type="text/javascript" src="{{ STATIC_URL }}js/lightbox.min.js"></script>
+	{% load dajaxice_templatetags %}
+	{% dajaxice_js_import %}
+	<!--script type="text/javascript" src="{{ STATIC_URL }}js/dajaxice.core.js"></script-->
+	<script type="text/javascript" src="{{ STATIC_URL }}js/jquery.dajax.core.js"></script>
+	<!-- admin -->
+	<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}admin/css/forms.css" />
+	<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}admin/css/widgets.css" />
+	<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/thumbnails.css" />
+	<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/lightbox.css" />
+	<script type="text/javascript">window.__admin_media_prefix__ = "{{ STATIC_URL }}admin/";</script>
+	<!--script type="text/javascript" src="/admin/jsi18n/"></script-->
+	<script type="text/javascript" src="{{ STATIC_URL }}admin/js/core.js"></script>
+	<!-- /admin -->
+	{% block js %}
+	{% endblock %}
+	<style>
+	{% block css %}
+	{% endblock %}
+	</style>
+</head>
+<body>
+<div id="topmenu">
+	<div id="tm_index" class=""> <a href="{% url 'bill_list' %}"> <img src="{{ STATIC_URL }}img/16/icon-home.png" alt="Главная" title="Главная"/> </a> </div>
+	<div style="width: 100%"> <b> <a href="{% url 'index' %}"> Das Ist: </a> {% block menu_title %} ... {% endblock %} </b> </div>
+	{% if user.is_authenticated %}
+		<div> {{ user.username }} : </div>
+		<div> <a href="{% url 'django.contrib.auth.views.logout' %}?next={% url 'index' %}"> <img src="{{ STATIC_URL }}img/16/icon-exit.png" alt="Выход" title="Выход"/> </a> </div>
+		{% if user.is_superuser %}
+			<div id="tm_admin"> <a href="{% url 'admin:index' %}"> <img src="{{ STATIC_URL }}img/16/icon-settingsthree-gears.png" alt="Админка" title="Админка"/> </a> </div>
+		{% endif %}
+	{% else %}
+		<div id="tm_login"> <a href="{% url 'django.contrib.auth.views.login' %}?next={% url 'index' %}" rel="nofollow"> <img src="{{ STATIC_URL }}img/16/icon-enter.png" alt="Вход" title="Вход"/> </a> </div>
+	{% endif %}
+	<div id="tm_about"> <a href="{% url 'about' %}"> <img src="{{ STATIC_URL }}img/16/icon-info-sign.png" alt="О программе" title="О программе"/> </a> </div>
+</div>
+	<div>
+	{% block body_main %}
+		<p> Заглушка </p>
+	{% endblock %}
+	</div>
+</body>
+</html>
