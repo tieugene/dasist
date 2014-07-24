@@ -43,7 +43,7 @@ FSNAME = 'fstate'	# 0..3
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
-def	_set_filter_state(q, s):
+def	set_filter_state(q, s):
 	'''
 	q - original QuerySet (all)
 	s - state (0..31; dead|done|onpay|onway|draft)
@@ -65,113 +65,63 @@ class	BillList(ListView):
 	template_name = 'bills/list.html'
 	paginate_by = PAGE_SIZE
 	# custom:
-	user = None
-	role = None
 	approver = None
-	canadd = False
 	mode = None
 	fsfilter = None
 
 	def	get_queryset(self):
 		# 1. vars
 		self.paginate_by = self.request.session.get('lpp', 25)
-		self.user = self.request.user
-		self.approver = models.Approver.objects.get(user=self.user)
-		self.mode = self.request.session.get('mode', None)
+		user = self.request.user
+		self.approver = models.Approver.objects.get(user=user)
+		role_id = self.approver.role.pk
+		self.mode = int(self.request.session.get('mode', 1))
+		self.fsfilter = self.request.session.get(FSNAME, 31)	# int 0..15: dropped|done|onway|draft
 		# 2. query
 		q = models.Bill.objects.all().order_by('-pk')
-		self.fsfilter = self.request.session.get(FSNAME, None)# int 0..15: dropped|done|onway|draft
-		if (self.fsfilter == None):
-			self.fsfilter = 31
-			self.request.session[FSNAME] = self.fsfilter
-		else:
-			self.fsfilter = int(self.fsfilter)
-		q = _set_filter_state(q, self.fsfilter)
+		if (self.mode == 1):	# Everything
+			if (role_id == 1) and (not user.is_superuser):	# Исполнитель
+				q = q.filter(assign=self.approver)
+			elif (role_id == 3):	# Руководитель
+				self.fsform = None
+				b_list = models.Event.objects.filter(approve=approver).values_list('bill_id', flat=True)
+				q1 = q.filter(rpoint__approve=self.approver)
+				q2 = q.filter(pk__in=b_list)
+				q = q1 | q2
+			# 3. filter using Filter
+			fsfilter = self.request.session.get(FSNAME, None)# int 0..15: dropped|done|onway|draft
+			if (fsfilter == None):
+				fsfilter = 31
+				self.request.session[FSNAME] = fsfilter
+			else:
+				fsfilter = int(fsfilter)
+			q = set_filter_state(q, fsfilter)
+			# 3. go
+			self.fsform = forms.FilterStateForm(initial={
+				'dead'	:bool(fsfilter&1),
+				'done'	:bool(fsfilter&2),
+				'onpay'	:bool(fsfilter&4),
+				'onway'	:bool(fsfilter&8),
+				'draft'	:bool(fsfilter&16),
+			})
+		else:			# Inbound
+			self.fsform = None
+			if (role_id == 1):		# Исполнитель
+				q = q.filter(assign=self.approver, rpoint=None)
+			elif (role_id in set((4, 6))):	# Директор, Бухгалтер
+				q = q.filter(rpoint__role=approver.role)
+			else:
+				q = q.filter(rpoint__approve=self.approver)
 		return q
 
 	def	get_context_data(self, **kwargs):
 		context = super(BillList, self).get_context_data(**kwargs)
 		context['lpp']		= self.paginate_by
-		context['role']		= self.role
-		context['canadd']	= self.canadd
+		context['role']		= self.approver.role
+		context['canadd']	= self.approver.canadd
 		context['mode']		= self.mode
-		context['fsform']	= forms.FilterStateForm()
+		context['fsform']	= self.fsform
 		return context
-
-
-@login_required
-def	bill_list(request):
-	'''
-	List of bills
-	ACL: user=assign|approve|root
-	'''
-	queryset = models.Bill.objects.all().order_by('-pk')
-	# 1. pre
-	user = request.user
-	approver = models.Approver.objects.get(user=user)
-	# 2. mode (1=All, 2=Inbound)
-	mode = request.session.get('mode', None)
-	if (mode == None):
-		mode = 1
-		request.session['mode'] = mode
-	else:
-		mode = int(mode)
-	# 3. filter by role
-	role_id = approver.role.pk
-	if (mode == 1):	# Все
-		if (role_id == 1) and (not user.is_superuser):	# Исполнитель
-			queryset = queryset.filter(assign=approver)
-		elif (role_id == 3):	# Руководитель
-			fsform = None
-			b_list = models.Event.objects.filter(approve=approver).values_list('bill_id', flat=True)
-			q1 = queryset.filter(rpoint__approve=approver)
-			q2 = queryset.filter(pk__in=b_list)
-			queryset = q1 | q2
-		# 3. filter using Filter
-		fsfilter = request.session.get(FSNAME, None)# int 0..15: dropped|done|onway|draft
-		if (fsfilter == None):
-			fsfilter = 31
-			request.session[FSNAME] = fsfilter
-		else:
-			fsfilter = int(fsfilter)
-		queryset = __set_filter_state(queryset, fsfilter)
-		# 3. go
-		fsform = forms.FilterStateForm(initial={
-			'dead'	:bool(fsfilter&1),
-			'done'	:bool(fsfilter&2),
-			'onpay'	:bool(fsfilter&4),
-			'onway'	:bool(fsfilter&8),
-			'draft'	:bool(fsfilter&16),
-		})
-	else:		# Входящие
-		fsform = None
-		if (approver.role.pk == 1):		# Исполнитель
-			queryset = queryset.filter(assign=approver, rpoint=None)
-		elif (approver.role.pk in set((4, 6))):	# Директор, Бухгалтер
-			queryset = queryset.filter(rpoint__role=approver.role)
-		else:
-			queryset = queryset.filter(rpoint__approve=approver)
-	# 4. lpp
-	lpp = request.session.get('lpp', None)
-	if (lpp == None):
-		lpp = 20
-		request.session['lpp'] = lpp
-	else:
-		lpp = int(lpp)
-	return  object_list (
-		request,
-		queryset = queryset,
-		paginate_by = lpp,
-		page = int(request.GET.get('page', '1')),
-		template_name = 'bills/list.html',
-		extra_context = {
-			'lpp': lpp,
-			'role': approver.role,
-			'canadd': approver.canadd,
-			'mode': mode,
-			'fsform': fsform,
-		}
-	)
 
 @login_required
 def	bill_filter_state(request):
@@ -200,7 +150,7 @@ def	bill_set_lpp(request, lpp):
 @login_required
 def	bill_set_mode(request, mode):
 	request.session['mode'] = mode
-	return redirect('bills.views.bill_list')
+	return redirect('bill_list')
 
 def	__pdf2png2(src_path, basename):
 	tmpdir = tempfile.mkdtemp()

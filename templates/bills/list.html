@@ -31,9 +31,9 @@
 </td>
 <td nowrap> Открыть:
  {% ifequal mode 1 %}
- <a href="{% url 'bills.views.bill_set_mode' 2 %}"> <button type="button" class="rounded" title="Входящие"> Входящие </button> </a>
+  <a href="{% url 'bills.views.bill_set_mode' 2 %}"> <button type="button" class="rounded" title="Входящие"> Входящие </button> </a>
  {% else %}
- <a href="{% url 'bills.views.bill_set_mode' 1 %}"> <button type="button" class="rounded" title="Все"> Все </button> </a>
+  <a href="{% url 'bills.views.bill_set_mode' 1 %}"> <button type="button" class="rounded" title="Все"> Все </button> </a>
  {% endifequal %}
 </td>
 {% if fsform %}
