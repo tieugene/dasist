@@ -84,7 +84,7 @@ class	BillList(ListView):
 				q = q.filter(assign=self.approver)
 			elif (role_id == 3):	# Руководитель
 				self.fsform = None
-				b_list = models.Event.objects.filter(approve=approver).values_list('bill_id', flat=True)
+				b_list = models.Event.objects.filter(approve=self.approver).values_list('bill_id', flat=True)
 				q1 = q.filter(rpoint__approve=self.approver)
 				q2 = q.filter(pk__in=b_list)
 				q = q1 | q2
@@ -109,7 +109,7 @@ class	BillList(ListView):
 			if (role_id == 1):		# Исполнитель
 				q = q.filter(assign=self.approver, rpoint=None)
 			elif (role_id in set((4, 6))):	# Директор, Бухгалтер
-				q = q.filter(rpoint__role=approver.role)
+				q = q.filter(rpoint__role=self.approver.role)
 			else:
 				q = q.filter(rpoint__approve=self.approver)
 		return q
