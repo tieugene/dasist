@@ -543,7 +543,7 @@ def	bill_view(request, id, upload_form=None):
 					if (bill.get_state_id() == 5):	# That's all
 						bill.rpoint = bill.route_set.all().delete()
 					__mailto(request, bill)
-					return redirect('bills.views.bill_list')
+					return redirect('bill_list')
 	else:
 		if (user.is_superuser or ((bill.assign == approver) and (bill_state_id in set([1, 6])))):
 			upload_form = forms.BillAddFileForm()
@@ -607,7 +607,7 @@ def	bill_delete(request, id):
 		fileseq = bill.fileseq
 		bill.delete()
 		fileseq.purge()
-		return redirect('bills.views.bill_list')
+		return redirect('bill_list')
 	else:
 		return redirect('bills.views.bill_view', bill.pk)
 
@@ -672,7 +672,7 @@ def	bill_toscan(request, id):
 				comment=event.comment
 			)
 		bill.delete()
-		return redirect('bills.views.bill_list')
+		return redirect('bill_list')
 	else:
 		return redirect('bills.views.bill_view', bill.pk)
 
