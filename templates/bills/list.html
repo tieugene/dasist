@@ -12,7 +12,7 @@
 <table border="0"> <tr>
 {% if canadd %}
 <td>
-<a href="{% url bills.views.bill_add %}"> {% include "button/new.html" %} </a>
+<a href="{% url 'bills.views.bill_add' %}"> {% include "button/new.html" %} </a>
 </td>
 {% endif %}
 <td nowrap>
