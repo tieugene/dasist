@@ -55,6 +55,6 @@ $(document).ready(function() {
 		{{ form.as_table }}
 	</table>
 	<button type="submit"> Записать </button>
-	<a href="{% if object %} {% url bills.views.bill_view object.pk %} {% else %} {% url bills.views.bill_list %} {% endif %}"> <button type="button"> Отказаться </button> </a>
+	<a href="{% if object %} {% url 'bills.views.bill_view' object.pk %} {% else %} {% url 'bill_list' %} {% endif %}"> <button type="button"> Отказаться </button> </a>
    </form>
 {% endblock %}

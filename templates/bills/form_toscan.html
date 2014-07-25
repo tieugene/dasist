@@ -16,15 +16,15 @@
   <td> <ol style="margin: 0">
    {% for img in bill.fileseq.fileseqitem_set.all %}
     <li>
-     <a href="{% url core.views.file_get img.pk %}" data-lightbox="roadtrip" title="{{ img.file.name }}">{{ img.file.name }}</a>
-     <a href="{% url core.views.file_get img.pk %}"> <img src="{{ STATIC_URL }}img/16/png.png" title="Download"/> </a>
+     <a href="{% url 'core.views.file_get' img.pk %}" data-lightbox="roadtrip" title="{{ img.file.name }}">{{ img.file.name }}</a>
+     <a href="{% url 'core.views.file_get' img.pk %}"> <img src="{{ STATIC_URL }}img/16/png.png" title="Download"/> </a>
     </li>
    {% endfor %}
   </ol> </td>
  </tr>
 	</table>
 	<button type="submit"> Записать </button>
-	<a href="{% url bills.views.bill_view bill.pk %}"> <button type="button"> Отказаться </button> </a>
+	<a href="{% url 'bills.views.bill_view' bill.pk %}"> <button type="button"> Отказаться </button> </a>
    </form>
   </td>
 <td valign="top">
