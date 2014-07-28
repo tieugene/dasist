@@ -3,6 +3,8 @@
 from django import forms
 from django.db.models.fields import BLANK_CHOICE_DASH
 
+import datetime
+
 from models import Scan
 from bills.models import Place, Subject
 
@@ -15,7 +17,19 @@ class	FilterScanListForm(forms.Form):
 	depart		= forms.ChoiceField(choices=EMPTY_VALUE + list(Scan.objects.order_by('depart').distinct().exclude(depart=None).values_list('depart', 'depart')), label=u'Направление', required=False)
 	supplier	= forms.CharField(max_length=64, label=u'Поставщик', required=False)
 	billno		= forms.CharField(max_length=64, label=u'Номер счета', required=False)
-	billdate	= forms.DateField(label=u'Дата счета', required=False, widget=forms.TextInput(attrs={'size':8}))
+	#billdate	= forms.DateField(label=u'Дата счета', required=False, widget=forms.TextInput(attrs={'size':8}))
+	billdate	= forms.CharField(label=u'Дата счета', required=False, widget=forms.TextInput(attrs={'size':8}))
+
+	def	clean_billdate(self):
+		data = self.cleaned_data['billdate']
+		#print 'Date:', data
+		if data:
+			try:
+				datetime.datetime.strptime(data, '%d.%m.%y')
+				return data
+			except ValueError:
+				self.cleaned_data['billdate'] = ''
+				raise forms.ValidationError('Must be "DD.MM.YY"')
 
 class	ReplaceDepartForm(forms.Form):
 	src		= forms.ChoiceField(choices=Scan.objects.order_by('depart').distinct().values_list('depart', 'depart'), label=u'Направление 1')

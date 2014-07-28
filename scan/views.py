@@ -18,7 +18,7 @@ from django.core.files.storage import default_storage	# MEDIA_ROOT
 from django.utils.decorators import method_decorator
 
 # 2. system
-import os, sys, imp, pprint, tempfile, subprocess, shutil
+import os, sys, imp, pprint, tempfile, subprocess, shutil, datetime
 
 # 3. 3rd party
 
@@ -72,7 +72,12 @@ class	ScanList(ListView):
 		if self.filter['billno']:
 			q = q.filter(no=self.filter['billno'])
 		if self.filter['billdate']:
-			q = q.filter(date=self.filter['billdate'])
+			print "Filter by date:", self.filter['billdate'], type(self.filter['billdate'])
+			#q = q.filter(date=self.filter['billdate'])
+			try:
+				q = q.filter(date=datetime.datetime.strptime(self.filter['billdate'], '%d.%m.%y'))
+			except:
+				pass
 		return q
 
 	def	get_context_data(self, **kwargs):
@@ -101,12 +106,14 @@ def	scan_set_filter(request):
 	form = forms.FilterScanListForm(request.POST)
 	if form.is_valid():
 		filter = form.cleaned_data
+		#print "Set filter:", filter['billdate']
 		request.session['scan_place'] =		filter['place']
 		request.session['scan_subject'] =	filter['subject']
 		request.session['scan_depart'] =	filter['depart']
 		request.session['scan_supplier'] =	filter['supplier']
 		request.session['scan_billno'] =	filter['billno']
 		request.session['scan_billdate'] =	filter['billdate']
+		#request.session['scan_billdate'] =	datetime.datetime.strptime(filter['billdate'], '%d.%m.%Y').date() if filter['billdate'] else None
 	return redirect('scan_list')
 
 @login_required
