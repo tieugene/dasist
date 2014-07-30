@@ -20,7 +20,7 @@
 	  {% for img in object.fileseq.fileseqitem_set.all %}
 	   <li>
 	    <a href="{% url 'core.views.file_get' img.pk %}" data-lightbox="roadtrip" title="{{ img.file.name }}">{{ img.file.name }}</a>
-	    <!--a href="#" onClick="window.open('{% url core.views.file_get img.pk %}', '_blank', 'toolbar=0, location=0, directories=0, status=0, scrollbars=0, resizable=0, copyhistory=0, menuBar=0, width=500, height=500');return(false)"> <img src="{{ STATIC_URL }}img/16/png.png" title="{{ img.file.name }}"/> </a-->
+	    <!--a href="#" onClick="window.open('{% url 'core.views.file_get' img.pk %}', '_blank', 'toolbar=0, location=0, directories=0, status=0, scrollbars=0, resizable=0, copyhistory=0, menuBar=0, width=500, height=500');return(false)"> <img src="{{ STATIC_URL }}img/16/png.png" title="{{ img.file.name }}"/> </a-->
 	    <a href="{% url 'core.views.file_get' img.pk %}"> <img src="{{ STATIC_URL }}img/16/png.png" title="Download"/> </a>
 	   </li>
 	  {% endfor %}
