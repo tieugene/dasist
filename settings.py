@@ -7,7 +7,7 @@ DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
-    ('TI_Eugene', 'im@eap.su'),
+    ('TI_Eugene', 'ti.eugene@gmail.com'),
 )
 
 MANAGERS = ADMINS
@@ -79,7 +79,6 @@ STATICFILES_DIRS = (
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-    'dajaxice.finders.DajaxiceFinder',
 )
 
 ROOT_URLCONF = 'urls'
@@ -92,12 +91,12 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.admin',
-    'dajaxice',
-    'dajax',
     'core',
     'bills',
     'scan',
 )
+
+ALLOWED_HOSTS = ['localhost']
 
 LOGIN_REDIRECT_URL = '/'
 LOGGING = {
@@ -117,9 +116,6 @@ LOGGING = {
         },
     }
 }
-
-#DAJAXICE_MEDIA_PREFIX='dajaxice'
-#DAJAXICE_FUNCTIONS = ('scan.ajax.subject',)
 
 BILLS_ROOT = '/mnt/shares/tmp/bills'
 

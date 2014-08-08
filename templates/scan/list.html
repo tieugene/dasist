@@ -2,9 +2,27 @@
 {% block js %}
 <script type="text/javascript">
 $(document).ready(function() {
-	//$('#id_test').change(function(){Dajaxice.scan.updatecombo(Dajax.process, {'option':this.value});});
-	$('#id_place').change(function(){Dajaxice.scan.updatesubj(Dajax.process, {'place':this.value});});
+	//$('#id_place').change(function(){Dajaxice.scan.updatesubj(Dajax.process, {'place':this.value});});
+	$('#id_place').change(function(){
+		json_to_select('{% url "scan.views.scan_get_subjects" %}?place=' + $(this).val(), '#id_subject');
+	});
 });
+function json_to_select(url, select_selector) {
+/*
+ Fill a select input field with data from a getJSON call
+ Inspired by: http://stackoverflow.com/questions/1388302/create-option-on-the-fly-with-jquery
+*/
+    $.getJSON(url, function(data) {
+    var opt=$(select_selector);
+    var old_val=opt.val();
+        opt.html('');
+        $.each(data, function () {
+            opt.append($('<option/>').val(this.id).text(this.value));
+        });
+        opt.val(old_val);
+        opt.change();
+    })
+}
 </script>
 {% endblock %}
 {% block body_main %}
@@ -43,13 +61,7 @@ $(document).ready(function() {
  <tr>
   <th/>
   <th> {{ form.place }} <br/> {{ form.place.errors }} </th>
-  <th> <select name="subject" id="id_subject">
-	{% if subjs %}
-		{% for k, v in subjs %}
-		<option value="{{k}}" {% ifequal subj k %}selected="selected"{% endifequal %}>{{v}}</option>
-		{% endfor %}
-	{% endif %}
-  </select> </th>
+  <th> {{ form.subject }} <br/> {{ form.subject.errors }} </th>
   <th> {{ form.depart }} <br/> {{ form.depart.errors }} </th>
   <th> {{ form.supplier }} <br/> {{ form.supplier.errors }} </th>
   <th> {{ form.billno }} <br/> {{ form.billno.errors }} </th>

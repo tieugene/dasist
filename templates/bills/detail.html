@@ -47,6 +47,7 @@
  <tr> <th> Ответственный </th> <td> {{ object.assign.get_fio }} </td> </tr>
  <tr> <th> Подписант </th> <td> {{ object.rpoint.approve.get_fio|default:"---" }} </td> </tr>
  <tr> <th> Состояние </th> <td> <img src="{{ STATIC_URL }}img/32/{{ object.state.get_icon }}" width="16px" height="16px"/> ({{ object.get_state_name }}) </td> </tr>
+ <tr> <th> Доплата </th> <td> {% if object.locked %} &radic; {% else %} - {% endif %} </td> </tr>
  <tr> <th> Маршрут </th> <td>
   <ol style="margin: 0">
   {% for i in object.route_set.all %}
@@ -149,11 +150,7 @@
  {% endif %}
  {% if button.reject %}
   <button type="submit" name="resume" value="reject" style="padding: 10px; background-color: red">
-  {% ifequal button.reject 1 %}
    Отказать
-  {% else %}
-   Дубль
-  {% endifequal %}
   </button>
  {% endif %}
  </p>

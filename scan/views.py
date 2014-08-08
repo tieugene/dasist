@@ -18,7 +18,7 @@ from django.core.files.storage import default_storage	# MEDIA_ROOT
 from django.utils.decorators import method_decorator
 
 # 2. system
-import os, sys, imp, pprint, tempfile, subprocess, shutil, datetime
+import os, sys, imp, pprint, tempfile, subprocess, shutil, datetime, simplejson
 
 # 3. 3rd party
 
@@ -72,7 +72,7 @@ class	ScanList(ListView):
 		if self.filter['billno']:
 			q = q.filter(no=self.filter['billno'])
 		if self.filter['billdate']:
-			print "Filter by date:", self.filter['billdate'], type(self.filter['billdate'])
+			#print "Filter by date:", self.filter['billdate'], type(self.filter['billdate'])
 			#q = q.filter(date=self.filter['billdate'])
 			try:
 				q = q.filter(date=datetime.datetime.strptime(self.filter['billdate'], '%d.%m.%y'))
@@ -92,9 +92,18 @@ class	ScanList(ListView):
 			'billno':	self.filter['billno'],
 			'billdate':	self.filter['billdate'],
 		})
-		context['subjs']= self.subjs
-		context['subj']	= self.subj
+		#context['subjs']= self.subjs
+		#context['subj']	= self.subj
 		return context
+
+def	scan_get_subjects(request):
+	pass
+	place=request.GET.get('place')
+	ret=[dict(id='', value='---'),]
+	if place:
+		for subj in models.Scan.objects.filter(place=place).order_by('subject').distinct().exclude(subject=None).values_list('subject',):
+			ret.append(dict(id=subj, value=subj))
+	return HttpResponse(simplejson.dumps(ret), content_type='application/json')
 
 @login_required
 def	scan_set_lpp(request, lpp):

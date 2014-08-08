@@ -23,10 +23,7 @@ STATE_ICON = (
 	'dialog-cancel.png',
 	'dollar.png',
 	'dialog-ok.png',
-	'document-edit.png',
-	'running-man.png',
-	'dialog-cancel.png',
-	'dialog-ok.png',
+	'ark.png',
 )
 
 # Refs
@@ -161,6 +158,7 @@ class	Bill(models.Model):
 	rpoint		= models.ForeignKey('Route', null=True, blank=True, related_name='rbill', verbose_name=u'Точка маршрута')
 	#done		= models.NullBooleanField(null=True, blank=True, verbose_name=u'Закрыт')
 	state		= models.ForeignKey(State, verbose_name=u'Состояние')
+	locked		= models.BooleanField(null=False, blank=False, default=False, verbose_name=u'В работе')
 	#route		= SortedManyToManyField(Approver, null=True, blank=True, related_name='route', verbose_name=u'Маршрут')
 	#history	= models.ManyToManyField(Approver, null=True, blank=True, related_name='history', through='BillEvent', verbose_name=u'История')
 

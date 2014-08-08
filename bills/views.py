@@ -50,15 +50,15 @@ def	set_filter_state(q, s):
 	'''
 	retvalue = q
 	if (not bool(s&1)):	# Rejected
-		retvalue = retvalue.exclude(state__in = [3, 8])
+		retvalue = retvalue.exclude(state=3)
 	if (not bool(s&2)):	# Done
-		retvalue = retvalue.exclude(state__in = [5, 9])
+		retvalue = retvalue.exclude(state=5)
 	if (not bool(s&4)):	# OnPay
-		retvalue = retvalue.exclude(state = 4)
+		retvalue = retvalue.exclude(state=4)
 	if (not bool(s&8)):	# OnWay
-		retvalue = retvalue.exclude(state__in = [2, 7])
+		retvalue = retvalue.exclude(state=2)
 	if (not bool(s&16)):	# Draft
-		retvalue = retvalue.exclude(state__in = [1, 6])
+		retvalue = retvalue.exclude(state=1)
 	return retvalue
 
 class	BillList(ListView):
@@ -440,8 +440,10 @@ def	__mailto(request, bill):
 	- Accept/Reject - to assignee
 	@param bill:Bill
 	'''
+	if settings.DEBUG:
+		return
 	state = bill.get_state_id()
-	if (state in set([2, 7])):	# OnWay
+	if (state == 2):	# OnWay
 		subj = 'Новый счет на подпись'
 		if (bill.rpoint.approve):
 			emails = [bill.rpoint.approve.user.email]
@@ -450,13 +452,14 @@ def	__mailto(request, bill):
 			for i in bill.rpoint.role.approver_set.all():
 				emails.append(i.user.email)
 		__emailto(request, emails, bill.pk, subj)
-	elif (state in set([3, 8])):	# Reject
+	elif (state == 3):	# Reject
 		__emailto(request, [bill.assign.user.email], bill.pk, 'Счет завернут')
 		#if (state == 3) and (bill.rpoint.)
-	elif (state == 5):		# Accepted
-		__emailto(request, [bill.assign.user.email], bill.pk, 'Счет оплачен')
-	elif (state == 9):		# Accepted?
-		__emailto(request, [bill.assign.user.email], bill.pk, 'Счет частично оплачен')
+	elif (state == 5):
+		if not bill.locked:
+			__emailto(request, [bill.assign.user.email], bill.pk, 'Счет оплачен')
+		else:
+			__emailto(request, [bill.assign.user.email], bill.pk, 'Счет частично оплачен')
 
 @login_required
 @transaction.commit_on_success
@@ -510,13 +513,10 @@ def	bill_view(request, id, upload_form=None):
 					# 2. update bill
 					if resume:	# Ok
 						route_list = bill.route_set.all().order_by('order')
-						if (bill_state_id in set([1, 6])):	# 1. 1st (draft)
+						if (bill_state_id == 1):	# 1. 1st (draft)
 							bill.rpoint = route_list[0]
-							if (bill_state_id == 1):	# draft
-								bill.set_state_id(2)
-							else:				# draft?
-								bill.set_state_id(7)
-						elif (bill_state_id in set([2, 7])):	# 2. onway
+							bill.set_state_id(2)
+						elif (bill_state_id == 2):	# 2. onway
 							rpoint = bill.rpoint
 							if (rpoint.order == len(route_list)):	# 2. last (accounter)
 								bill.set_state_id(4)
@@ -526,18 +526,10 @@ def	bill_view(request, id, upload_form=None):
 							bill.rpoint = None
 							bill.payedsum += bill.topaysum
 							bill.topaysum = decimal.Decimal('0.00')
-							if (bill.payedsum == bill.billsum):
-								bill.set_state_id(5)
-							else:
-								bill.set_state_id(9)
+							bill.set_state_id(5)
+							bill.locked = (bill.payedsum < bill.billsum)
 					else:		# Reject
-						if (bill_state_id == 2):
-							if (bill.rpoint.role.pk == 6):	# 2. accounter
-								# TODO: duplication
-								__emailto(request, [settings.EMAIL_DUP,], bill.pk, 'Счет дублирован')
-							bill.set_state_id(3)
-						else:	# 7
-							bill.set_state_id(8)
+						bill.set_state_id(3)
 						bill.rpoint = None
 					bill.save()
 					if (bill.get_state_id() == 5):	# That's all
@@ -545,26 +537,26 @@ def	bill_view(request, id, upload_form=None):
 					__mailto(request, bill)
 					return redirect('bill_list')
 	else:
-		if (user.is_superuser or ((bill.assign == approver) and (bill_state_id in set([1, 6])))):
+		if (user.is_superuser or ((bill.assign == approver) and (bill_state_id == 1))):
 			upload_form = forms.BillAddFileForm()
 	if (form == None):
 		form = forms.ResumeForm()
 	buttons = {
 		'edit':		# assignee & Draft*
-			(user.is_superuser or ((bill.assign == approver) and (bill_state_id in set([1, 6])))),
+			(user.is_superuser or ((bill.assign == approver) and (bill_state_id == 1))),
 		'del':		# assignee & (Draft|Rejected)
-			(user.is_superuser or ((bill.assign == approver) and (bill_state_id in set([1, 3])))),
+			(user.is_superuser or ((bill.assign == approver) and (bill_state_id in set([1, 3])) and (bill.locked == False))),
 		'restart':	# assignee & (Rejected*|Done?)
-			(user.is_superuser or ((bill.assign == approver) and (bill_state_id in set([3, 8, 9])))),
+			(user.is_superuser or ((bill.assign == approver) and ((bill_state_id == 3) or ((bill_state_id == 5) and (bill.locked == True))))),
 		'arch':		# assignee & Done
-			(user.is_superuser or (((bill.assign == approver) or user.is_staff) and (bill_state_id == 5))),
+			(user.is_superuser or (((bill.assign == approver) or user.is_staff) and (bill_state_id == 5) and (bill.locked == False))),
 	}
 	# Accepting (Вперед, Согласовано, В оплате, Исполнено)
 	buttons['accept'] = 0
-	if (bill_state_id in set([1, 6])):		# Draft
+	if (bill_state_id == 1):			# Draft
 		if (bill.assign == approver):
 			buttons['accept'] = 1		# Вперед
-	elif (bill_state_id in set([2, 7])):		# OnWay
+	elif (bill_state_id == 2):		# OnWay
 		if (approver.role.pk != 6):		# not Accounter
 			if ((bill.rpoint.approve == None) and (bill.rpoint.role == approver.role)) or \
 			   ((bill.rpoint.approve != None) and (bill.rpoint.approve == approver)):
@@ -574,16 +566,15 @@ def	bill_view(request, id, upload_form=None):
 	elif (bill_state_id == 4):			# OnPay
 		if (approver.role.pk == 6):		# Accounter
 			buttons['accept'] = 4		# Оплачен
-	# Rejecting (Отказать, Дубль)
+	# Rejecting
 	buttons['reject'] = 0
-	if (bill_state_id in set([2, 7])):		# OnWay
-		if (approver.role.pk != 6):
-			if ((bill.rpoint.approve == None) and (bill.rpoint.role == approver.role)) or \
-			   ((bill.rpoint.approve != None) and (bill.rpoint.approve == approver)):
-				buttons['reject'] = 1	# Отказать
-		else:
-			if (bill.get_state_id() == 2) and (bill.rpoint.role == approver.role):
-				buttons['reject'] = 2	# Дубль
+	if (approver.role.pk != 6):
+		if (bill_state_id == 2) and (((bill.rpoint.approve == None) and (bill.rpoint.role == approver.role)) or \
+		   ((bill.rpoint.approve != None) and (bill.rpoint.approve == approver))):
+			buttons['reject'] = 1
+	else:
+		if (bill_state_id in set([2, 4])) and (bill.rpoint.role == approver.role):
+			buttons['reject'] = 1
 	return render_to_response('bills/detail.html', context_instance=RequestContext(request, {
 		'object': bill,
 		'form': form if (buttons['accept'] or buttons['reject']) else None,
@@ -603,7 +594,8 @@ def	bill_delete(request, id):
 	#bill = models.Bill.objects.get(pk=int(id))
 	if (request.user.is_superuser) or (\
 	   (bill.assign.user.pk == request.user.pk) and\
-	   (bill.get_state_id() in set([1, 3]) )):
+	   (bill.get_state_id() in set([1, 3])) and\
+	   (bill.locked == False)):
 		fileseq = bill.fileseq
 		bill.delete()
 		fileseq.purge()
@@ -621,11 +613,8 @@ def	bill_restart(request, id):
 	#bill = models.Bill.objects.get(pk=int(id))
 	if (request.user.is_superuser) or (\
 	   (bill.assign.user.pk == request.user.pk) and\
-	   (bill.get_state_id() in set([3, 8, 9]))):
-		if (bill.get_state_id() == 3):
-			bill.set_state_id(1)
-		else:
-			bill.set_state_id(6)
+	   ((bill.get_state_id() == 3) or ((bill.get_state_id() == 5) and (bill.locked == True)))):
+		bill.set_state_id(1)
 		bill.save()
 	return redirect('bills.views.bill_view', bill.pk)
 
@@ -651,7 +640,7 @@ def	bill_toscan(request, id):
 	#bill = models.Bill.objects.get(pk=int(id))
 	if (request.user.is_superuser) or (\
 	   ((bill.assign.user.pk == request.user.pk) or request.user.is_staff) and\
-	   (bill.get_state_id() == 5)):
+	   ((bill.get_state_id() == 5) and (bill.locked==False))):
 		scan = Scan.objects.create(
 			fileseq	= bill.fileseq,
 			place	= bill.place.name,
