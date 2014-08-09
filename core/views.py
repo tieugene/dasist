@@ -40,7 +40,6 @@ class	FileSeqDetail(DetailView):
 		context['form']	= forms.FileSeqItemAddForm()
 		return context
 
-
 @login_required
 def	file_preview(request, id):
 	return render_to_response('core/file_img.html', context_instance=RequestContext(request, {'file': models.File.objects.get(pk=int(id))}))
@@ -115,3 +114,12 @@ def	fileseqitem_move_down(request, id):
 	if fs.files.count() > order:
 		fsi.swap(fsi.order+1)
 	return redirect('core.views.fileseq_view', fs.pk)
+
+class	OrgList(ListView):
+	model = models.Org
+	template_name = 'core/org_list.html'
+	paginate_by = PAGE_SIZE
+
+class	OrgDetail(DetailView):
+	model = models.Org
+	template_name = 'core/org_detail.html'

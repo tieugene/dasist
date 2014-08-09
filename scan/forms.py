@@ -13,7 +13,7 @@ EMPTY_VALUE = [('', '---'),]
 class	FilterScanListForm(forms.Form):
 	#place		= forms.ChoiceField(choices=Scan.objects.order_by('place').distinct().values_list('place', 'place'), label=u'Объект', required=False)
 	place		= forms.ChoiceField(choices=EMPTY_VALUE + list(Scan.objects.order_by('place').distinct().values_list('place', 'place')), label=u'Объект', required=False)
-	#subject		= forms.ChoiceField(choices=EMPTY_VALUE + list(Scan.objects.order_by('subject').distinct().values_list('subject', 'subject')), label=u'Подобъект', required=False)
+	#subject	= forms.ChoiceField(choices=EMPTY_VALUE + list(Scan.objects.order_by('subject').distinct().values_list('subject', 'subject')), label=u'Подобъект', required=False)
 	subject		= forms.ChoiceField(choices=EMPTY_VALUE, label=u'Подобъект', required=False)
 	depart		= forms.ChoiceField(choices=EMPTY_VALUE + list(Scan.objects.order_by('depart').distinct().exclude(depart=None).values_list('depart', 'depart')), label=u'Направление', required=False)
 	supplier	= forms.CharField(max_length=64, label=u'Поставщик', required=False)
@@ -55,6 +55,31 @@ class	ReplacePlaceForm(forms.Form):
 	subject		= forms.ModelChoiceField(queryset=Subject.objects.all().order_by('name'), label=u'Подобъект', required=False)
 
 class	ScanEditForm(forms.ModelForm):
+	'''
+	TODO: check inn, supplier uniq
+	'''
+	place		= forms.ChoiceField(choices = list(Scan.objects.order_by('place').distinct().values_list('place', 'place')), label=u'Объект', required=False)
+	subject		= forms.ChoiceField(choices=EMPTY_VALUE, label=u'Подобъект', required=False)
+	depart		= forms.ChoiceField(choices=EMPTY_VALUE + list(Scan.objects.order_by('depart').distinct().exclude(depart=None).values_list('depart', 'depart')), label=u'Направление', required=False)
+	payer		= forms.ChoiceField(choices=EMPTY_VALUE + list(Scan.objects.order_by('payer').distinct().exclude(payer=None).values_list('payer', 'payer')), label=u'Плательщик', required=True)
+	inn		= forms.CharField(min_length=10, max_length=12, label=u'ИНН Поставщика', required=True)
+	suppfull	= forms.CharField(max_length=64, label=u'Поставщик (полностью)', required=True)
+	sum		= forms.DecimalField(max_digits=11, decimal_places=2, label=u'Сумма')
+
+	def __init__(self, *args, **kwargs):
+		#forms.Form.__init__(self, *args, **kwargs)
+		super(ScanEditForm, self).__init__(*args, **kwargs)
+		places=EMPTY_VALUE + list(Scan.objects.order_by('place').distinct().values_list('place', 'place'))
+		if len(places)==1:
+			self.fields['place'].initial=places[0][0]
+		place=self.fields['place'].initial or self.initial.get('place') or self._raw_value('place')
+		if place:
+			# parent is known. Now I can display the matching children.
+			subjects=EMPTY_VALUE + list(Scan.objects.filter(place=place).order_by('subject').distinct().exclude(subject=None).values_list('subject', 'subject'))
+			self.fields['subject'].choices=subjects
+			if len(subjects)==1:
+				self.fields['subject'].initial=subjects[0][0]
+
 	class Meta:
 		model = Scan
-		exclude = ['fileseq']
+		exclude = ['fileseq', 'events', 'suppinn']

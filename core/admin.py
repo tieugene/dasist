@@ -18,5 +18,9 @@ class	FileSeqAdmin(admin.ModelAdmin):
 	ordering	= ('id',)
 	inlines		= (FileSeqItemInLine,)
 
+class	OrgAdmin(admin.ModelAdmin):
+	ordering	= ('name',)
+
 admin.site.register(File,	FileAdmin)
 admin.site.register(FileSeq,	FileSeqAdmin)
+admin.site.register(Org,	OrgAdmin)

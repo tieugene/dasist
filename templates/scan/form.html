@@ -12,14 +12,14 @@
   <td> <ol style="margin: 0">
    {% for img in object.fileseq.fileseqitem_set.all %}
     <li>
-     <a href="{% url core.views.file_get img.pk %}" data-lightbox="roadtrip" title="{{ img.file.name }}">{{ img.file.name }}</a>
-     <a href="{% url core.views.file_get img.pk %}"> <img src="{{ STATIC_URL }}img/16/png.png" title="Download"/> </a>
+     <a href="{% url 'core.views.file_get' img.pk %}" data-lightbox="roadtrip"> <img src="{{ STATIC_URL }}img/32/png.png" title="{{ img.file.name }}"/> </a>
+     <a href="{% url 'core.views.file_get' img.pk %}"> <img src="{{ STATIC_URL }}img/32/download.png" title="Скачать"/> </a>
     </li>
    {% endfor %}
   </ol> </td>
  </tr>
 	</table>
 	<button type="submit"> Записать </button>
-	<a href="{% url scan.views.scan_view object.pk %}"> <button type="button"> Отказаться </button> </a>
+	<a href="{% url 'scan_view' object.pk %}"> <button type="button"> Отказаться </button> </a>
    </form>
 {% endblock %}

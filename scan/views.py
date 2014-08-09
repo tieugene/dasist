@@ -8,6 +8,7 @@ from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
+from django.db import transaction
 from django.http import HttpResponse
 from django.shortcuts import render_to_response, render, redirect
 from django.template import RequestContext, Context, loader
@@ -24,7 +25,7 @@ import os, sys, imp, pprint, tempfile, subprocess, shutil, datetime, simplejson
 
 # 4. my
 import models, forms
-from core.models import File, FileSeq
+from core.models import File, FileSeq, Org
 
 reload(sys)
 sys.setdefaultencoding('utf-8')
@@ -126,6 +127,7 @@ def	scan_set_filter(request):
 	return redirect('scan_list')
 
 @login_required
+@transaction.commit_on_success
 def	scan_edit(request, id):
 	'''
 	'''
@@ -133,8 +135,24 @@ def	scan_edit(request, id):
 	if request.method == 'POST':
 		form = forms.ScanEditForm(request.POST, instance=scan)
 		if form.is_valid():
+			# extract fullname, [replace] shortname, replace inn with object
+			inn = form.cleaned_data['inn']
+			inns = Org.objects.filter(inn=inn)
+			if not len(inns):	# not found > create
+				dstorg = Org(
+					inn = form.cleaned_data['inn'],
+					name = form.cleaned_data['supplier'],
+					fullname = form.cleaned_data['suppfull']
+				)
+				dstorg.save()
+			else:
+				dstorg = inns[0]
+				form.cleaned_data['supplier'] = dstorg.name
+			del form.cleaned_data['suppfull']
+			del form.cleaned_data['inn']
+			form.cleaned_data['suppinn'] = dstorg
 			form.save()
-			return redirect('scan.views.scan_view', scan.pk)
+			return redirect('scan_view', scan.pk)
 	else:
 		form = forms.ScanEditForm(instance=scan)
 	return render_to_response('scan/form.html', context_instance=RequestContext(request, {
@@ -151,7 +169,7 @@ def	scan_delete(request, id):
 	scan = models.Scan.objects.get(pk=int(id))
 	scan.delete()
 	fileseq.purge()
-	return redirect('scan.views.scan_list')
+	return redirect('scan_list')
 
 @login_required
 def	scan_clean_spaces(request):
@@ -182,7 +200,7 @@ def	scan_clean_spaces(request):
 			#print "Place: '%s'" % scan.place
 			scan.save()
 		#print scan.place
-	return redirect('scan.views.scan_list')
+	return redirect('scan_list')
 
 @login_required
 def	scan_replace_depart(request):

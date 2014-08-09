@@ -10,17 +10,21 @@ from django.db import models
 import os, sys, datetime, json
 
 # 4. local
-from core.models import File, FileSeq
+from core.models import File, FileSeq, Org
 
 class	Scan(models.Model):
 	fileseq		= models.OneToOneField(FileSeq, primary_key=True, related_name='scans', verbose_name=u'Файлы')
 	place		= models.CharField(max_length=64, verbose_name=u'Объект')
 	subject		= models.CharField(max_length=64, null=True, blank=True, verbose_name=u'Подобъект')
 	depart		= models.CharField(max_length=64, null=True, blank=True, verbose_name=u'Направление')
+	# FIXME: null=False
 	payer		= models.CharField(max_length=64, null=True, blank=True, verbose_name=u'Плательщик')
+	# FIXME: null=False
+	suppinn		= models.ForeignKey(Org, null=True, blank=True, verbose_name=u'ИНН Поставщика')
 	supplier	= models.CharField(max_length=64, verbose_name=u'Поставщик')
 	no		= models.CharField(max_length=16, verbose_name=u'Номер')
 	date		= models.DateField(verbose_name=u'Дата')
+	# FIXME: null=False
 	sum		= models.DecimalField(max_digits=11, decimal_places=2, null=True, blank=True, verbose_name=u'Сумма')
 	events		= models.TextField(null=True, blank=True, verbose_name=u'История')
 

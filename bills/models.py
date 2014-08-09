@@ -14,7 +14,7 @@ from StringIO import StringIO
 
 # 4. local
 #print sys.path
-from core.models import File, FileSeq
+from core.models import File, FileSeq, Org
 #import core
 
 STATE_ICON = (
@@ -148,6 +148,7 @@ class	Bill(models.Model):
 	subject		= models.ForeignKey(Subject, null=True, blank=True, verbose_name=u'ПодОбъект')
 	depart		= models.ForeignKey(Department, null=True, blank=True, verbose_name=u'Направление')
 	payer		= models.ForeignKey(Payer, null=True, blank=True, verbose_name=u'Плательщик')
+	suppinn		= models.ForeignKey(Org, null=True, blank=True, verbose_name=u'ИНН Поставщика')
 	supplier	= models.CharField(max_length=64, verbose_name=u'Поставщик')
 	billno		= models.CharField(max_length=16, verbose_name=u'Номер счета')
 	billdate	= models.DateField(verbose_name=u'Дата счета')

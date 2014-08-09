@@ -1,1 +1,0 @@
-cat 011_012.sql | ./manage.py dbshell

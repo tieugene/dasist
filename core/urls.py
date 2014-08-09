@@ -25,4 +25,6 @@ urlpatterns = patterns('core.views',
 	url(r'^fsi/(?P<id>\d+)/d/$',	'fileseqitem_del'),
 	url(r'^fsi/(?P<id>\d+)/up/$',	'fileseqitem_move_up'),
 	url(r'^fsi/(?P<id>\d+)/down/$',	'fileseqitem_move_down'),
+	url(r'^o/$',			login_required(views.OrgList.as_view()), name='org_list'),
+	url(r'^o/(?P<pk>\d+)/r/$',	login_required(views.OrgDetail.as_view()), name='org_view'),
 )
