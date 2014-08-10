@@ -133,28 +133,44 @@ def	scan_edit(request, id):
 	'''
 	scan = models.Scan.objects.get(pk=int(id))
 	if request.method == 'POST':
-		form = forms.ScanEditForm(request.POST, instance=scan)
+		form = forms.ScanEditForm(request.POST)
 		if form.is_valid():
-			# extract fullname, [replace] shortname, replace inn with object
-			inn = form.cleaned_data['inn']
-			inns = Org.objects.filter(inn=inn)
-			if not len(inns):	# not found > create
-				dstorg = Org(
-					inn = form.cleaned_data['inn'],
-					name = form.cleaned_data['supplier'],
-					fullname = form.cleaned_data['suppfull']
+			suppinn = form.cleaned_data['suppinn'].strip()
+			shippers = Org.objects.filter(inn=suppinn)
+			if not len(shippers):	# not found > create
+				shipper = Org(
+					inn = suppinn,
+					name = form.cleaned_data['suppname'].strip(),
+					fullname = form.cleaned_data['suppfull'].strip()
 				)
-				dstorg.save()
+				shipper.save()
 			else:
-				dstorg = inns[0]
-				form.cleaned_data['supplier'] = dstorg.name
-			del form.cleaned_data['suppfull']
-			del form.cleaned_data['inn']
-			form.cleaned_data['suppinn'] = dstorg
-			form.save()
+				shipper = shippers[0]
+				form.cleaned_data['suppname'] = shipper.name
+			scan.place	= form.cleaned_data['place'].strip()
+			scan.subject	= form.cleaned_data['subject'].strip()
+			scan.depart	= form.cleaned_data['depart'].strip()
+			scan.payer	= form.cleaned_data['payer'].strip()
+			scan.shipper	= shipper
+			scan.supplier	= shipper.name
+			scan.no		= form.cleaned_data['no'].strip()
+			scan.date	= form.cleaned_data['date']
+			scan.sum	= form.cleaned_data['sum']
+			scan.save()
 			return redirect('scan_view', scan.pk)
 	else:
-		form = forms.ScanEditForm(instance=scan)
+		form = forms.ScanEditForm(initial={
+			'place': scan.place,
+			'subject': scan.subject,
+			'depart': scan.depart,
+			'payer': scan.payer,
+			'suppinn': scan.shipper.inn if scan.shipper else '',
+			'suppname': scan.supplier,
+			'suppfull': scan.shipper.fullname if scan.shipper else '',
+			'no': scan.no,
+			'date': scan.date,
+			'sum': scan.sum,
+		})
 	return render_to_response('scan/form.html', context_instance=RequestContext(request, {
 		'form': form,
 		'object': scan,

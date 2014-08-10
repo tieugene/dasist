@@ -20,8 +20,9 @@ class	Scan(models.Model):
 	# FIXME: null=False
 	payer		= models.CharField(max_length=64, null=True, blank=True, verbose_name=u'Плательщик')
 	# FIXME: null=False
-	suppinn		= models.ForeignKey(Org, null=True, blank=True, verbose_name=u'ИНН Поставщика')
-	supplier	= models.CharField(max_length=64, verbose_name=u'Поставщик')
+	shipper		= models.ForeignKey(Org, null=True, blank=True, verbose_name=u'Поставщик')
+	# FIXME: delete
+	supplier	= models.CharField(max_length=64, verbose_name=u'Продавец')
 	no		= models.CharField(max_length=16, verbose_name=u'Номер')
 	date		= models.DateField(verbose_name=u'Дата')
 	# FIXME: null=False

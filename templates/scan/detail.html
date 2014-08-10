@@ -11,8 +11,19 @@
  <tr> <th> Подобъект </th> <td> {{ object.subject|default:"---" }} </td> </tr>
  <tr> <th> Направление </th> <td> {{ object.depart|default:"---" }} </td> </tr>
  <tr> <th> Плательщик </th> <td> {{ object.payer|default:"---" }} </td> </tr>
- <tr> <th> Поставщик </th> <td> {{ object.supplier }} </td> </tr>
- <tr> <th> Счет </th> <td> № {{ object.no }} от {{ object.date|date:"d.m.y" }} на {{ object.sum }} руб. </td> </tr>
+ <tr> <th> Поставщик </th> <td>
+  {% if object.shipper %}
+   <ul>
+    <li> ИНН: {{ object.shipper.inn }} </li>
+    <li> Наименование: {{ object.shipper.name }} </li>
+    <li> Полное: {{ object.shipper.fullname }} </li>
+   </ul>
+  {% else %}
+   ---
+  {% endif %}
+  </td> </tr>
+ <tr> <th> Продавец </th> <td> {{ object.supplier|default:"---" }} </td> </tr>
+ <tr> <th> Счет </th> <td> № {{ object.no }} от {{ object.date|date:"d.m.y" }} на {{ object.sum|default:"---" }} руб. </td> </tr>
  <tr>
   <td> Оригинал: </td>
   <td> <ol style="margin: 0">

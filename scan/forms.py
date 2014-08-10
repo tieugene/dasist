@@ -54,17 +54,20 @@ class	ReplacePlaceForm(forms.Form):
 	place		= forms.ModelChoiceField(queryset=Place.objects.all().order_by('name'), empty_label=None, label=u'Объект')
 	subject		= forms.ModelChoiceField(queryset=Subject.objects.all().order_by('name'), label=u'Подобъект', required=False)
 
-class	ScanEditForm(forms.ModelForm):
+class	ScanEditForm(forms.Form):
 	'''
 	TODO: check inn, supplier uniq
 	'''
-	place		= forms.ChoiceField(choices = list(Scan.objects.order_by('place').distinct().values_list('place', 'place')), label=u'Объект', required=False)
+	place		= forms.ChoiceField(choices = list(Scan.objects.order_by('place').distinct().values_list('place', 'place')), label=u'Объект', required=True)
 	subject		= forms.ChoiceField(choices=EMPTY_VALUE, label=u'Подобъект', required=False)
 	depart		= forms.ChoiceField(choices=EMPTY_VALUE + list(Scan.objects.order_by('depart').distinct().exclude(depart=None).values_list('depart', 'depart')), label=u'Направление', required=False)
 	payer		= forms.ChoiceField(choices=EMPTY_VALUE + list(Scan.objects.order_by('payer').distinct().exclude(payer=None).values_list('payer', 'payer')), label=u'Плательщик', required=True)
-	inn		= forms.CharField(min_length=10, max_length=12, label=u'ИНН Поставщика', required=True)
+	suppinn		= forms.CharField(min_length=10, max_length=12, label=u'ИНН Поставщика', required=True)
+	suppname	= forms.CharField(max_length=64, label=u'Поставщик (кратко)', required=True)
 	suppfull	= forms.CharField(max_length=64, label=u'Поставщик (полностью)', required=True)
-	sum		= forms.DecimalField(max_digits=11, decimal_places=2, label=u'Сумма')
+	no		= forms.CharField(max_length=16, label=u'Счет.№', required=True)
+	date		= forms.DateField(label=u'Счет.Дата', required=True)
+	sum		= forms.DecimalField(max_digits=11, decimal_places=2, label=u'Счет.Сумма', required=True)
 
 	def __init__(self, *args, **kwargs):
 		#forms.Form.__init__(self, *args, **kwargs)
@@ -80,6 +83,5 @@ class	ScanEditForm(forms.ModelForm):
 			if len(subjects)==1:
 				self.fields['subject'].initial=subjects[0][0]
 
-	class Meta:
-		model = Scan
-		exclude = ['fileseq', 'events', 'suppinn']
+	#def clean(self):
+	# check inn, suppname (uniq)

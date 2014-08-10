@@ -189,7 +189,7 @@ class	FileSeqItem(models.Model):
 		verbose_name_plural     = u'Файлы последовательности'
 
 class	Org(models.Model):
-	inn		= models.CharField(primary_key=True, max_length=12, verbose_name=u'ИНН')
+	inn		= models.CharField(unique=True, max_length=12, verbose_name=u'ИНН')
 	name		= models.CharField(unique=True, max_length=32, verbose_name=u'Краткое наименование')
 	fullname	= models.CharField(max_length=255, verbose_name=u'Полное наименование')
 

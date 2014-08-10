@@ -2,7 +2,6 @@
 {% block js %}
 <script type="text/javascript">
 $(document).ready(function() {
-	//$('#id_place').change(function(){Dajaxice.scan.updatesubj(Dajax.process, {'place':this.value});});
 	$('#id_place').change(function(){
 		json_to_select('{% url "scan.views.scan_get_subjects" %}?place=' + $(this).val(), '#id_subject');
 	});
@@ -52,6 +51,7 @@ function json_to_select(url, select_selector) {
   <th> Подобъект </th>
   <th> Направление </th>
   <th> Поставщик </th>
+  <th> Продавец </th>
   <th> Номер </th>
   <th> Дата </th>
   <th> Сумма </th>
@@ -63,6 +63,7 @@ function json_to_select(url, select_selector) {
   <th> {{ form.place }} <br/> {{ form.place.errors }} </th>
   <th> {{ form.subject }} <br/> {{ form.subject.errors }} </th>
   <th> {{ form.depart }} <br/> {{ form.depart.errors }} </th>
+  <th/>
   <th> {{ form.supplier }} <br/> {{ form.supplier.errors }} </th>
   <th> {{ form.billno }} <br/> {{ form.billno.errors }} </th>
   <th> {{ form.billdate }} <br/> {{ form.billdate.errors }} </th>
@@ -77,6 +78,7 @@ function json_to_select(url, select_selector) {
   <td> {{ object.place }} </td>
   <td> {{ object.subject|default:"---" }} </td>
   <td> {% if object.depart %} {{ object.depart }} {% else %} --- {% endif %} </td>
+  <td> {{ object.shipper|default:"---" }} </td>
   <td> {{ object.supplier }} </td>
   <td> {{ object.no }} </td>
   <td> {{ object.date|date:"d.m.y" }} </td>

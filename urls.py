@@ -6,9 +6,6 @@ from django.contrib.auth.views import login, logout
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.views.generic.base import TemplateView
 
-from dajaxice.core import dajaxice_autodiscover, dajaxice_config
-dajaxice_autodiscover()
-
 admin.autodiscover()
 
 urlpatterns = patterns('',
@@ -24,7 +21,5 @@ urlpatterns = patterns('',
 	url(r'^scan/',		include('scan.urls')),
 	#url(r'^about$',		'views.about'),
 	url(r'^about$',		TemplateView.as_view(template_name='about.html'), name='about'),
-	#(r'^%s/' % settings.DAJAXICE_MEDIA_PREFIX, include('dajaxice.urls')),
-	url(dajaxice_config.dajaxice_url, include('dajaxice.urls')),
 )
 urlpatterns += staticfiles_urlpatterns()

@@ -6,7 +6,7 @@ from models import *
 
 # 2. odmins
 class	ScanAdmin(admin.ModelAdmin):
-	ordering	= ('date',)
-	list_display	= ('place', 'subject', 'depart', 'supplier', 'no', 'date', 'sum')
+	ordering	= ('fileseq',)
+	list_display	= ('fileseq', 'place', 'subject', 'depart', 'shipper', 'supplier', 'no', 'date', 'sum')
 
 admin.site.register(Scan,	ScanAdmin)
