@@ -34,3 +34,13 @@ class	InnField(forms.CharField):
 		else:
 			if not (self.__chk_cs(value, (7, 2, 4, 10, 3, 5, 9, 4, 9, 8)) and self.__chk_cs(value, (3, 7, 2, 4, 10, 3, 5, 9, 4, 6, 8))):
 				raise forms.ValidationError('Контрольные суммы цифр неверны')
+
+def	chk_new_org(inn, name):
+	'''
+	Check new shipper on uniqueness
+	@f:form object
+	@flds:tupple - field to check (inn, shorname)
+	'''
+	orgs = models.Org.objects.filter(name=name.strip())
+	if (orgs.count()) and (orgs[0].inn != inn.strip()):
+		raise forms.ValidationError('Поставщик с таким кратким наименованием и другим ИНН уже есть')

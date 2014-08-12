@@ -7,7 +7,7 @@ import datetime
 
 from models import Scan
 from bills.models import Place, Subject
-from core.forms import InnField
+from core.forms import InnField, chk_new_org
 
 EMPTY_VALUE = [('', '---'),]
 
@@ -71,8 +71,7 @@ class	ScanEditForm(forms.Form):
 	sum		= forms.DecimalField(max_digits=11, decimal_places=2, label=u'Счет.Сумма', required=True)
 
 	def __init__(self, *args, **kwargs):
-		#forms.Form.__init__(self, *args, **kwargs)
-		super(ScanEditForm, self).__init__(*args, **kwargs)
+		forms.Form.__init__(self, *args, **kwargs)
 		places=EMPTY_VALUE + list(Scan.objects.order_by('place').distinct().values_list('place', 'place'))
 		if len(places)==1:
 			self.fields['place'].initial=places[0][0]
@@ -84,5 +83,7 @@ class	ScanEditForm(forms.Form):
 			if len(subjects)==1:
 				self.fields['subject'].initial=subjects[0][0]
 
-	#def clean(self):
-	# check inn, suppname (uniq)
+	def clean(self):
+		cleaned_data = super(ScanEditForm, self).clean()
+		chk_new_org(cleaned_data['suppinn'], cleaned_data['suppname'])
+		return cleaned_data
