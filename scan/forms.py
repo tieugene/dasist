@@ -7,6 +7,7 @@ import datetime
 
 from models import Scan
 from bills.models import Place, Subject
+from core.forms import InnField
 
 EMPTY_VALUE = [('', '---'),]
 
@@ -62,7 +63,7 @@ class	ScanEditForm(forms.Form):
 	subject		= forms.ChoiceField(choices=EMPTY_VALUE, label=u'Подобъект', required=False)
 	depart		= forms.ChoiceField(choices=EMPTY_VALUE + list(Scan.objects.order_by('depart').distinct().exclude(depart=None).values_list('depart', 'depart')), label=u'Направление', required=False)
 	payer		= forms.ChoiceField(choices=EMPTY_VALUE + list(Scan.objects.order_by('payer').distinct().exclude(payer=None).values_list('payer', 'payer')), label=u'Плательщик', required=True)
-	suppinn		= forms.CharField(min_length=10, max_length=12, label=u'ИНН Поставщика', required=True)
+	suppinn		= InnField(min_length=10, max_length=12, label=u'ИНН Поставщика', required=True)
 	suppname	= forms.CharField(max_length=64, label=u'Поставщик (кратко)', required=True)
 	suppfull	= forms.CharField(max_length=64, label=u'Поставщик (полностью)', required=True)
 	no		= forms.CharField(max_length=16, label=u'Счет.№', required=True)

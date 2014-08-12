@@ -63,6 +63,7 @@
   <th title="К оплате"> К&nbsp;опл. </th>
   <th title="Исполнитель"> Исполн. </th>
   <th> Подписант </th>
+  <th> ? </th>
  </tr>
  </thead>
  <tbody>
@@ -88,6 +89,7 @@ onclick="window.document.location='{% url 'bills.views.bill_view' object.pk %}'"
   <td align="right"> {% if object.topaysum %} {{ object.topaysum|stringformat:"d" }} {% endif %} </td>
   <td> {{ object.assign.user.last_name }} </td>
   <td> {% if object.rpoint %} {{ object.rpoint.get_str }} {% else %} --- {% endif %} </td>
+  <td> {% if object.locked %} &radic; {% else %} - {% endif %} </td>
  </tr>
 {% endfor %}
 </table>

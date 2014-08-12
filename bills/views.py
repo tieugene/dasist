@@ -532,8 +532,8 @@ def	bill_view(request, id, upload_form=None):
 						bill.set_state_id(3)
 						bill.rpoint = None
 					bill.save()
-					if (bill.get_state_id() == 5):	# That's all
-						bill.rpoint = bill.route_set.all().delete()
+					if (bill.get_state_id() == 5) and (bill.locked == False):	# That's all
+						bill.route_set.all().delete()
 					__mailto(request, bill)
 					return redirect('bill_list')
 	else:
