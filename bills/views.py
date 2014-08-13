@@ -24,7 +24,6 @@ from django.db import transaction
 
 # 2. system
 import os, sys, imp, pprint, tempfile, subprocess, shutil, json, decimal
-from django.utils import simplejson
 
 # 3. 3rd party
 #from pyPdf import PdfFileReader
