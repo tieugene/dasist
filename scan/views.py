@@ -98,7 +98,6 @@ class	ScanList(ListView):
 		return context
 
 def	scan_get_subjects(request):
-	pass
 	place=request.GET.get('place')
 	ret=[dict(id='', value='---'),]
 	if place:

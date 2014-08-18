@@ -5,26 +5,44 @@
 <script type="text/javascript">
 	function enable_suppX (v) {
 		// switch supplier names enable/disable
-		$('#id_suppname').prop( "disabled", !v );
-		$('#id_suppfull').prop( "disabled", !v );
+		$('#id_suppname').prop( "readonly", !v );
+		$('#id_suppfull').prop( "readonly", !v );
 	};
 	function inn_focus() {
-		console.log('focus');
+		//console.log('focus');
 		enable_suppX(true);
 	};
 	function inn_blur() {
-		console.log('blur');
+		//console.log('blur');
 		v = $('#id_suppinn').val()
 		//console.log('INN: ' + v);
 		result = checkINN(v);
 		if (result == null) {
 			console.log("ИНН OK");
+			// clear error (if exists)
 			// find inn in db
-			// if found: fill supp*; disable them; focus to id_billno
+			json_to_suppX('{% url "core.views.org_get_by_inn" %}?inn=' + v);
 		} else {
 			console.log("ERR: " + result);
 			enable_suppX(false);
 		};
+	};
+	function json_to_suppX(url) {
+		$.getJSON(url, function(data) {
+			// if found:
+			// * fill supp*;
+			// * disable them;
+			// * focus to id_billno
+			if (data != null) {
+				//console.log('Found:');
+				//console.log('name='+data.name);
+				$('#id_suppname').val(data.name);
+				$('#id_suppfull').val(data.fullname);
+				enable_suppX(false);
+				$('#id_no').focus();
+			};
+			//console.log(data);
+		})
 	};
 	$(document).ready(function() {
 		$('#id_suppinn').focus(function() {inn_focus();});

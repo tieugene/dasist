@@ -12,6 +12,9 @@ from django.shortcuts import render_to_response, render, redirect
 from django.template import RequestContext, Context, loader
 from django.db import transaction
 
+# 2. system
+import simplejson
+
 # 4. my
 import models, forms
 
@@ -123,3 +126,16 @@ class	OrgList(ListView):
 class	OrgDetail(DetailView):
 	model = models.Org
 	template_name = 'core/org_detail.html'
+
+def	org_get_by_inn(request):
+	'''
+	@param ?inn:str - INN
+	@return: {'name': name, 'fullname': fullname}
+	'''
+	inn=request.GET.get('inn')
+	org = models.Org.objects.filter(inn=inn).first()
+	if org:
+		ret = dict(name = org.name, fullname = org.fullname)
+	else:
+		ret = None
+	return HttpResponse(simplejson.dumps(ret), content_type='application/json')
