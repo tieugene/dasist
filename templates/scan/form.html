@@ -1,16 +1,30 @@
 {% extends "scan/base.html" %}
 {% block js %}
 {{ form.media }}
+<script type="text/javascript" src="{{ STATIC_URL }}js/chk_inn.js"></script>
 <script type="text/javascript">
+	function enable_suppX (v) {
+		// switch supplier names enable/disable
+		$('#id_suppname').prop( "disabled", !v );
+		$('#id_suppfull').prop( "disabled", !v );
+	};
 	function inn_focus() {
 		console.log('focus');
-		$('#id_suppname').prop( "disabled", false );
-		$('#id_suppfull').prop( "disabled", false );
+		enable_suppX(true);
 	};
 	function inn_blur() {
 		console.log('blur');
-		$('#id_suppname').prop( "disabled", true );
-		$('#id_suppfull').prop( "disabled", true );
+		v = $('#id_suppinn').val()
+		//console.log('INN: ' + v);
+		result = checkINN(v);
+		if (result == null) {
+			console.log("ИНН OK");
+			// find inn in db
+			// if found: fill supp*; disable them; focus to id_billno
+		} else {
+			console.log("ERR: " + result);
+			enable_suppX(false);
+		};
 	};
 	$(document).ready(function() {
 		$('#id_suppinn').focus(function() {inn_focus();});
