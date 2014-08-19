@@ -19,6 +19,7 @@ class	FileSeqAdmin(admin.ModelAdmin):
 	inlines		= (FileSeqItemInLine,)
 
 class	OrgAdmin(admin.ModelAdmin):
+	list_display	= ('id', 'inn', 'name', 'fullname')
 	ordering	= ('name',)
 
 admin.site.register(File,	FileAdmin)
