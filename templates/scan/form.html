@@ -3,10 +3,23 @@
 {{ form.media }}
 <script type="text/javascript" src="{{ STATIC_URL }}js/chk_inn.js"></script>
 <script type="text/javascript">
+	function ro_item (item) {
+		// switch item to readonly
+		$(item).prop("readonly", true);
+	};
+	function rw_item (item) {
+		// switch item to readwrite
+		$(item).prop("readonly", false);
+	};
 	function enable_suppX (v) {
 		// switch supplier names enable/disable
-		$('#id_suppname').prop( "readonly", !v );
-		$('#id_suppfull').prop( "readonly", !v );
+		if (v) {
+			rw_item("#id_suppname");
+			rw_item("#id_suppfull");
+		} else {
+			ro_item("#id_suppname");
+			ro_item("#id_suppfull");
+		}
 	};
 	function inn_focus() {
 		//console.log('focus');
@@ -14,16 +27,18 @@
 	};
 	function inn_blur() {
 		//console.log('blur');
+		// clear error (if exists)
+		$("#innerror").remove();
 		v = $('#id_suppinn').val()
 		//console.log('INN: ' + v);
 		result = checkINN(v);
 		if (result == null) {
 			console.log("ИНН OK");
-			// clear error (if exists)
 			// find inn in db
 			json_to_suppX('{% url "core.views.org_get_by_inn" %}?inn=' + v);
 		} else {
 			console.log("ERR: " + result);
+			$("<p id='innerror'>"+result+"</p>").insertBefore("#id_suppinn");
 			enable_suppX(false);
 		};
 	};
@@ -40,6 +55,8 @@
 				$('#id_suppfull').val(data.fullname);
 				enable_suppX(false);
 				$('#id_no').focus();
+			} else {
+				enable_suppX(true);
 			};
 			//console.log(data);
 		})
@@ -49,6 +66,17 @@
 		$('#id_suppinn').blur(function() {inn_blur();});
 	});
 </script>
+{% endblock %}
+{% block css %}
+	ul.errorlist {
+		color: red;
+	}
+	p#innerror {
+		color: red;
+	}
+	input[readonly] {
+		background-color: Gainsboro;
+	}
 {% endblock %}
 {% block body_main %}
    <form enctype="multipart/form-data" action="" method="POST">

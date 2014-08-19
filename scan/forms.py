@@ -85,5 +85,6 @@ class	ScanEditForm(forms.Form):
 
 	def clean(self):
 		cleaned_data = super(ScanEditForm, self).clean()
-		chk_new_org(cleaned_data['suppinn'], cleaned_data['suppname'])
+		if ('suppinn' in cleaned_data) and ('suppname' in cleaned_data):
+			chk_new_org(cleaned_data['suppinn'], cleaned_data['suppname'])
 		return cleaned_data
