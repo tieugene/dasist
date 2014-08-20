@@ -34,6 +34,12 @@ class	ScanDetail(DetailView):
 	model = models.Scan
 	template_name = 'scan/detail.html'
 
+	def	get_context_data(self, **kwargs):
+		context = super(ScanDetail, self).get_context_data(**kwargs)
+		context['prev'] = models.Scan.objects.filter(pk__lt = context['object'].pk).order_by('-pk').first()
+		context['next'] = models.Scan.objects.filter(pk__gt = context['object'].pk).order_by( 'pk').first()
+		return context
+
 class	ScanList(ListView):
 	template_name = 'scan/list.html'
 	paginate_by = 25

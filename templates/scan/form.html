@@ -1,65 +1,27 @@
 {% extends "scan/base.html" %}
 {% block js %}
 {{ form.media }}
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/inn.css" />
 <script type="text/javascript" src="{{ STATIC_URL }}js/chk_inn.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/handle_inn.js"></script>
 <script type="text/javascript">
-	function ro_item (item) {			// switch item to readonly
-		$(item).prop("readonly", true);
-	};
-	function rw_item (item) {			// switch item to readwrite
-		$(item).prop("readonly", false);
-	};
-	function enable_suppX (v) {			// switch supplier names enable/disable
-		if (v) {
-			rw_item("#id_suppname");
-			rw_item("#id_suppfull");
-		} else {
-			ro_item("#id_suppname");
-			ro_item("#id_suppfull");
-		};
-	};
-	function inn_focus() {
-		enable_suppX(true);
-	};
-	function inn_blur() {
-		$("#innerror").remove();				// clear error (if exists)
-		v = $('#id_suppinn').val()
-		result = checkINN(v);
-		if (result == null) {
-			json_to_suppX('{% url "core.views.org_get_by_inn" %}?inn=' + v);	// find inn in db
-		} else {
-			$("<p id='innerror'>"+result+"</p>").insertBefore("#id_suppinn");
-			enable_suppX(false);
-		};
-	};
-	function json_to_suppX(url) {
-		$.getJSON(url, function(data) {
-			if (data != null) {				// if found:
-				$('#id_suppname').val(data.name);	// * fill supp*;
-				$('#id_suppfull').val(data.fullname);
-				enable_suppX(false);			// * disable them;
-				$('#id_no').focus();			// * focus to id_billno
-			} else {
-				enable_suppX(true);
-			};
-		})
-	};
 	$(document).ready(function() {
-		$('#id_suppinn').focus(function() {inn_focus();});
-		$('#id_suppinn').blur(function() {inn_blur();});
+		enable_suppX(false);
+		$('#id_suppinn').focus(function() {
+			enable_suppX(false);
+		});
+		$('#id_suppinn').blur(function() {
+			$("#innerror").remove();							// clear error (if exists)
+			v = $('#id_suppinn').val()
+			result = checkINN(v);
+			if (result == null) {								// INN seems ok
+				json_to_suppX('{% url "core.views.org_get_by_inn" %}?inn=' + v);	// find inn in db
+			} else {									// bad inn
+				$("<p id='innerror'>"+result+"</p>").insertBefore("#id_suppinn");
+			};
+		});
 	});
 </script>
-{% endblock %}
-{% block css %}
-	ul.errorlist {
-		color: red;
-	}
-	p#innerror {
-		color: red;
-	}
-	input[readonly] {
-		background-color: Gainsboro;
-	}
 {% endblock %}
 {% block body_main %}
    <form enctype="multipart/form-data" action="" method="POST">

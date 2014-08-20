@@ -11,13 +11,11 @@
  <tr> <th> Подобъект </th> <td> {{ object.subject|default:"---" }} </td> </tr>
  <tr> <th> Направление </th> <td> {{ object.depart|default:"---" }} </td> </tr>
  <tr> <th> Плательщик </th> <td> {{ object.payer|default:"---" }} </td> </tr>
- <tr> <th> Поставщик </th> <td>
+ <tr> <th> Поставщик </th> <td nowrap>
   {% if object.shipper %}
-   <ul>
-    <li> ИНН: {{ object.shipper.inn }} </li>
-    <li> Наименование: {{ object.shipper.name }} </li>
-    <li> Полное: {{ object.shipper.fullname }} </li>
-   </ul>
+    {{ object.shipper.name }} <br/>
+    ({{ object.shipper.fullname }}) <br/>
+    ИНН: {{ object.shipper.inn }}
   {% else %}
    ---
   {% endif %}
@@ -64,5 +62,11 @@
 </table>
 {% if user.is_superuser %}
 <a href="{% url 'scan.views.scan_edit' object.pk %}"> {% include "button/edit.html" %} </a>
+{% endif %}
+{% if prev %}
+ <a href="{% url 'scan_view' prev.pk %}"> {% include "button/prev.html" %} </a>
+{% endif %}
+{% if next %}
+ <a href="{% url 'scan_view' next.pk %}"> {% include "button/next.html" %} </a>
 {% endif %}
 {% endblock %}
