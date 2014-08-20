@@ -265,6 +265,7 @@ def	bill_add(request):
 	- add Route to them
 	- convert image
 	- add images into fileseq
+	TODO: transaction
 	'''
 	user = request.user
 	#approver = models.Approver.objects.get(pk=user.pk)	# !!!

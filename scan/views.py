@@ -141,8 +141,8 @@ def	scan_edit(request, id):
 		form = forms.ScanEditForm(request.POST)
 		if form.is_valid():
 			suppinn = form.cleaned_data['suppinn'].strip()
-			shippers = Org.objects.filter(inn=suppinn)
-			if not len(shippers):	# not found > create
+			shipper = Org.objects.filter(inn=suppinn).first()
+			if not (shipper):	# not found > create
 				shipper = Org(
 					inn = suppinn,
 					name = form.cleaned_data['suppname'].strip(),
@@ -150,7 +150,6 @@ def	scan_edit(request, id):
 				)
 				shipper.save()
 			else:
-				shipper = shippers[0]
 				form.cleaned_data['suppname'] = shipper.name
 			scan.place	= form.cleaned_data['place'].strip()
 			scan.subject	= form.cleaned_data['subject'].strip()
