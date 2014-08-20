@@ -1,27 +1,7 @@
 {% extends "scan/base.html" %}
 {% block js %}
 {{ form.media }}
-<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/inn.css" />
-<script type="text/javascript" src="{{ STATIC_URL }}js/chk_inn.js"></script>
-<script type="text/javascript" src="{{ STATIC_URL }}js/handle_inn.js"></script>
-<script type="text/javascript">
-	$(document).ready(function() {
-		enable_suppX(false);
-		$('#id_suppinn').focus(function() {
-			enable_suppX(false);
-		});
-		$('#id_suppinn').blur(function() {
-			$("#innerror").remove();							// clear error (if exists)
-			v = $('#id_suppinn').val()
-			result = checkINN(v);
-			if (result == null) {								// INN seems ok
-				json_to_suppX('{% url "core.views.org_get_by_inn" %}?inn=' + v);	// find inn in db
-			} else {									// bad inn
-				$("<p id='innerror'>"+result+"</p>").insertBefore("#id_suppinn");
-			};
-		});
-	});
-</script>
+{% include "handle_inn.html" %}
 {% endblock %}
 {% block body_main %}
    <form enctype="multipart/form-data" action="" method="POST">
