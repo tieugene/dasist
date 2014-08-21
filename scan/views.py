@@ -19,7 +19,7 @@ from django.core.files.storage import default_storage	# MEDIA_ROOT
 from django.utils.decorators import method_decorator
 
 # 2. system
-import os, sys, imp, pprint, tempfile, subprocess, shutil, datetime, simplejson
+import os, sys, imp, pprint, tempfile, subprocess, shutil, datetime, json
 
 # 3. 3rd party
 
@@ -109,7 +109,7 @@ def	scan_get_subjects(request):
 	if place:
 		for subj in models.Scan.objects.filter(place=place).order_by('subject').distinct().exclude(subject=None).values_list('subject',):
 			ret.append(dict(id=subj, value=subj))
-	return HttpResponse(simplejson.dumps(ret), content_type='application/json')
+	return HttpResponse(json.dumps(ret), content_type='application/json')
 
 @login_required
 def	scan_set_lpp(request, lpp):
