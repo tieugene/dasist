@@ -149,8 +149,6 @@ def	scan_edit(request, id):
 					fullname = form.cleaned_data['suppfull'].strip()
 				)
 				shipper.save()
-			else:
-				form.cleaned_data['suppname'] = shipper.name
 			scan.place	= form.cleaned_data['place'].strip()
 			scan.subject	= form.cleaned_data['subject'].strip()
 			scan.depart	= form.cleaned_data['depart'].strip()
@@ -164,20 +162,20 @@ def	scan_edit(request, id):
 			return redirect('scan_view', scan.pk)
 	else:
 		form = forms.ScanEditForm(initial={
-			'place': scan.place,
-			'subject': scan.subject,
-			'depart': scan.depart,
-			'payer': scan.payer,
-			'suppinn': scan.shipper.inn if scan.shipper else '',
-			'suppname': scan.supplier,
-			'suppfull': scan.shipper.fullname if scan.shipper else '',
-			'no': scan.no,
-			'date': scan.date,
-			'sum': scan.sum,
+			'place':	scan.place,
+			'subject':	scan.subject,
+			'depart':	scan.depart,
+			'payer':	scan.payer,
+			'suppinn':	scan.shipper.inn if scan.shipper else '',
+			'suppname':	scan.shipper.name if scan.shipper else scan.supplier,
+			'suppfull':	scan.shipper.fullname if scan.shipper else '',
+			'no':		scan.no,
+			'date':		scan.date,
+			'sum':		scan.sum,
 		})
 	return render_to_response('scan/form.html', context_instance=RequestContext(request, {
-		'form': form,
-		'object': scan,
+		'form':		form,
+		'object':	scan,
 	}))
 
 @login_required

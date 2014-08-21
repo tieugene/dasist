@@ -1,7 +1,7 @@
 {% extends "bills/base.html" %}
 {% block js %}
+{{ form.media }}
 <script type="text/javascript">
-
 var place_subjects = {
 	{% for place in places %}
 	{{ place.id }}: { {% for subj in place.subjects.all %}
@@ -22,7 +22,6 @@ function fill_subj (place_id, subj_id) {
 		subj.append( $('<option value="' + subj_key + '">' + place[subj_key] + '</option>'));
 		//console.log(place[subj_id]);
 	};
-
 	$("#id_subject [value='"+subj_id+"']").attr("selected", "selected");
 }
 
@@ -45,7 +44,7 @@ $(document).ready(function() {
 	fill_subj(place_id, subj_id);
 });
 </script>
-{{ form.media }}
+{% include "handle_inn.html" %}
 {% endblock %}
 {% block body_main %}
    <form enctype="multipart/form-data" action="" method="POST">
@@ -53,6 +52,20 @@ $(document).ready(function() {
 	<table border="1">
 		<caption> {% if object %} Редактировать {% else %} Новый {% endif %} счет </caption>
 		{{ form.as_table }}
+		{% if object %}
+		 <tr>
+		  <td> Оригинал: </td>
+		  <td> <table border="0">
+		   {% for img in object.fileseq.list_items.all %}
+		    <tr> <td>
+		     {{ img.order }}
+		     <a href="{% url 'core.views.file_get' img.pk %}" data-lightbox="roadtrip"> <img src="{{ STATIC_URL }}img/32/png.png" title="{{ img.file.name }}"/> </a>
+		     <a href="{% url 'core.views.file_get' img.pk %}"> <img src="{{ STATIC_URL }}img/32/download.png" title="Скачать"/> </a>
+		    </td> </tr>
+		   {% endfor %}
+		  </table> </td>
+		 </tr>
+		{% endif %}
 	</table>
 	<button type="submit"> Записать </button>
 	<a href="{% if object %} {% url 'bills.views.bill_view' object.pk %} {% else %} {% url 'bill_list' %} {% endif %}"> <button type="button"> Отказаться </button> </a>

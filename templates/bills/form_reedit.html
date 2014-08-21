@@ -10,7 +10,14 @@
 	<tr> <th> ПодОбъект </th> <td> {{ object.subject|default:"---" }} </td> </tr>
 	<tr> <th> Направление </th> <td> {{ object.depart|default:"---" }} </td> </tr>
 	<tr> <th> Плательщик </th> <td> {{ object.payer|default:"---" }} </td> </tr>
-	<tr> <th> Поставщик </th> <td> {{ object.supplier }} </td> </tr>
+	<tr> <th> Поставщик </th> <td nowrap>
+	{% if object.shipper %}
+		{{ object.shipper.name }} <br/> ({{ object.shipper.fullname }}) <br/> ИНН: {{ object.shipper.inn }}
+	{% else %}
+		---
+	{% endif %}
+	</td> </tr>
+	<tr> <th> Продавец </th> <td> {{ object.supplier }} </td> </tr>
 	<tr> <th> Счет </th> <td> № {{ object.billno }} от {{ object.billdate|date:"d/m/y" }} </td> </tr>
 	<tr> <th> Сумма счета </th> <td> {{ object.billsum }} </td> </tr>
 	<tr> <th> Оплачено </th> <td> {{ object.payedsum }} </td> </tr>

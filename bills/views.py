@@ -33,7 +33,7 @@ from PIL import Image as PIL_Image
 
 # 4. my
 import models, forms, utils
-from core.models import File, FileSeq, FileSeqItem
+from core.models import File, FileSeq, FileSeqItem, Org
 from scan.models import Scan, Event
 
 PAGE_SIZE = 25
@@ -256,6 +256,18 @@ def	__update_fileseq(f, fileseq, rawpdf=False):
 		os.unlink(src_path)
 		fileseq.add_file(myfile)
 
+def	__handle_shipper(form):
+	suppinn = form.cleaned_data['suppinn'].strip()
+	shipper = Org.objects.filter(inn=suppinn).first()
+	if not (shipper):	# not found > create
+		shipper = Org(
+			inn = suppinn,
+			name = form.cleaned_data['suppname'].strip(),
+			fullname = form.cleaned_data['suppfull'].strip()
+		)
+		shipper.save()
+	return shipper
+
 @login_required
 def	bill_add(request):
 	'''
@@ -283,13 +295,15 @@ def	bill_add(request):
 			# 2. convert image and add to fileseq
 			__update_fileseq(request.FILES['file'], fileseq, form.cleaned_data['rawpdf'])
 			# 3. bill at all
+			shipper = __handle_shipper(form)
 			bill = models.Bill(
 				fileseq		= fileseq,
 				place		= form.cleaned_data['place'],
 				subject		= form.cleaned_data['subject'],
 				depart		= form.cleaned_data['depart'],
 				payer		= form.cleaned_data['payer'],
-				supplier	= form.cleaned_data['supplier'],
+				shipper		= shipper,
+				supplier	= shipper.name,
 				billno		= form.cleaned_data['billno'],
 				billdate	= form.cleaned_data['billdate'],
 				billsum		= form.cleaned_data['billsum'],
@@ -333,6 +347,7 @@ def	bill_edit(request, id):
 	'''
 	Update (edit) Draft bill
 	ACL: (assignee) & Draft
+	TODO: transaction
 	'''
 	bill = get_object_or_404(models.Bill, pk=int(id))
 	#bill = models.Bill.objects.get(pk=int(id))
@@ -346,12 +361,14 @@ def	bill_edit(request, id):
 	if request.method == 'POST':
 		form = forms.BillEditForm(request.POST, request.FILES)
 		if form.is_valid():
+			shipper = __handle_shipper(form)
 			# 1. update bill
 			bill.place =	form.cleaned_data['place']
 			bill.subject =	form.cleaned_data['subject']
 			bill.depart =	form.cleaned_data['depart']
 			bill.payer =	form.cleaned_data['payer']
-			bill.supplier =	form.cleaned_data['supplier']
+			bill.shipper =	shipper
+			bill.supplier =	shipper.name
 			bill.billno =	form.cleaned_data['billno']
 			bill.billdate =	form.cleaned_data['billdate']
 			bill.billsum =	form.cleaned_data['billsum']
@@ -376,7 +393,9 @@ def	bill_edit(request, id):
 			'subject':	bill.subject,
 			'depart':	bill.depart,
 			'payer':	bill.payer,
-			'supplier':	bill.supplier,
+			'suppinn':	bill.shipper.inn if bill.shipper else '',
+			'suppname':	bill.shipper.name if bill.shipper else bill.supplier,
+			'suppfull':	bill.shipper.fullname if bill.shipper else '',
 			'billno':	bill.billno,
 			'billdate':	bill.billdate,
 			'billsum':	bill.billsum,
@@ -386,16 +405,16 @@ def	bill_edit(request, id):
 			#'approver':	6,
 		})
 	return render_to_response('bills/form.html', context_instance=RequestContext(request, {
-		'form': form,
-		'object': bill,
-		'places': models.Place.objects.all(),
+		'form':		form,
+		'object':	bill,
+		'places':	models.Place.objects.all(),
 	}))
 
 @login_required
 @transaction.commit_on_success
 def	bill_reedit(request, id):
 	'''
-	Update (edit) Draft? bill
+	Update (edit) locked Draft bill
 	ACL: (assignee) & Draft?
 	'''
 	bill = get_object_or_404(models.Bill, pk=int(id))
@@ -647,6 +666,7 @@ def	bill_toscan(request, id):
 			subject	= bill.subject.name if bill.subject else None,
 			depart	= bill.depart.name if bill.depart else None,
 			payer	= bill.payer.name if bill.payer else None,
+			shipper	= bill.shipper,
 			supplier= bill.supplier,
 			no	= bill.billno,
 			date	= bill.billdate,
