@@ -13,7 +13,7 @@ from django.template import RequestContext, Context, loader
 from django.db import transaction
 
 # 2. system
-import simplejson
+import json
 
 # 4. my
 import models, forms
@@ -138,4 +138,4 @@ def	org_get_by_inn(request):
 		ret = dict(name = org.name, fullname = org.fullname)
 	else:
 		ret = None
-	return HttpResponse(simplejson.dumps(ret), content_type='application/json')
+	return HttpResponse(json.dumps(ret), content_type='application/json')
