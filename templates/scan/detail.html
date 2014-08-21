@@ -60,7 +60,7 @@
 </td>
 </tr>
 </table>
-{% if user.is_superuser %}
+{% if user.is_staff %}
 <a href="{% url 'scan.views.scan_edit' object.pk %}"> {% include "button/edit.html" %} </a>
 {% endif %}
 {% if prev %}
