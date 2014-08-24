@@ -6,6 +6,7 @@ from models import *
 class   FileSeqItemInLine(admin.TabularInline):
         model           = FileSeqItem
         extra           = 1
+	fields		= ('order', 'file')
 
 # 2. odmins
 class	FileAdmin(admin.ModelAdmin):

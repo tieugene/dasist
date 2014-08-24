@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 '''
+bills.forms
 '''
 
 from django import forms
@@ -11,7 +12,7 @@ from django.db.models.fields.files import FieldFile
 
 #import models
 from bills.models import Approver, Place, Subject, Department, Payer
-from core.forms import InnField, chk_new_org
+from core.forms import InnField, chk_new_org, chk_org_names
 
 import decimal
 
@@ -25,6 +26,26 @@ mime_available = set((
 class ApproverModelChoiceField(forms.ModelChoiceField):
     def label_from_instance(self, obj):
         return obj.get_fio()
+
+class	ResumeForm(forms.Form):
+	note	= forms.CharField(max_length=255, label='Комментарий', required = False, widget=forms.TextInput(attrs={'size':80}))
+
+class	FilterStateForm(forms.Form):
+	draft	= forms.BooleanField(label='Черновики',	required = False)
+	onway	= forms.BooleanField(label='В пути',	required = False)
+	onpay	= forms.BooleanField(label='В оплате',	required = False)
+	done	= forms.BooleanField(label='Исполнены',	required = False)
+	dead	= forms.BooleanField(label='Завернуты',	required = False)
+
+class	BillAddFileForm(forms.Form):
+	file		= forms.FileField(label=u'Файл')
+	rawpdf		= forms.BooleanField(label=u'Конвертировать PDF', required=False)
+
+	def clean_file(self):
+		file = self.cleaned_data['file']
+		if (not isinstance(file, FieldFile)) and (file.content_type not in mime_available):
+			raise forms.ValidationError('File must be PNG, TIF, JPG or PDF!')
+		return None
 
 class	BillForm(forms.Form):
 	'''
@@ -49,8 +70,12 @@ class	BillForm(forms.Form):
 
 	def clean(self):
 		cleaned_data = super(BillForm, self).clean()
+		# 1. chk inn<>suppname
 		if ('suppinn' in cleaned_data) and ('suppname' in cleaned_data):
 			chk_new_org(cleaned_data['suppinn'], cleaned_data['suppname'])
+		# 2. chk supp names
+		chk_org_names(cleaned_data['suppname'], cleaned_data['suppfull'])
+		# 3. chk summs
 		billsum = cleaned_data.get('billsum')
 		payedsum = cleaned_data.get('payedsum')
 		topaysum = cleaned_data.get('topaysum')
@@ -64,6 +89,7 @@ class	BillForm(forms.Form):
 			raise forms.ValidationError('Оплачено больше суммы счета.')
 		if (topaysum > (billsum - payedsum)):
 			raise forms.ValidationError('К оплате больше чем надо.')
+		# X. that's all, folks
 		return cleaned_data
 
 class	BillAddForm(BillForm):
@@ -97,7 +123,6 @@ class	BillReEditForm(forms.Form):
 	approver	= ApproverModelChoiceField(queryset=Approver.objects.filter(role__pk=3), empty_label=None, label=u'Руководитель', widget=forms.RadioSelect)
 
 	def	__init__(self, *args, **kwargs):
-		#print kwargs
 		if ('max_topaysum') in kwargs:
 			self.max_topaysum = kwargs.pop('max_topaysum')
 		else:
@@ -111,23 +136,3 @@ class	BillReEditForm(forms.Form):
 				raise forms.ValidationError('Больше %s не дадут' % self.max_topaysum)
 				return None
 		return topaysum
-
-class	ResumeForm(forms.Form):
-	note	= forms.CharField(max_length=255, label='Комментарий', required = False, widget=forms.TextInput(attrs={'size':80}))
-
-class	FilterStateForm(forms.Form):
-	draft	= forms.BooleanField(label='Черновики',	required = False)
-	onway	= forms.BooleanField(label='В пути',	required = False)
-	onpay	= forms.BooleanField(label='В оплате',	required = False)
-	done	= forms.BooleanField(label='Исполнены',	required = False)
-	dead	= forms.BooleanField(label='Завернуты',	required = False)
-
-class	BillAddFileForm(forms.Form):
-	file		= forms.FileField(label=u'Файл')
-	rawpdf		= forms.BooleanField(label=u'Конвертировать PDF', required=False)
-
-	def clean_file(self):
-		file = self.cleaned_data['file']
-		if (not isinstance(file, FieldFile)) and (file.content_type not in mime_available):
-			raise forms.ValidationError('File must be PNG, TIF, JPG or PDF!')
-		return None

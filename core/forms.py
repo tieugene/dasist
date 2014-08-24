@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 '''
+core.forms
 '''
 
 from django import forms
@@ -44,3 +45,7 @@ def	chk_new_org(inn, name):
 	orgs = models.Org.objects.filter(name=name.strip())
 	if (orgs.count()) and (orgs[0].inn != inn.strip()):
 		raise forms.ValidationError('Поставщик с таким кратким наименованием и другим ИНН уже есть')
+
+def	chk_org_names(shortname, fullname):
+	if (shortname.strip() == fullname.strip()):
+		raise forms.ValidationError('Краткое и Полное наименования Поставщика совпадают. Не надо так делать.')

@@ -268,6 +268,25 @@ def	__handle_shipper(form):
 		shipper.save()
 	return shipper
 
+def	__fill_route(bill, mgr):
+	std_route1 = [	# role_id, approve_id
+		(2, models.Approver.objects.get(pk=23)),	# Gorbunoff.N.V.
+		(3, mgr),		# Руководитель
+		(4, None),					# Директор
+		(5, models.Approver.objects.get(pk=3)),		# Гендир
+		#(6, models.Approver.objects.get(pk=4)),	# Бухгалтер
+		(6, None),					# Бухгалтер
+	]
+	for i, r in enumerate(std_route1):
+		bill.route_set.add(
+			models.Route(
+				bill	= bill,
+				order	= i+1,
+				role	= models.Role.objects.get(pk=r[0]),
+				approve	= r[1],
+			),
+		)
+
 @login_required
 def	bill_add(request):
 	'''
@@ -316,24 +335,8 @@ def	bill_add(request):
 			)
 			bill.save()
 			# 4. add route
-			std_route1 = [	# role_id, approve_id
-				(2, models.Approver.objects.get(pk=23)),	# Gorbunoff.N.V.
-				(3, form.cleaned_data['approver']),		# Руководитель
-				(4, None),					# Директор
-				(5, models.Approver.objects.get(pk=3)),		# Гендир
-				#(6, models.Approver.objects.get(pk=4)),	# Бухгалтер
-				(6, None),					# Бухгалтер
-			]
-			for i, r in enumerate(std_route1):
-				bill.route_set.add(
-					models.Route(
-						bill	= bill,
-						order	= i+1,
-						role	= models.Role.objects.get(pk=r[0]),
-						approve	= r[1],
-					),
-				)
-			#bill = form.save(commit=False)
+			mgr = form.cleaned_data['approver']
+			__fill_route(bill, mgr)
 			return redirect('bills.views.bill_view', bill.pk)
 	else:
 		form = forms.BillAddForm()
@@ -435,6 +438,12 @@ def	bill_reedit(request, id):
 				special.save()
 			return redirect('bills.views.bill_view', bill.pk)
 	else:	# GET
+		# hack
+		if (bill.route_set.count() == 0):
+			#print "Fill route"
+			mgr = models.Approver.objects.get(pk=9)
+			__fill_route(bill, mgr)
+		# /hack
 		form = forms.BillReEditForm(initial={
 			'topaysum': bill.topaysum if bill.topaysum else max_topaysum,
 			'approver':	bill.route_set.get(order=2).approve,

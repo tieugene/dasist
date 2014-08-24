@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+'''
+scan.forms
+'''
 
 from django import forms
 from django.db.models.fields import BLANK_CHOICE_DASH
@@ -85,6 +88,10 @@ class	ScanEditForm(forms.Form):
 
 	def clean(self):
 		cleaned_data = super(ScanEditForm, self).clean()
+		# 1. chk inn<>suppname
 		if ('suppinn' in cleaned_data) and ('suppname' in cleaned_data):
 			chk_new_org(cleaned_data['suppinn'], cleaned_data['suppname'])
+		# 2. chk supp names
+		chk_org_names(cleaned_data['suppname'], cleaned_data['suppfull'])
+		# X. that's all, folks
 		return cleaned_data
