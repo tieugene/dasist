@@ -1,0 +1,57 @@
+{% extends "scan/base.html" %}
+{% block body_main %}
+<table border="0">
+<tr>
+<td valign="top">
+<table border="1">
+<caption>  Скан: </caption>
+<tbody>
+ <tr> <th> # </th> <td> {{ object.fileseq.pk }} </td> </tr>
+ <tr> <th> Объект </th> <td> {{ object.place }} </td> </tr>
+ <tr> <th> Подобъект </th> <td> {{ object.subject|default:"---" }} </td> </tr>
+ <tr> <th> Направление </th> <td> {{ object.depart }} </td> </tr>
+ <tr> <th> Плательщик </th> <td> {{ object.payer|default:"---" }} </td> </tr>
+ <tr> <th> Поставщик </th> <td> {{ object.supplier }} </td> </tr>
+ <tr> <th> Счет </th> <td> № {{ object.no }} от {{ object.date|date:"d.m.y" }} на {{ object.sum }} руб. </td> </tr>
+ <tr>
+  <td> Оригинал: </td>
+  <td> <ol style="margin: 0">
+   {% for img in object.fileseq.fileseqitem_set.all %}
+    <li>
+     <a href="{% url 'core.views.file_get' img.pk %}" data-lightbox="roadtrip" title="{{ img.file.name }}">{{ img.file.name }}</a>
+     <a href="{% url 'core.views.file_get' img.pk %}"> <img src="{{ STATIC_URL }}img/16/png.png" title="Download"/> </a>
+    </li>
+   {% endfor %}
+  </ol> </td>
+ </tr>
+ </tbody>
+</table>
+</td>
+<td valign="top">
+<table border="1">
+<caption> История: </caption>
+<thead>
+ <th> Ok </th>
+ <th> Когда </th>
+ <th> Кто </th>
+ <th> Камменты </th>
+</thead>
+<tbody>
+  {# for i in object.decode_events #}
+  {% for i in object.event_set.all %}
+  <tr>
+   <td valign="top"> <img {% if i.resume %} src="{{ STATIC_URL }}img/32/dialog-ok.png" title="OK" {% else %} src="{{ STATIC_URL }}img/32/dialog-cancel.png" title="Canceled" {% endif %} width="16px" height="16px"/> </td>
+   <td valign="top"> {{ i.ctime }} </td>
+   <td valign="top"> {{ i.approve }} </td>
+   <td valign="top"> {{ i.comment }} </td>
+  </tr>
+  {% endfor %}
+</tbody>
+</table>
+</td>
+</tr>
+</table>
+{% if user.is_superuser %}
+<a href="{% url 'scan.views.scan_edit' object.pk %}"> {% include "button/edit.html" %} </a>
+{% endif %}
+{% endblock %}

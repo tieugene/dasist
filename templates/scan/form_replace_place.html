@@ -1,0 +1,14 @@
+{% extends "scan/base.html" %}
+{% block js %}
+{{ form.media }}
+{% endblock %}
+{% block body_main %}
+   <form action="" method="POST">
+	{% csrf_token %}
+	{{ form.as_p }}
+	<button type="submit"> Ok </button>
+   </form>
+   {% if msg %}
+   <p> {{ msg }} </p>
+   {% endif %}
+{% endblock %}
