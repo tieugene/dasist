@@ -33,7 +33,7 @@ class	InnField(forms.CharField):
 			if not self.__chk_cs(value, (2, 4, 10, 3, 5, 9, 4, 6, 8)):
 				raise forms.ValidationError('Контрольная сумма цифр неверна')
 		else:
-			if not (self.__chk_cs(value, (7, 2, 4, 10, 3, 5, 9, 4, 9, 8)) and self.__chk_cs(value, (3, 7, 2, 4, 10, 3, 5, 9, 4, 6, 8))):
+			if not (self.__chk_cs(value, (3, 7, 2, 4, 10, 3, 5, 9, 4, 6, 8)) and self.__chk_cs(value, (7, 2, 4, 10, 3, 5, 9, 4, 6, 8))):
 				raise forms.ValidationError('Контрольные суммы цифр неверны')
 
 def	chk_new_org(inn, name):

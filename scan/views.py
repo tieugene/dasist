@@ -47,7 +47,7 @@ class	ScanList(ListView):
 		'place':	None,
 		'subject':	None,
 		'depart':	None,
-		'supplier':	None,
+		'shipper':	None,
 		'billno':	None,
 		'billdate':	None,
 	}
@@ -61,7 +61,7 @@ class	ScanList(ListView):
 		self.filter['place'] =		self.request.session.get('scan_place', None)
 		self.filter['subject'] =	self.request.session.get('scan_subject', None)
 		self.filter['depart'] =		self.request.session.get('scan_depart', None)
-		self.filter['supplier'] =	self.request.session.get('scan_supplier', None)
+		self.filter['shipper'] =	self.request.session.get('scan_shipper', None)
 		self.filter['billno'] =		self.request.session.get('scan_billno', None)
 		self.filter['billdate'] =	self.request.session.get('scan_billdate', None)
 		# 2. create query
@@ -74,8 +74,8 @@ class	ScanList(ListView):
 				q = q.filter(subject=self.filter['subject'])
 		if self.filter['depart']:
 			q = q.filter(depart=self.filter['depart'])
-		if self.filter['supplier']:
-			q = q.filter(supplier=self.filter['supplier'])
+		if self.filter['shipper']:
+			q = q.filter(shipper__pk=self.filter['shipper'])
 		if self.filter['billno']:
 			q = q.filter(no=self.filter['billno'])
 		if self.filter['billdate']:
@@ -95,7 +95,7 @@ class	ScanList(ListView):
 			'place':	self.filter['place'],
 			'subject':	self.filter['subject'],
 			'depart':	self.filter['depart'],
-			'supplier':	self.filter['supplier'],
+			'shipper':	self.filter['shipper'],
 			'billno':	self.filter['billno'],
 			'billdate':	self.filter['billdate'],
 		})
@@ -125,7 +125,7 @@ def	scan_set_filter(request):
 		request.session['scan_place'] =		filter['place']
 		request.session['scan_subject'] =	filter['subject']
 		request.session['scan_depart'] =	filter['depart']
-		request.session['scan_supplier'] =	filter['supplier']
+		request.session['scan_shipper'] =	filter['shipper'].pk if filter['shipper'] else None
 		request.session['scan_billno'] =	filter['billno']
 		request.session['scan_billdate'] =	filter['billdate']
 		#request.session['scan_billdate'] =	datetime.datetime.strptime(filter['billdate'], '%d.%m.%Y').date() if filter['billdate'] else None

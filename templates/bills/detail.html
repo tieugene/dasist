@@ -111,9 +111,11 @@
 {% if button.arch %}	<a href="{% url 'bills.views.bill_toscan' object.pk %}">	{% include "button/arch.html" %} </a> {% endif %}
 {% if button.edit %}
  {% if object.state.pk == 1 %}
-	<a href="{% url 'bills.views.bill_edit' object.pk %}"> {% include "button/edit.html" %} </a>
- {% else %}
+  {% if object.locked %}
 	<a href="{% url 'bills.views.bill_reedit' object.pk %}"> {% include "button/edit.html" %} </a>
+  {% else %}
+	<a href="{% url 'bills.views.bill_edit' object.pk %}"> {% include "button/edit.html" %} </a>
+  {% endif %}
  {% endif %}
 {% endif %}
 {% if button.del %}	<a href="{% url 'bills.views.bill_delete' object.pk %}">	{% include "button/delete.html" %} </a> {% endif %}

@@ -10,7 +10,8 @@ import datetime
 
 from models import Scan
 from bills.models import Place, Subject
-from core.forms import InnField, chk_new_org
+from core.models import Org
+from core.forms import InnField, chk_new_org, chk_org_names
 
 EMPTY_VALUE = [('', '---'),]
 
@@ -20,7 +21,8 @@ class	FilterScanListForm(forms.Form):
 	#subject	= forms.ChoiceField(choices=EMPTY_VALUE + list(Scan.objects.order_by('subject').distinct().values_list('subject', 'subject')), label=u'Подобъект', required=False)
 	subject		= forms.ChoiceField(choices=EMPTY_VALUE, label=u'Подобъект', required=False)
 	depart		= forms.ChoiceField(choices=EMPTY_VALUE + list(Scan.objects.order_by('depart').distinct().exclude(depart=None).values_list('depart', 'depart')), label=u'Направление', required=False)
-	supplier	= forms.CharField(max_length=64, label=u'Поставщик', required=False)
+	shipper		= forms.ModelChoiceField(queryset=Org.objects.all().order_by('name'), label=u'Поставщик', required=False)
+	#supplier	= forms.CharField(max_length=64, label=u'Ghjlfdtw', required=False)
 	billno		= forms.CharField(max_length=64, label=u'Номер счета', required=False)
 	#billdate	= forms.DateField(label=u'Дата счета', required=False, widget=forms.TextInput(attrs={'size':8}))
 	billdate	= forms.CharField(label=u'Дата счета', required=False, widget=forms.TextInput(attrs={'size':8}))
