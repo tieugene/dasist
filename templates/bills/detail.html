@@ -1,0 +1,170 @@
+{% extends "bills/base.html" %}
+{% block js %}
+<script type="text/javascript">
+	function printimg(img, name) {
+		var mywindow = window.open('', name);
+		mywindow.document.write('<html><head><title>' + name + '</title>');
+		mywindow.document.write('</head><body>');
+		data = "<img src='" + img + "'/>"
+		mywindow.document.write(data);  // data = all image
+		mywindow.document.write('</body></html>');
+		mywindow.print();
+		mywindow.close();
+	}
+</script>
+{% endblock %}
+{% block css %}
+	fieldset {
+		background-color: gainsboro;
+		border-color: gainsboro;
+		border-radius: 5px;
+		padding: 5px;
+		vertical-align: top;
+	}
+	legend {
+		background-color: white;
+		border-radius: 5px;
+		padding: 0px 10px;
+	}
+	fieldset table {
+		background-color: white;
+	}
+{% endblock %}
+{% block body_main %}
+<fieldset> <legend> Счет </legend>
+<table border="1">
+<tbody>
+ <tr> <th> # </th> <td> {{ object.pk }} </td> </tr>
+ <tr> <th> Объект </th> <td> {{ object.place }} </td> </tr>
+ <tr> <th> ПодОбъект </th> <td> {{ object.subject|default:"---" }} </td> </tr>
+ <tr> <th> Направление </th> <td> {{ object.depart|default:"---" }} </td> </tr>
+ <tr> <th> Плательщик </th> <td> {{ object.payer|default:"---" }} </td> </tr>
+ <tr> <th> Поставщик </th> <td nowrap>
+	{% if object.shipper %}
+		{{ object.shipper.name }} <br/> ({{ object.shipper.fullname }}) <br/> ИНН: {{ object.shipper.inn }}
+	{% else %}
+		---
+	{% endif %}
+	</td> </tr>
+ <tr> <th> Продавец </th> <td> {{ object.supplier }} </td> </tr>
+ <tr> <th> Счет </th> <td> № {{ object.billno }} от {{ object.billdate|date:"d/m/y" }} </td> </tr>
+ <tr> <th> Сумма счета </th> <td> {{ object.billsum }} </td> </tr>
+ <tr> <th> Оплачено </th> <td> {{ object.payedsum }} </td> </tr>
+ <tr> <th> К оплате </th> <td> {{ object.topaysum }} </td> </tr>
+ <tr> <th> Ответственный </th> <td> {{ object.assign.get_fio }} </td> </tr>
+ <tr> <th> Подписант </th> <td> {{ object.rpoint.approve.get_fio|default:"---" }} </td> </tr>
+ <tr> <th> Состояние </th> <td> <img src="{{ STATIC_URL }}img/32/{{ object.state.get_icon }}" width="16px" height="16px"/> ({{ object.get_state_name }}) </td> </tr>
+ <tr> <th> Доплата </th> <td> {% if object.locked %} &radic; {% else %} - {% endif %} </td> </tr>
+ <tr> <th> Маршрут </th> <td>
+  <ol style="margin: 0">
+  {% for i in object.route_set.all %}
+   <li> <p style="margin: 0{% if i.order < object.rpoint.order %}; text-decoration: line-through{% endif %}"> {{ i.get_str }} </p> </li>
+  {% endfor %}
+  </ol>
+ </td> </tr>
+ <tr>
+  <td> Оригинал: </td>
+  <td> <table border="0">
+   {% for img in object.fileseq.list_items.all %}
+    <tr> <td>
+     {{ img.order }}
+     <a href="{% url 'core.views.file_get' img.pk %}" data-lightbox="roadtrip"> <img src="{{ STATIC_URL }}img/32/png.png" title="{{ img.file.name }}"/> </a>
+     <a href="{% url 'core.views.file_get' img.pk %}"> <img src="{{ STATIC_URL }}img/32/download.png" title="Скачать"/> </a>
+     <input type="image" src="{{ STATIC_URL }}img/32/document-print.png" onClick="printimg('{% url 'core.views.file_get' img.pk %}', '{{ img.pk }}');"/>
+     {% if button.edit %}
+	<a href="{% url 'bills.views.bill_img_del' img.pk %}"> {% include "button/delete.html" %} </a>
+     </td><td>
+	{% if not img.is_first %} <a href="{% url 'bills.views.bill_img_up' img.file.pk %}"> <button type="button"> <img src="{{ STATIC_URL }}img/up.png" alt="up"/> </button> </a> <br/> {% endif %}
+	{% if not img.is_last  %} <a href="{% url 'bills.views.bill_img_dn' img.file.pk %}"> <button type="button"> <img src="{{ STATIC_URL }}img/down.png" alt="down"/> </button> </a> {% endif %}
+     </td>
+     {% endif %}
+    </tr>
+   {% endfor %}
+  </table> </td>
+ </tr>
+ </tbody>
+</table>
+</fieldset>
+
+<fieldset> <legend> История </legend>
+<table border="1">
+<thead>
+ <th> Ok </th>
+ <th> Когда </th>
+ <th> Кто </th>
+ <th> Комментарий </th>
+</thead>
+<tbody>
+  {% for i in object.events.all %}
+  <tr>
+   <td valign="top"> <img {% if i.resume %} src="{{ STATIC_URL }}img/32/dialog-ok.png" title="OK" {% else %} src="{{ STATIC_URL }}img/32/dialog-cancel.png" title="Canceled" {% endif %} width="16px" height="16px"/> </td>
+   <td valign="top"> {{ i.ctime|date:"d.m H:i" }} </td>
+   <td valign="top"> {{ i.approve.user.last_name }} </td>
+   <td valign="top"> {{ i.comment }} </td>
+  </tr>
+  {% endfor %}
+</tbody>
+</table>
+</fieldset>
+
+<p style="margin: 0">
+{% if button.arch %}	<a href="{% url 'bills.views.bill_toscan' object.pk %}">	{% include "button/arch.html" %} </a> {% endif %}
+{% if button.edit %}
+ {% if object.state.pk == 1 %}
+  {% if object.locked %}
+	<a href="{% url 'bills.views.bill_reedit' object.pk %}"> {% include "button/edit.html" %} </a>
+  {% else %}
+	<a href="{% url 'bills.views.bill_edit' object.pk %}"> {% include "button/edit.html" %} </a>
+  {% endif %}
+ {% endif %}
+{% endif %}
+{% if button.del %}	<a href="{% url 'bills.views.bill_delete' object.pk %}">	{% include "button/delete.html" %} </a> {% endif %}
+{% if button.restart %}	<a href="{% url 'bills.views.bill_restart' object.pk %}">	{% include "button/restart.html" %} </a> {% endif %}
+{% if user.is_superuser %} <a href="{% url 'bills.views.mailto' object.pk %}"> {% include "button/mailto.html" %} </a> {% endif %}
+</p>
+{% if upload_form %}
+<form enctype="multipart/form-data" action="" method="POST">
+	{% csrf_token %}
+	<table> <tr>
+	<td>
+	<table border="0">
+		{{ upload_form.as_table }}
+	</table>
+	</td>
+	<td>
+	<button type="submit"> <img src="{{ STATIC_URL }}img/32/upload.png" alt="upload"/> </button>
+	</td>
+	<input type="hidden" name="action" value="upload">
+	</tr> </table>
+</form>
+{% endif %}
+{% if form %} {# was if canaccept #}
+ <form action="" method="POST">
+	{% csrf_token %}
+	{{ form.as_p }}
+ <p style="margin: 0"> <i> (комментарий обязателен только при Отказе) </i> </p>
+ <p style="margin: 0">
+ {% if button.accept %}
+  <button type="submit" name="resume" value="accept" style="padding: 10px; background-color: chartreuse">
+  {% if button.accept == 1 %}
+   Вперед
+  {% elif button.accept == 2 %}
+   Согласовано
+  {% elif button.accept == 3 %}
+   В оплате
+  {% else %}
+   Оплачено
+  {% endif %}
+  </button>
+ {% endif %}
+ {% if button.reject %}
+  <button type="submit" name="resume" value="reject" style="padding: 10px; background-color: red">
+   Отказать
+  </button>
+ {% endif %}
+ </p>
+ <input type="hidden" name="action" value="resume">
+ </form>
+{% endif %}
+{% if err %} <p> Error: {{ err }} </p> {% endif %}
+{% endblock %}

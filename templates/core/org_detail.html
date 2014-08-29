@@ -1,0 +1,10 @@
+{% extends "core/org_base.html" %}
+{% block body_main %}
+<table width="auto" border="1">
+ <tbody>
+  <tr> <th> ИНН </th> <td> {{ object.inn }} </td> </tr>
+  <tr> <th> Name </th> <td> {{ object.name }} </td> </tr>
+  <tr> <th> Mime </th> <td> {{ object.fullname }} </td> </tr>
+ </tbody>
+</table>
+{% endblock %}
