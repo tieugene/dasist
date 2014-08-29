@@ -1,0 +1,9 @@
+ul.errorlist {
+	color: red;
+}
+p#innerror {
+	color: red;
+}
+input[readonly] {
+	background-color: Gainsboro;
+}

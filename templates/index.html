@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block jsready %}
+$("#tm_index").addClass("active");
+{% endblock %}
+{% block body_main %}
+<center>
+{% if user.is_authenticated %}
+<p>
+ <a href="{% url 'scan_list' %}"> <button type="button"> Сканы </button> </a>
+ <a href="{% url 'bill_list' %}"> <button type="button"> Счета </button> </a>
+</p>
+ {% if user.is_superuser %}
+<p>
+ <a href="{% url 'file_list' %}"> <button type="button"> Файлы </button> </a>
+ <a href="{% url 'fileseq_list' %}"> <button type="button"> Последовательности </button> </a>
+ <a href="{% url 'org_list' %}"> <button type="button"> Организации </button> </a>
+</p>
+<p>
+ Не переключайтесь:
+ <button type="button" disabled="disabled"> Заявки </button>
+ <button type="button" disabled="disabled"> ХелпДеск </button>
+ <button type="button" disabled="disabled"> Сертификаты </button>
+ <button type="button" disabled="disabled"> Аудиенция </button>
+</p>
+ {% endif %}
+{% else %}
+Залогиньтесь
+{% endif %}
+</center>
+{% endblock %}
