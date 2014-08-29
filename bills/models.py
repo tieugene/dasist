@@ -221,7 +221,7 @@ class	Event(models.Model):
 	approve	= models.ForeignKey(Approver, db_index=True, verbose_name=u'Подписант')
 	resume	= models.BooleanField(db_index=True, verbose_name=u'Резолюция')
 	ctime	= models.DateTimeField(auto_now_add=True, db_index=True, verbose_name=u'ДатаВремя')
-	comment	= models.CharField(max_length=128, null=True, blank=True, db_index=True, verbose_name=u'Камменты')	# max=107
+	comment	= models.CharField(max_length=255, null=True, blank=True, db_index=True, verbose_name=u'Камменты')	# max=107
 
 	def	__unicode__(self):
 		return '%s: %s' % (self.approve, self.comment)
