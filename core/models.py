@@ -52,13 +52,12 @@ class	File(RenameFilesModel):
 	#mimetype	= models.CharField(max_length=64, verbose_name=u'MIME')
 	#size
 
-	#file	= models.FileField(null=False, upload_to=my_upload_to, verbose_name=u'Файл')    # attrs: name, path, url, size
 	file	= models.FileField(null=False, upload_to=my_upload_to, verbose_name=u'Файл')    # attrs: name, path, url, size
 	name	= models.CharField(null=False, db_index=True, blank=False, max_length=255, verbose_name=u'Имя файла')
-	mime	= models.CharField(null=False, blank=False, max_length=255, verbose_name=u'Тип Mime')
-	ctime	= models.DateTimeField(null=False, blank=False, auto_now_add=True, verbose_name=u'Записано')
-	size	= models.PositiveIntegerField(null=False, blank=False, verbose_name=u'Размер')
-	md5	= models.CharField(null=False, blank=False, max_length=32, verbose_name=u'MD5')
+	mime	= models.CharField(null=False, blank=False, db_index=True, max_length=255, verbose_name=u'Тип Mime')
+	ctime	= models.DateTimeField(null=False, blank=False, db_index=True, auto_now_add=True, verbose_name=u'Записано')
+	size	= models.PositiveIntegerField(null=False, blank=False, db_index=True, verbose_name=u'Размер')
+	md5	= models.CharField(null=False, blank=False, db_index=True, max_length=32, verbose_name=u'MD5')
 	#RENAME_FILES    = {'file': {'dest': settings.BILLS_ROOT, 'keep_ext': False}}
 	RENAME_FILES    = {'file': {'dest': '', 'keep_ext': False}}
 
@@ -158,8 +157,8 @@ def	_fileseq_delete(sender, instance, **kwargs):
 
 class	FileSeqItem(models.Model):
 	file	= models.OneToOneField(File, primary_key=True, verbose_name=u'Файл')
-	fileseq	= models.ForeignKey(FileSeq, null=False, blank=False, verbose_name=u'Последовательность файлов')
-	order	= models.PositiveSmallIntegerField(null=False, blank=False, verbose_name=u'#')
+	fileseq	= models.ForeignKey(FileSeq, null=False, blank=False, db_index=True, verbose_name=u'Последовательность файлов')
+	order	= models.PositiveSmallIntegerField(null=False, blank=False, db_index=True, verbose_name=u'#')
 
 	#def	__unicode__(self):
 	#	return '%s: %s' % (self.user, self.comment)
@@ -191,7 +190,7 @@ class	FileSeqItem(models.Model):
 class	Org(models.Model):
 	inn		= models.CharField(unique=True, max_length=12, verbose_name=u'ИНН')
 	name		= models.CharField(unique=True, max_length=32, verbose_name=u'Краткое наименование')
-	fullname	= models.CharField(max_length=255, verbose_name=u'Полное наименование')
+	fullname	= models.CharField(null=False, blank=False, db_index=True, max_length=255, verbose_name=u'Полное наименование')
 
 	def	__unicode__(self):
 		return self.name

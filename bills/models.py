@@ -32,8 +32,8 @@ class	State(models.Model):
 	Predefined Bill states
 	'''
 	id	= models.PositiveSmallIntegerField(primary_key=True, verbose_name=u'#')
-	name	= models.CharField(max_length=16, verbose_name=u'Наименование')
-	color	= models.CharField(max_length=16, verbose_name=u'Цвет')
+	name	= models.CharField(max_length=16, db_index=True, verbose_name=u'Наименование')
+	color	= models.CharField(max_length=16, db_index=True, verbose_name=u'Цвет')
 	#icon	= models.CharField(max_length=16, blank-True, null=True, verbose_name=u'Пиктограмма')
 
 	def	__unicode__(self):
@@ -54,7 +54,7 @@ class	Role(models.Model):
 	TODO: m2m user [via Approver]
 	'''
 	id	= models.PositiveSmallIntegerField(primary_key=True, verbose_name=u'#')
-	name	= models.CharField(max_length=32, verbose_name=u'Наименование')
+	name	= models.CharField(max_length=32, db_index=True, verbose_name=u'Наименование')
 	#users		= models.ManyToManyField(User, null=True, blank=True, related_name='history', through='Approver', verbose_name=u'Подписанты')
 
 	def	__unicode__(self):
@@ -70,9 +70,9 @@ class	Approver(models.Model):
 	'''
 	'''
 	user	= models.OneToOneField(User, primary_key=True, verbose_name=u'Пользователь')
-	role	= models.ForeignKey(Role, verbose_name=u'Роль')
-	jobtit	= models.CharField(max_length=32, verbose_name=u'Должность')
-	canadd	= models.BooleanField(verbose_name=u'Может создавать')
+	role	= models.ForeignKey(Role, db_index=True, verbose_name=u'Роль')
+	jobtit	= models.CharField(max_length=32, db_index=True, verbose_name=u'Должность')
+	canadd	= models.BooleanField(db_index=True, verbose_name=u'Может создавать')
 
 	class   Meta:
 		ordering                = ('role', )
@@ -88,7 +88,7 @@ class	Approver(models.Model):
 
 class	Place(models.Model):
 	#id	= models.PositiveSmallIntegerField(primary_key=True, verbose_name=u'#')
-	name	= models.CharField(max_length=32, verbose_name=u'Наименование')
+	name	= models.CharField(max_length=32, db_index=True, verbose_name=u'Наименование')
 
 	def	__unicode__(self):
 		return self.name
@@ -101,8 +101,8 @@ class	Place(models.Model):
 
 class	Subject(models.Model):
 	#id	= models.PositiveSmallIntegerField(primary_key=True, verbose_name=u'#')
-	place	= models.ForeignKey(Place, related_name='subjects', verbose_name=u'Объект')
-	name	= models.CharField(max_length=32, verbose_name=u'Наименование')
+	place	= models.ForeignKey(Place, db_index=True, related_name='subjects', verbose_name=u'Объект')
+	name	= models.CharField(max_length=32, db_index=True, verbose_name=u'Наименование')
 
 	def	__unicode__(self):
 		return self.name
@@ -115,7 +115,7 @@ class	Subject(models.Model):
 
 class	Department(models.Model):
 	id	= models.PositiveSmallIntegerField(primary_key=True, verbose_name=u'#')
-	name	= models.CharField(max_length=32, verbose_name=u'Наименование')
+	name	= models.CharField(max_length=32, db_index=True, verbose_name=u'Наименование')
 
 	def	__unicode__(self):
 		return self.name
@@ -128,7 +128,7 @@ class	Department(models.Model):
 
 class	Payer(models.Model):
 	id	= models.PositiveSmallIntegerField(primary_key=True, verbose_name=u'#')
-	name	= models.CharField(max_length=32, verbose_name=u'Наименование')
+	name	= models.CharField(max_length=32, db_index=True, verbose_name=u'Наименование')
 
 	def	__unicode__(self):
 		return self.name
@@ -144,24 +144,24 @@ class	Bill(models.Model):
 	'''
 	'''
 	fileseq		= models.OneToOneField(FileSeq, primary_key=True, verbose_name=u'Файлы')
-	place		= models.ForeignKey(Place, null=False, blank=False, verbose_name=u'Объект')
-	subject		= models.ForeignKey(Subject, null=True, blank=True, verbose_name=u'ПодОбъект')
-	depart		= models.ForeignKey(Department, null=True, blank=True, verbose_name=u'Направление')
-	payer		= models.ForeignKey(Payer, null=False, blank=False, verbose_name=u'Плательщик')
+	place		= models.ForeignKey(Place, null=False, blank=False, db_index=True, verbose_name=u'Объект')
+	subject		= models.ForeignKey(Subject, null=True, blank=True, db_index=True, verbose_name=u'ПодОбъект')
+	depart		= models.ForeignKey(Department, null=True, blank=True, db_index=True, verbose_name=u'Направление')
+	payer		= models.ForeignKey(Payer, null=False, blank=False, db_index=True, verbose_name=u'Плательщик')
 	# FIXME: null=False
-	shipper		= models.ForeignKey(Org, null=True, blank=True, verbose_name=u'Поставщик')
+	shipper		= models.ForeignKey(Org, null=True, blank=True, db_index=True, verbose_name=u'Поставщик')
 	# FIXME: delete
-	supplier	= models.CharField(max_length=64, verbose_name=u'Продавец')
-	billno		= models.CharField(max_length=16, verbose_name=u'Номер счета')
-	billdate	= models.DateField(verbose_name=u'Дата счета')
-	billsum		= models.DecimalField(max_digits=11, decimal_places=2, verbose_name=u'Сумма счета')
-	payedsum	= models.DecimalField(max_digits=11, decimal_places=2, verbose_name=u'Оплачено')
-	topaysum	= models.DecimalField(max_digits=11, decimal_places=2, verbose_name=u'Сумма к оплате')
-	assign		= models.ForeignKey(Approver, related_name='assigned', verbose_name=u'Исполнитель')
-	rpoint		= models.ForeignKey('Route', null=True, blank=True, related_name='rbill', verbose_name=u'Точка маршрута')
+	supplier	= models.CharField(max_length=64, db_index=True, verbose_name=u'Продавец')
+	billno		= models.CharField(max_length=16, db_index=True, verbose_name=u'Номер счета')
+	billdate	= models.DateField(db_index=True, verbose_name=u'Дата счета')
+	billsum		= models.DecimalField(max_digits=11, decimal_places=2, db_index=True, verbose_name=u'Сумма счета')
+	payedsum	= models.DecimalField(max_digits=11, decimal_places=2, db_index=True, verbose_name=u'Оплачено')
+	topaysum	= models.DecimalField(max_digits=11, decimal_places=2, db_index=True, verbose_name=u'Сумма к оплате')
+	assign		= models.ForeignKey(Approver, related_name='assigned', db_index=True, verbose_name=u'Исполнитель')
+	rpoint		= models.ForeignKey('Route', null=True, blank=True, related_name='rbill', db_index=True, verbose_name=u'Точка маршрута')
 	#done		= models.NullBooleanField(null=True, blank=True, verbose_name=u'Закрыт')
-	state		= models.ForeignKey(State, verbose_name=u'Состояние')
-	locked		= models.BooleanField(null=False, blank=False, default=False, verbose_name=u'В работе')
+	state		= models.ForeignKey(State, db_index=True, verbose_name=u'Состояние')
+	locked		= models.BooleanField(null=False, blank=False, default=False, db_index=True, verbose_name=u'В работе')
 	#route		= SortedManyToManyField(Approver, null=True, blank=True, related_name='route', verbose_name=u'Маршрут')
 	#history	= models.ManyToManyField(Approver, null=True, blank=True, related_name='history', through='BillEvent', verbose_name=u'История')
 
@@ -193,10 +193,10 @@ class	Bill(models.Model):
 		verbose_name_plural	= u'Счета'
 
 class	Route(models.Model):
-	bill	= models.ForeignKey(Bill, verbose_name=u'Счет')
-	order	= models.PositiveSmallIntegerField(null=False, blank=False, verbose_name=u'#')
-	role	= models.ForeignKey(Role, verbose_name=u'Роль')
-	approve	= models.ForeignKey(Approver, null=True, blank=True, verbose_name=u'Подписант')
+	bill	= models.ForeignKey(Bill, db_index=True, verbose_name=u'Счет')
+	order	= models.PositiveSmallIntegerField(null=False, blank=False, db_index=True, verbose_name=u'#')
+	role	= models.ForeignKey(Role, db_index=True, verbose_name=u'Роль')
+	approve	= models.ForeignKey(Approver, null=True, blank=True, db_index=True, verbose_name=u'Подписант')
 	#state	= models.ForeignKey(State, verbose_name=u'Состояние')
 	#action	= models.CharField(max_length=16, verbose_name=u'Действие')
 
@@ -214,11 +214,11 @@ class	Route(models.Model):
 		verbose_name_plural     = u'Точки маршрута'
 
 class	Event(models.Model):
-	bill	= models.ForeignKey(Bill, related_name='events', verbose_name=u'Счет')
-	approve	= models.ForeignKey(Approver, verbose_name=u'Подписант')
-	resume	= models.BooleanField(verbose_name=u'Резолюция')
-	ctime	= models.DateTimeField(auto_now_add=True, verbose_name=u'ДатаВремя')
-	comment	= models.CharField(max_length=64, null=True, blank=True, verbose_name=u'Камменты')
+	bill	= models.ForeignKey(Bill, related_name='events', db_index=True, verbose_name=u'Счет')
+	approve	= models.ForeignKey(Approver, db_index=True, verbose_name=u'Подписант')
+	resume	= models.BooleanField(db_index=True, verbose_name=u'Резолюция')
+	ctime	= models.DateTimeField(auto_now_add=True, db_index=True, verbose_name=u'ДатаВремя')
+	comment	= models.CharField(max_length=64, null=True, blank=True, db_index=True, verbose_name=u'Камменты')
 
 	def	__unicode__(self):
 		return '%s: %s' % (self.approve, self.comment)
