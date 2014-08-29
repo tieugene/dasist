@@ -3,8 +3,11 @@
 <table width="auto" border="1">
  <tbody>
   <tr> <th> ИНН </th> <td> {{ object.inn }} </td> </tr>
-  <tr> <th> Name </th> <td> {{ object.name }} </td> </tr>
-  <tr> <th> Mime </th> <td> {{ object.fullname }} </td> </tr>
+  <tr> <th> Кратко </th> <td> {{ object.name }} </td> </tr>
+  <tr> <th> Полностью </th> <td> {{ object.fullname }} </td> </tr>
  </tbody>
 </table>
+{% if user.is_staff %}
+<a href="{% url 'core.views.org_edit' object.pk %}"> {% include "button/edit.html" %} </a>
+{% endif %}
 {% endblock %}
