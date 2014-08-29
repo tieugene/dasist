@@ -9,12 +9,16 @@ def	send_mail(to, subj, body):
 	msg['From'] = settings.EMAIL_FROM
 	msg['Subject'] = subj
 	#email.encoders.encode_quopri(msg)
-	server = smtplib.SMTP(settings.EMAIL_HOST, settings.EMAIL_PORT)
-	server.ehlo()
-	server.starttls()
-	server.login(settings.EMAIL_HOST_USER, settings.EMAIL_HOST_PASSWORD)
-	server.sendmail(settings.EMAIL_FROM, to, msg.as_string())
-	server.close()
+	try:
+		server = smtplib.SMTP(settings.EMAIL_HOST, settings.EMAIL_PORT, timeout=5)
+		server.ehlo()
+		if (settings.EMAIL_USE_TLS):
+			server.starttls()
+		server.login(settings.EMAIL_HOST_USER, settings.EMAIL_HOST_PASSWORD)
+		server.sendmail(settings.EMAIL_FROM, to, msg.as_string())
+		server.close()
+	except:
+		pass
 
 #def	__pdf2png1(self, src_path, thumb_template, pages):
 #	for page in range(pages, 10):
