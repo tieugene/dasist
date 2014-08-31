@@ -15,7 +15,7 @@ MANAGERS = ADMINS
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': '/mnt/shares/tmp/dasist_test.db',
+        'NAME': '/var/lib/dasist/dasist.db',
         'USER': '',
         'PASSWORD': '',
         'HOST': '',
@@ -31,7 +31,7 @@ USE_L10N = True
 USE_THOUSAND_SEPARATOR = True
 DECIMAL_SEPARATOR = ','
 
-MEDIA_ROOT = '/mnt/shares/tmp/bills'
+MEDIA_ROOT = '/var/lib/dasist/media'
 MEDIA_URL = ''
 
 #STATIC_ROOT = os.path.join(PROJECT_DIR, 'static'),
@@ -117,7 +117,7 @@ LOGGING = {
     }
 }
 
-BILLS_ROOT = '/mnt/shares/tmp/bills'
+BILLS_ROOT = MEDIA_ROOT
 
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 #SESSION_COOKIE_AGE = 86400

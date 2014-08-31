@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+'''
+bills.models
+'''
 
 # 1. django
 from django.conf import settings
@@ -54,7 +57,7 @@ class	Role(models.Model):
 	TODO: m2m user [via Approver]
 	'''
 	id	= models.PositiveSmallIntegerField(primary_key=True, verbose_name=u'#')
-	name	= models.CharField(max_length=32, db_index=True, verbose_name=u'Наименование')
+	name	= models.CharField(max_length=32, db_index=True, verbose_name=u'Наименование')	# max=20
 	#users		= models.ManyToManyField(User, null=True, blank=True, related_name='history', through='Approver', verbose_name=u'Подписанты')
 
 	def	__unicode__(self):
@@ -71,7 +74,7 @@ class	Approver(models.Model):
 	'''
 	user	= models.OneToOneField(User, primary_key=True, verbose_name=u'Пользователь')
 	role	= models.ForeignKey(Role, db_index=True, verbose_name=u'Роль')
-	jobtit	= models.CharField(max_length=32, db_index=True, verbose_name=u'Должность')
+	jobtit	= models.CharField(max_length=32, db_index=True, verbose_name=u'Должность')	# max=28
 	canadd	= models.BooleanField(db_index=True, verbose_name=u'Может создавать')
 
 	class   Meta:
@@ -88,7 +91,7 @@ class	Approver(models.Model):
 
 class	Place(models.Model):
 	#id	= models.PositiveSmallIntegerField(primary_key=True, verbose_name=u'#')
-	name	= models.CharField(max_length=32, db_index=True, verbose_name=u'Наименование')
+	name	= models.CharField(max_length=24, db_index=True, verbose_name=u'Наименование')	# max=22
 
 	def	__unicode__(self):
 		return self.name
@@ -102,7 +105,7 @@ class	Place(models.Model):
 class	Subject(models.Model):
 	#id	= models.PositiveSmallIntegerField(primary_key=True, verbose_name=u'#')
 	place	= models.ForeignKey(Place, db_index=True, related_name='subjects', verbose_name=u'Объект')
-	name	= models.CharField(max_length=32, db_index=True, verbose_name=u'Наименование')
+	name	= models.CharField(max_length=32, db_index=True, verbose_name=u'Наименование')	# max=28
 
 	def	__unicode__(self):
 		return self.name
@@ -115,7 +118,7 @@ class	Subject(models.Model):
 
 class	Department(models.Model):
 	id	= models.PositiveSmallIntegerField(primary_key=True, verbose_name=u'#')
-	name	= models.CharField(max_length=32, db_index=True, verbose_name=u'Наименование')
+	name	= models.CharField(max_length=16, db_index=True, verbose_name=u'Наименование')	# max=14
 
 	def	__unicode__(self):
 		return self.name
@@ -128,7 +131,7 @@ class	Department(models.Model):
 
 class	Payer(models.Model):
 	id	= models.PositiveSmallIntegerField(primary_key=True, verbose_name=u'#')
-	name	= models.CharField(max_length=32, db_index=True, verbose_name=u'Наименование')
+	name	= models.CharField(max_length=16, db_index=True, verbose_name=u'Наименование')	# max=11
 
 	def	__unicode__(self):
 		return self.name
@@ -151,8 +154,8 @@ class	Bill(models.Model):
 	# FIXME: null=False
 	shipper		= models.ForeignKey(Org, null=True, blank=True, db_index=True, verbose_name=u'Поставщик')
 	# FIXME: delete
-	supplier	= models.CharField(max_length=64, db_index=True, verbose_name=u'Продавец')
-	billno		= models.CharField(max_length=16, db_index=True, verbose_name=u'Номер счета')
+	supplier	= models.CharField(max_length=64, db_index=True, verbose_name=u'Продавец')	# max=38
+	billno		= models.CharField(max_length=32, db_index=True, verbose_name=u'Номер счета')	# max=11
 	billdate	= models.DateField(db_index=True, verbose_name=u'Дата счета')
 	billsum		= models.DecimalField(max_digits=11, decimal_places=2, db_index=True, verbose_name=u'Сумма счета')
 	payedsum	= models.DecimalField(max_digits=11, decimal_places=2, db_index=True, verbose_name=u'Оплачено')
@@ -218,7 +221,7 @@ class	Event(models.Model):
 	approve	= models.ForeignKey(Approver, db_index=True, verbose_name=u'Подписант')
 	resume	= models.BooleanField(db_index=True, verbose_name=u'Резолюция')
 	ctime	= models.DateTimeField(auto_now_add=True, db_index=True, verbose_name=u'ДатаВремя')
-	comment	= models.CharField(max_length=64, null=True, blank=True, db_index=True, verbose_name=u'Камменты')
+	comment	= models.CharField(max_length=255, null=True, blank=True, db_index=True, verbose_name=u'Камменты')	# max=107
 
 	def	__unicode__(self):
 		return '%s: %s' % (self.approve, self.comment)

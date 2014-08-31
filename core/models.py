@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+'''
+core.models
+'''
 
 # 1. django
 from django.conf import settings
@@ -53,8 +56,8 @@ class	File(RenameFilesModel):
 	#size
 
 	file	= models.FileField(null=False, upload_to=my_upload_to, verbose_name=u'Файл')    # attrs: name, path, url, size
-	name	= models.CharField(null=False, db_index=True, blank=False, max_length=255, verbose_name=u'Имя файла')
-	mime	= models.CharField(null=False, blank=False, db_index=True, max_length=255, verbose_name=u'Тип Mime')
+	name	= models.CharField(null=False, db_index=True, blank=False, max_length=255, verbose_name=u'Имя файла')	# max=130
+	mime	= models.CharField(null=False, blank=False, db_index=True, max_length=16, verbose_name=u'Тип Mime')	# max=10
 	ctime	= models.DateTimeField(null=False, blank=False, db_index=True, auto_now_add=True, verbose_name=u'Записано')
 	size	= models.PositiveIntegerField(null=False, blank=False, db_index=True, verbose_name=u'Размер')
 	md5	= models.CharField(null=False, blank=False, db_index=True, max_length=32, verbose_name=u'MD5')
@@ -189,8 +192,8 @@ class	FileSeqItem(models.Model):
 
 class	Org(models.Model):
 	inn		= models.CharField(unique=True, max_length=12, verbose_name=u'ИНН')
-	name		= models.CharField(unique=True, max_length=32, verbose_name=u'Краткое наименование')
-	fullname	= models.CharField(null=False, blank=False, db_index=True, max_length=255, verbose_name=u'Полное наименование')
+	name		= models.CharField(unique=True, max_length=40, verbose_name=u'Краткое наименование')	# max=38
+	fullname	= models.CharField(null=False, blank=False, db_index=True, max_length=64, verbose_name=u'Полное наименование')	# max=63
 
 	def	__unicode__(self):
 		return self.name

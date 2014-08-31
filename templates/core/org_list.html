@@ -1,19 +1,27 @@
 {% extends "core/org_base.html" %}
+{% block css %}
+ tr.list td {
+  cursor:pointer;
+  padding-top: 0;
+  padding-bottom: 0;
+  white-space: nowrap;
+ }
+{% endblock %}
 {% block body_main %}
 {% include "paginator.html" %}
 <table width="auto" border="1">
 <thead>
  <tr>
-  <th> # </th>
-  <th> Name </th>
-  <th> FullName </th>
+  <th> ИНН </th>
+  <th> Кратко </th>
+  <th> Полностью </th>
  </tr>
 </thead>
 <tbody>
 {% for object in object_list %}
- <tr>
+ <tr class="list" onclick="window.document.location='{% url 'org_view' object.pk %}'">
   <td> {{ object.inn }} </td>
-  <td> <a href="{% url 'org_view' object.pk %}"> {{ object.name }} </a> </td>
+  <td> {{ object.name }} </td>
   <td> {{ object.fullname }} </td>
  </tr>
 {% endfor %}

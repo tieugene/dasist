@@ -127,6 +127,20 @@ class	OrgDetail(DetailView):
 	model = models.Org
 	template_name = 'core/org_detail.html'
 
+def	org_edit(request, id):
+	org = models.Org.objects.get(pk=int(id))
+	if request.method == 'POST':
+		form = forms.OrgEditForm(request.POST, instance=org)
+		if form.is_valid():
+			form.save()
+			return redirect('org_view', org.pk)
+	else:
+		form = forms.OrgEditForm(instance=org)
+	return render_to_response('core/org_form.html', context_instance=RequestContext(request, {
+		'form': form,
+		'object': org,
+	}))
+
 def	org_get_by_inn(request):
 	'''
 	@param ?inn:str - INN

@@ -454,6 +454,12 @@ def	bill_reedit(request, id):
 	}))
 
 def	__emailto(request, emails, bill_id, subj):
+	'''
+	Send email to recipients
+	@param emails:list - list of emails:str
+	@param bill_id:int
+	@param subj:str - email's Subj
+	'''
 	if (emails):
 		utils.send_mail(
 			emails,

@@ -49,3 +49,7 @@ def	chk_new_org(inn, name):
 def	chk_org_names(shortname, fullname):
 	if (shortname.strip() == fullname.strip()):
 		raise forms.ValidationError('Краткое и Полное наименования Поставщика совпадают. Не надо так делать.')
+
+class	OrgEditForm(forms.ModelForm):
+	class Meta:
+		model = models.Org

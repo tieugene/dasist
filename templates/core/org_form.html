@@ -1,0 +1,14 @@
+{% extends "core/org_base.html" %}
+{% block js %}
+{{ form.media }}
+{% endblock %}
+{% block body_main %}
+   <form enctype="multipart/form-data" action="" method="POST">
+	{% csrf_token %}
+	<table border="1">
+		{{ form.as_table }}
+	</table>
+	<button type="submit"> Записать </button>
+	<a href="{% url 'org_view' object.pk %}"> <button type="button"> Отказаться </button> </a>
+   </form>
+{% endblock %}
