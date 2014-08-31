@@ -16,7 +16,6 @@ echo "BEGIN;" > $TMP
 for i in `echo "SHOW TABLES;" | ./manage.py dbshell | grep -v ^Tables_in_dasist`; do echo "DELETE FROM $i;" >> $TMP; done
 echo "COMMIT;" >> $TMP
 cat $TMP | ./manage.py dbshell
-exit
 echo "5. load data"
 ./manage.py loaddata data.json.gz
 # the end
