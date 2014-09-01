@@ -12,6 +12,7 @@
 <table width="auto" border="1">
 <thead>
  <tr>
+  <th> # </th>
   <th> ИНН </th>
   <th> Кратко </th>
   <th> Полностью </th>
@@ -20,7 +21,8 @@
 <tbody>
 {% for object in object_list %}
  <tr class="list" onclick="window.document.location='{% url 'org_view' object.pk %}'">
-  <td> {{ object.inn }} </td>
+  <td align="right"> {{ object.pk }} </td>
+  <td style="font-family: mono"> {{ object.inn }} </td>
   <td> {{ object.name }} </td>
   <td> {{ object.fullname }} </td>
  </tr>

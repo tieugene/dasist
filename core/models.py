@@ -132,6 +132,7 @@ class	FileSeq(models.Model):
 		'''
 		FileSeqItem(file=f, fileseq=self, order=self.files.count()+1).save()
 
+	@transaction.atomic
 	def	del_file(self, id):
 		'''
 
@@ -169,7 +170,7 @@ class	FileSeqItem(models.Model):
 	#def	delete(self):
 	#	pass
 
-	@transaction.commit_on_success
+	@transaction.atomic
 	def	swap(self, sibling):
 		new_fsi = self.fileseq.fileseqitem_set.get(order=sibling)
 		old_order = self.order

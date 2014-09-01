@@ -138,7 +138,7 @@ def	scan_set_filter(request):
 	return redirect('scan_list')
 
 @login_required
-@transaction.commit_on_success
+@transaction.atomic
 def	scan_edit(request, id):
 	'''
 	'''
