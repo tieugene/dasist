@@ -271,10 +271,9 @@ def	__handle_shipper(form):
 def	__fill_route(bill, mgr):
 	std_route1 = [	# role_id, approve_id
 		(2, models.Approver.objects.get(pk=23)),	# Gorbunoff.N.V.
-		(3, mgr),		# Руководитель
+		(3, mgr),					# Руководитель
 		(4, None),					# Директор
 		(5, models.Approver.objects.get(pk=3)),		# Гендир
-		#(6, models.Approver.objects.get(pk=4)),	# Бухгалтер
 		(6, None),					# Бухгалтер
 	]
 	for i, r in enumerate(std_route1):
@@ -288,6 +287,7 @@ def	__fill_route(bill, mgr):
 		)
 
 @login_required
+@transaction.atomic
 def	bill_add(request):
 	'''
 	Add new (draft) bill
@@ -296,11 +296,9 @@ def	bill_add(request):
 	- add Route to them
 	- convert image
 	- add images into fileseq
-	TODO: transaction
 	'''
 	user = request.user
-	#approver = models.Approver.objects.get(pk=user.pk)	# !!!
-	approver = models.Approver.objects.get(user=user)	# !!!
+	approver = models.Approver.objects.get(user=user)
 	#if not user.is_superuser:
 	#	if (approver.role.pk != 1):
 	#		return redirect('bills.views.bill_list')
@@ -308,14 +306,14 @@ def	bill_add(request):
 		#path = request.POST['path']
 		form = forms.BillAddForm(request.POST, request.FILES)
 		if form.is_valid():
+			# FIXME: add transaction
 			# 1. create fileseq
-			fileseq = FileSeq()
-			fileseq.save()
+			fileseq = FileSeq.objects.create()
 			# 2. convert image and add to fileseq
 			__update_fileseq(request.FILES['file'], fileseq, form.cleaned_data['rawpdf'])
 			# 3. bill at all
 			shipper = __handle_shipper(form)
-			bill = models.Bill(
+			bill = models.Bill.objects.create(
 				fileseq		= fileseq,
 				place		= form.cleaned_data['place'],
 				subject		= form.cleaned_data['subject'],
@@ -333,7 +331,6 @@ def	bill_add(request):
 				#done		= None,
 				state		= models.State.objects.get(pk=1),
 			)
-			bill.save()
 			# 4. add route
 			mgr = form.cleaned_data['approver']
 			__fill_route(bill, mgr)
@@ -346,13 +343,14 @@ def	bill_add(request):
 	}))
 
 @login_required
+@transaction.atomic
 def	bill_edit(request, id):
 	'''
 	Update (edit) Draft bill
 	ACL: (assignee) & Draft
 	TODO: transaction
 	'''
-	bill = get_object_or_404(models.Bill, pk=int(id))
+	bill = get_object_or_404(models.Bill, pk=int(id))	# FIXME: select_for_update(nowait=False)
 	#bill = models.Bill.objects.get(pk=int(id))
 	user = request.user
 	approver = models.Approver.objects.get(pk=user.pk)
@@ -364,6 +362,7 @@ def	bill_edit(request, id):
 	if request.method == 'POST':
 		form = forms.BillEditForm(request.POST, request.FILES)
 		if form.is_valid():
+			# FIXME: add transaction
 			shipper = __handle_shipper(form)
 			# 1. update bill
 			bill.place =	form.cleaned_data['place']
@@ -377,9 +376,9 @@ def	bill_edit(request, id):
 			bill.billsum =	form.cleaned_data['billsum']
 			bill.payedsum =	form.cleaned_data['payedsum']
 			bill.topaysum =	form.cleaned_data['topaysum']
-			bill.save()
+			bill.save()	# FIXME: update()
 			# 2. update approver (if required)
-			special = bill.route_set.get(order=2)	# Аня
+			special = bill.route_set.get(order=2)	# OMTS boss
 			if (special.approve != form.cleaned_data['approver']):
 				special.approve = form.cleaned_data['approver']
 				special.save()
@@ -414,7 +413,8 @@ def	bill_edit(request, id):
 	}))
 
 @login_required
-@transaction.commit_on_success
+#transaction.commit_on_success
+@transaction.atomic
 def	bill_reedit(request, id):
 	'''
 	Update (edit) locked Draft bill
@@ -496,7 +496,8 @@ def	__mailto(request, bill):
 			__emailto(request, [bill.assign.user.email], bill.pk, 'Счет частично оплачен')
 
 @login_required
-@transaction.commit_on_success
+#transaction.commit_on_success
+@transaction.atomic
 def	bill_view(request, id, upload_form=None):
 	'''
 	View/Accept/Reject bill
@@ -618,7 +619,7 @@ def	bill_view(request, id, upload_form=None):
 	}))
 
 @login_required
-@transaction.commit_on_success
+@transaction.atomic
 def	bill_delete(request, id):
 	'''
 	Delete bill
@@ -638,10 +639,10 @@ def	bill_delete(request, id):
 		return redirect('bills.views.bill_view', bill.pk)
 
 @login_required
-@transaction.commit_on_success
+@transaction.atomic
 def	bill_restart(request, id):
 	'''
-	Restart bill
+	Restart bill (partialy Done or Rejected)
 	'''
 	bill = get_object_or_404(models.Bill, pk=int(id))
 	#bill = models.Bill.objects.get(pk=int(id))
@@ -666,7 +667,7 @@ def	mailto(request, id):
 	return redirect('bills.views.bill_view', bill.pk)
 
 @login_required
-@transaction.commit_on_success
+@transaction.atomic
 def	bill_toscan(request, id):
 	'''
 	'''
@@ -708,7 +709,7 @@ def	bill_img_del(request, id):
 	return redirect('bills.views.bill_view', fs.pk)
 
 @login_required
-@transaction.commit_on_success
+#transaction.atomic
 def	bill_img_up(request, id):
 	fsi = FileSeqItem.objects.get(pk=int(id))
 	if not fsi.is_first():
@@ -716,7 +717,7 @@ def	bill_img_up(request, id):
 	return redirect('bills.views.bill_view', fsi.fileseq.pk)
 
 @login_required
-@transaction.commit_on_success
+#transaction.atomic
 def	bill_img_dn(request, id):
 	fsi = FileSeqItem.objects.get(pk=int(id))
 	if not fsi.is_last():

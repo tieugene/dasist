@@ -95,7 +95,7 @@ def	fileseqitem_del(request, id):
 	return redirect('core.views.fileseq_view', fs.pk)
 
 @login_required
-@transaction.commit_on_success
+#transaction.commit_on_success
 def	fileseqitem_move_up(request, id):
 	'''
 	'''
@@ -107,7 +107,7 @@ def	fileseqitem_move_up(request, id):
 	return redirect('core.views.fileseq_view', fs.pk)
 
 @login_required
-@transaction.commit_on_success
+#transaction.commit_on_success
 def	fileseqitem_move_down(request, id):
 	'''
 	'''
