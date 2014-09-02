@@ -59,7 +59,6 @@
   <th> Подобъект </th>
   <th> Направление </th>
   <th> Поставщик </th>
-  <th> Продавец </th>
   <th> Плательщик </th>
   <th title="К оплате"> К&nbsp;опл. </th>
   <th title="Исполнитель"> Исполн. </th>
@@ -85,8 +84,7 @@ onclick="window.document.location='{% url 'bills.views.bill_view' object.pk %}'"
   <td> {{ object.place }} </td>
   <td> {{ object.subject|default:"---" }} </td>
   <td> {% if object.depart %} {{ object.depart }} {% else %} --- {% endif %} </td>
-  <td> {{ object.shipper|default:"---" }} </td>
-  <td> {{ object.supplier }} </td>
+  <td> {{ object.shipper|default:object.supplier }} </td>
   <td> {{ object.payer|default:"---" }} </td>
   <td align="right"> {% if object.topaysum %} {{ object.topaysum|stringformat:"d" }} {% endif %} </td>
   <td> {{ object.assign.user.last_name }} </td>
