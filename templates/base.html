@@ -8,18 +8,20 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 	{% block meta %} {% endblock %}
 	<title> Das Ist {% block title %} ... {% endblock %} </title>
-	<link type="text/css" href="{{ STATIC_URL }}css/base.css" rel="stylesheet">
-	<link type="text/css" href="{{ STATIC_URL }}css/colors.css" rel="stylesheet"/>
-	<link type="text/css" href="{{ STATIC_URL }}css/fieldset.css" rel="stylesheet"/>
+	<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/base.css">
+	<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/colors.css"/>
+	<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/fieldset.css"/>
+	<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/thumbnails.css" />
+	<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/lightbox.css" />
+	<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/magnific-popup.css" />
 	<script type="text/javascript" src="{{ STATIC_URL }}js/jquery.min.js"></script>
 	<script type="text/javascript" src="{{ STATIC_URL }}js/lightbox.min.js"></script>
+	<script type="text/javascript" src="{{ STATIC_URL }}js/jquery.magnific-popup.js"></script>
 	<!-- admin -->
 	<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}admin/css/forms.css" />
 	<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}admin/css/widgets.css" />
-	<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/thumbnails.css" />
-	<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/lightbox.css" />
-	<script type="text/javascript">window.__admin_media_prefix__ = "{{ STATIC_URL }}admin/";</script>
 	<!--script type="text/javascript" src="/admin/jsi18n/"></script-->
+	<script type="text/javascript">window.__admin_media_prefix__ = "{{ STATIC_URL }}admin/";</script>
 	<script type="text/javascript" src="{{ STATIC_URL }}admin/js/core.js"></script>
 	<!-- /admin -->
 	{% block js %}

@@ -1,4 +1,14 @@
 {% extends "scan/base.html" %}
+{% block js %}
+<script type="text/javascript">
+	$(document).ready(function() {
+		$('.image-link').magnificPopup({
+			type:'image',
+			image: { verticalFit: false }
+		});
+	});
+</script>
+{% endblock %}
 {% block body_main %}
 <table border="0">
 <tr>
@@ -24,14 +34,13 @@
  <tr> <th> Счет </th> <td> № {{ object.no }} от {{ object.date|date:"d.m.y" }} на {{ object.sum|default:"---" }} руб. </td> </tr>
  <tr>
   <td> Оригинал: </td>
-  <td> <ol style="margin: 0">
+  <td margin="0" padding="0">
    {% for img in object.fileseq.fileseqitem_set.all %}
-    <li>
-     <a href="{% url 'core.views.file_get' img.pk %}" data-lightbox="roadtrip"> <img src="{{ STATIC_URL }}img/32/png.png" title="{{ img.file.name }}"/> </a>
+     <a href="{% url 'core.views.file_get' img.pk %}" class="image-link"> <img src="{{ STATIC_URL }}img/32/png.png" title="{{ img.file.name }}"/> </a>
      <a href="{% url 'core.views.file_get' img.pk %}"> <img src="{{ STATIC_URL }}img/32/download.png" title="Скачать"/> </a>
-    </li>
+    <br/>
    {% endfor %}
-  </ol> </td>
+  </td>
  </tr>
  </tbody>
 </table>
