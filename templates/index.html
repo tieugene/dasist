@@ -24,7 +24,7 @@ $("#tm_index").addClass("active");
 </p>
  {% endif %}
 {% else %}
-Залогиньтесь
+	<a href="{% url 'django.contrib.auth.views.login' %}?next={% url 'index' %}" rel="nofollow"> <button type="button" alt="Вход" title="Вход"> Вход </button> </a>
 {% endif %}
 </center>
 {% endblock %}
