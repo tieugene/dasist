@@ -116,7 +116,10 @@ LOGGING = {
         },
     }
 }
-from logging_settings import LOGGING
+try:
+	from logging_settings import LOGGING
+except ImportError:
+        pass
 BILLS_ROOT = '/mnt/shares/tmp/bills'
 
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
