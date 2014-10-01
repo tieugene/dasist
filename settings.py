@@ -116,7 +116,7 @@ LOGGING = {
         },
     }
 }
-
+from logging_settings import LOGGING
 BILLS_ROOT = '/mnt/shares/tmp/bills'
 
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True

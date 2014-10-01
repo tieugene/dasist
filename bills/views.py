@@ -35,6 +35,8 @@ from PIL import Image as PIL_Image
 import models, forms, utils
 from core.models import File, FileSeq, FileSeqItem, Org
 from scan.models import Scan, Event
+import logging
+logger = logging.getLogger(__name__)
 
 PAGE_SIZE = 25
 FSNAME = 'fstate'	# 0..3
@@ -508,6 +510,7 @@ def	bill_view(request, id, upload_form=None):
 	#bill = models.Bill.objects.get(pk=int(id))
 	bill = get_object_or_404(models.Bill, pk=int(id))
 	user = request.user
+	logger.info('bill_view: user: %s, bill: %s' % (user.username, id))
 	approver = models.Approver.objects.get(user=user)
 	bill_state_id = bill.get_state_id()
 	form = None
