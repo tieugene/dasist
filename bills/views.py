@@ -23,18 +23,14 @@ from django.utils.encoding import smart_unicode
 from django.db import transaction
 
 # 2. system
-import os, sys, imp, pprint, tempfile, subprocess, shutil, json, decimal
-
-# 3. 3rd party
-#from pyPdf import PdfFileReader
-#from pdfrw import PdfReader
-from PIL import Image as PIL_Image
-#from wand.image import Image as Wand_Image
+import sys, pprint, decimal
 
 # 4. my
-import models, forms, utils
+import models, forms
 from core.models import File, FileSeq, FileSeqItem, Org
 from scan.models import Scan, Event
+from views_extras import *
+
 import logging
 logger = logging.getLogger(__name__)
 
@@ -44,25 +40,19 @@ FSNAME = 'fstate'	# 0..3
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
-def	set_filter_state(q, s):
-	'''
-	q - original QuerySet (all)
-	s - state (0..31; dead|done|onpay|onway|draft)
-	'''
-	retvalue = q
-	if (not bool(s&1)):	# Rejected
-		retvalue = retvalue.exclude(state=3)
-	if (not bool(s&2)):	# Done
-		retvalue = retvalue.exclude(state=5)
-	if (not bool(s&4)):	# OnPay
-		retvalue = retvalue.exclude(state=4)
-	if (not bool(s&8)):	# OnWay
-		retvalue = retvalue.exclude(state=2)
-	if (not bool(s&16)):	# Draft
-		retvalue = retvalue.exclude(state=1)
-	return retvalue
-
 class	BillList(ListView):
+	'''
+	ACL:
+	- All:
+	-- Исполнитель: только свои (где он - Исполнитель)
+	-- Руководитель: только где он - текущий Подписант или в Истории
+	-- *: все
+	- Inboud:
+	-- Испольнитель: только свои И без подписанта (== Черновик, Завернут, Исполнен)
+	-- Директор, Бухгалтер = где роль тек. Подписанта == роль юзверя
+	-- *: == тек. Подписант
+
+	'''
 	template_name = 'bills/list.html'
 	paginate_by = PAGE_SIZE
 	# custom:
@@ -74,25 +64,25 @@ class	BillList(ListView):
 		# 1. vars
 		self.paginate_by = self.request.session.get('lpp', 25)
 		user = self.request.user
-		self.approver = models.Approver.objects.get(user=user)
-		role_id = self.approver.role.pk
+		self.approver = models.Approver.objects.get(user=user)	# user as approver
+		role_id = self.approver.role.pk				# user's role
 		self.mode = int(self.request.session.get('mode', 1))
-		self.fsfilter = self.request.session.get(FSNAME, 31)	# int 0..15: dropped|done|onway|draft
+		self.fsfilter = self.request.session.get(FSNAME, 31)	# default == all
 		# 2. query
 		q = models.Bill.objects.all().order_by('-pk')
 		if (self.mode == 1):	# Everything
 			if (role_id == 1) and (not user.is_superuser):	# Исполнитель
 				q = q.filter(assign=self.approver)
-			elif (role_id == 3):	# Руководитель
+			elif (role_id == 3):				# Руководитель
 				self.fsform = None
 				b_list = models.Event.objects.filter(approve=self.approver).values_list('bill_id', flat=True)
 				q1 = q.filter(rpoint__approve=self.approver)
 				q2 = q.filter(pk__in=b_list)
 				q = q1 | q2
 			# 3. filter using Filter
-			fsfilter = self.request.session.get(FSNAME, None)# int 0..15: dropped|done|onway|draft
+			fsfilter = self.request.session.get(FSNAME, None)
 			if (fsfilter == None):
-				fsfilter = 31
+				fsfilter = 31	# default == all
 				self.request.session[FSNAME] = fsfilter
 			else:
 				fsfilter = int(fsfilter)
@@ -127,9 +117,11 @@ class	BillList(ListView):
 @login_required
 def	bill_filter_state(request):
 	'''
+	Set filter on state of bill list
 	POST only
 	* set filter in cookie
 	* redirect
+	ACL: *
 	'''
 	fsform = forms.FilterStateForm(request.POST)
 	if fsform.is_valid():
@@ -145,148 +137,21 @@ def	bill_filter_state(request):
 
 @login_required
 def	bill_set_lpp(request, lpp):
+	'''
+	Set lines-per-page of bill list.
+	ACL: *
+	'''
 	request.session['lpp'] = lpp
 	return redirect('bill_list')
 
 @login_required
 def	bill_set_mode(request, mode):
+	'''
+	Set bill list mode (all/inbound)
+	ACL: *
+	'''
 	request.session['mode'] = mode
 	return redirect('bill_list')
-
-def	__pdf2png2(src_path, basename):
-	tmpdir = tempfile.mkdtemp()
-	# 1. extract
-	arglist = ["gs", "-dBATCH", "-dNOPAUSE", "-sDEVICE=pnggray", "-r150", "-sOutputFile=%s-%%d.png" % os.path.join(tmpdir, basename), src_path]
-	sp = subprocess.Popen(args=arglist, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-	sp.communicate()
-	# 2. mv
-	retvalue = os.listdir(tmpdir)
-	retvalue.sort()
-	for f in retvalue:
-		shutil.move(os.path.join(tmpdir, f), os.path.join(settings.MEDIA_ROOT, f))
-	os.rmdir(tmpdir)
-	return retvalue
-
-def	__pdf2png3(src_path, basename):
-	'''
-	src_path - full path to src file
-	basename - source file name w/o ext
-	'''
-	retvalue = list()
-	tmpdir = tempfile.mkdtemp()
-	# 1. extract
-	arglist = ['pdfimages', '-q', '-j', src_path, os.path.join(tmpdir, basename)]
-	sp = subprocess.Popen(args=arglist, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-	sp.communicate()
-	# 2. convert
-	filelist = os.listdir(tmpdir)
-	filelist.sort()
-	for f in filelist:
-		chunk_path = os.path.join(tmpdir, f)
-		with open(chunk_path, 'rb') as fh:
-			img = PIL_Image.open(fh)
-			name, ext = f.rsplit('.', 1)
-			dst_filename = name + '.png'
-			flag = {'jpg': 'L', 'ppm': 'L', 'pbm': '1'}[ext]
-			img.convert('L').save(os.path.join(settings.MEDIA_ROOT, dst_filename), 'PNG')
-			del img
-			retvalue.append(dst_filename)
-		os.unlink(chunk_path)
-	os.rmdir(tmpdir)
-	return retvalue
-
-def	__convert_img(file, rawpdf=False):
-	'''
-	Convert image
-	@param img:django.core.files.uploadedfile.InMemoryUploadedFile
-	@return list of output filepaths
-	'''
-	retvalue = list()
-	dirname = settings.MEDIA_ROOT
-	filemime = file.content_type
-	filename = file.name.encode('utf-8')
-	src_path = os.path.join(settings.MEDIA_ROOT, filename)
-	# beg
-	#default_storage.save(filename, ContentFile(file.read()))	# unicode
-	buffer = file.read()
-	f = open(src_path, 'wb')
-	f.write(buffer)
-	f.close()
-	# end
-	basename = filename.rsplit('.', 1)[0]
-	if (filemime == 'image/png'):
-		img = PIL_Image.open(src_path)
-		if (img.mode not in set(['1', 'L'])):	# [paletted ('P')], bw, grey
-			img.convert('L').save(src_path)
-		retvalue.append(filename)
-	elif (filemime == 'image/jpeg'):
-		img = PIL_Image.open(src_path)
-		dst_filename = basename + '.png'
-		img.convert('L').save(os.path.join(settings.MEDIA_ROOT, dst_filename), 'PNG')
-		os.unlink(src_path)
-		retvalue.append(dst_filename)
-	elif (filemime == 'image/tiff'):
-		img = PIL_Image.open(src_path)
-		for i in range(9):
-			try:
-				img.seek(i)
-				if (img.mode in set(['1','L'])):
-					thumb = img
-				else:
-					thumb = img.convert('L')
-				dst_filename = '%s-%d.png' % (basename, i+1)
-				thumb.save(os.path.join(settings.MEDIA_ROOT, dst_filename), 'PNG')
-				retvalue.append(dst_filename)
-			except EOFError:
-				break
-		os.unlink(src_path)
-	elif (filemime == 'application/pdf'):
-		if (rawpdf):
-			retvalue = __pdf2png2(src_path, basename)
-		else:
-			retvalue = __pdf2png3(src_path, basename)
-		os.unlink(src_path)
-	return retvalue
-
-def	__update_fileseq(f, fileseq, rawpdf=False):
-	for filename in __convert_img(f, rawpdf):
-		src_path = os.path.join(settings.MEDIA_ROOT, filename)
-		#myfile = File(file=SimpleUploadedFile(filename, default_storage.open(filename).read()))
-		myfile = File(file=SimpleUploadedFile(filename, open(src_path).read()))	# unicode error
-		myfile.save()
-		#default_storage.delete(filename)
-		os.unlink(src_path)
-		fileseq.add_file(myfile)
-
-def	__handle_shipper(form):
-	suppinn = form.cleaned_data['suppinn'].strip()
-	shipper = Org.objects.filter(inn=suppinn).first()
-	if not (shipper):	# not found > create
-		shipper = Org(
-			inn = suppinn,
-			name = form.cleaned_data['suppname'].strip(),
-			fullname = form.cleaned_data['suppfull'].strip()
-		)
-		shipper.save()
-	return shipper
-
-def	__fill_route(bill, mgr):
-	std_route1 = [	# role_id, approve_id
-		(2, models.Approver.objects.get(pk=23)),	# Gorbunoff.N.V.
-		(3, mgr),					# Руководитель
-		(4, None),					# Директор
-		(5, models.Approver.objects.get(pk=3)),		# Гендир
-		(6, None),					# Бухгалтер
-	]
-	for i, r in enumerate(std_route1):
-		bill.route_set.add(
-			models.Route(
-				bill	= bill,
-				order	= i+1,
-				role	= models.Role.objects.get(pk=r[0]),
-				approve	= r[1],
-			),
-		)
 
 @login_required
 @transaction.atomic
@@ -294,16 +159,11 @@ def	bill_add(request):
 	'''
 	Add new (draft) bill
 	ACL: Исполнитель
-	- add Bill
-	- add Route to them
-	- convert image
-	- add images into fileseq
 	'''
 	user = request.user
 	approver = models.Approver.objects.get(user=user)
-	#if not user.is_superuser:
-	#	if (approver.role.pk != 1):
-	#		return redirect('bills.views.bill_list')
+	if (approver.role.pk != 1):
+		return redirect('bill_list')
 	if request.method == 'POST':
 		#path = request.POST['path']
 		form = forms.BillAddForm(request.POST, request.FILES)
@@ -312,9 +172,9 @@ def	bill_add(request):
 			# 1. create fileseq
 			fileseq = FileSeq.objects.create()
 			# 2. convert image and add to fileseq
-			__update_fileseq(request.FILES['file'], fileseq, form.cleaned_data['rawpdf'])
+			update_fileseq(request.FILES['file'], fileseq, form.cleaned_data['rawpdf'])
 			# 3. bill at all
-			shipper = __handle_shipper(form)
+			shipper = handle_shipper(form)
 			bill = models.Bill.objects.create(
 				fileseq		= fileseq,
 				place		= form.cleaned_data['place'],
@@ -335,7 +195,7 @@ def	bill_add(request):
 			)
 			# 4. add route
 			mgr = form.cleaned_data['approver']
-			__fill_route(bill, mgr)
+			fill_route(bill, mgr)
 			return redirect('bills.views.bill_view', bill.pk)
 	else:
 		form = forms.BillAddForm()
@@ -349,23 +209,23 @@ def	bill_add(request):
 def	bill_edit(request, id):
 	'''
 	Update (edit) Draft bill
-	ACL: (assignee) & Draft
+	ACL: root | (Испольнитель & Draft & !Locked)
 	TODO: transaction
 	'''
 	bill = get_object_or_404(models.Bill, pk=int(id))	# FIXME: select_for_update(nowait=False)
 	#bill = models.Bill.objects.get(pk=int(id))
 	user = request.user
 	approver = models.Approver.objects.get(pk=user.pk)
-	#if (not request.user.is_superuser) and (\
-	#   (bill.assign != approver) or\
-	#   (bill.rpoint != None) or\
-	#   (bill.done != None)):
-	#	return redirect('bills.views.bill_view', bill.pk)
+	if not (request.user.is_superuser or (\
+	   (bill.assign == approver) and\
+	   (bill.get_state_id() == 1) and\
+	   (not bill.locked))):
+		return redirect('bills.views.bill_view', bill.pk)
 	if request.method == 'POST':
 		form = forms.BillEditForm(request.POST, request.FILES)
 		if form.is_valid():
 			# FIXME: add transaction
-			shipper = __handle_shipper(form)
+			shipper = handle_shipper(form)
 			# 1. update bill
 			bill.place =	form.cleaned_data['place']
 			bill.subject =	form.cleaned_data['subject']
@@ -389,7 +249,7 @@ def	bill_edit(request, id):
 			if (file):
 				fileseq = bill.fileseq
 				fileseq.clean_children()
-				__update_fileseq(file, fileseq, form.cleaned_data['rawpdf'])	# unicode error
+				update_fileseq(file, fileseq, form.cleaned_data['rawpdf'])	# unicode error
 			return redirect('bills.views.bill_view', bill.pk)
 	else:	# GET
 		form = forms.BillEditForm(initial={
@@ -420,12 +280,17 @@ def	bill_edit(request, id):
 def	bill_reedit(request, id):
 	'''
 	Update (edit) locked Draft bill
-	ACL: (assignee) & Draft?
+	ACL: root | (Испольнитель & Draft & Locked)
 	'''
 	bill = get_object_or_404(models.Bill, pk=int(id))
 	#bill = models.Bill.objects.get(pk=int(id))
 	user = request.user
 	approver = models.Approver.objects.get(pk=user.pk)
+	if not (request.user.is_superuser or (\
+	   (bill.assign == approver) and\
+	   (bill.get_state_id() == 1) and\
+	   (bill.locked))):
+		return redirect('bills.views.bill_view', bill.pk)
 	max_topaysum = bill.billsum - bill.payedsum
 	if request.method == 'POST':
 		form = forms.BillReEditForm(request.POST, max_topaysum = bill.billsum - bill.payedsum)
@@ -444,7 +309,7 @@ def	bill_reedit(request, id):
 		if (bill.route_set.count() == 0):
 			#print "Fill route"
 			mgr = models.Approver.objects.get(pk=9)
-			__fill_route(bill, mgr)
+			fill_route(bill, mgr)
 		# /hack
 		form = forms.BillReEditForm(initial={
 			'topaysum': bill.topaysum if bill.topaysum else max_topaysum,
@@ -455,57 +320,24 @@ def	bill_reedit(request, id):
 		'object': bill,
 	}))
 
-def	__emailto(request, emails, bill_id, subj):
-	'''
-	Send email to recipients
-	@param emails:list - list of emails:str
-	@param bill_id:int
-	@param subj:str - email's Subj
-	'''
-	if (emails):
-		utils.send_mail(
-			emails,
-			'%s: %d' % (subj, bill_id),
-			request.build_absolute_uri(reverse('bills.views.bill_view', kwargs={'id': bill_id})),
-		)
-
-def	__mailto(request, bill):
-	'''
-	Sends emails to people:
-	- onway - to rpoint role or aprove
-	- Accept/Reject - to assignee
-	@param bill:Bill
-	'''
-	if settings.DEBUG:
-		return
-	state = bill.get_state_id()
-	if (state == 2):	# OnWay
-		subj = 'Новый счет на подпись'
-		if (bill.rpoint.approve):
-			emails = [bill.rpoint.approve.user.email]
-		else:
-			emails = list()
-			for i in bill.rpoint.role.approver_set.all():
-				emails.append(i.user.email)
-		__emailto(request, emails, bill.pk, subj)
-	elif (state == 3):	# Reject
-		__emailto(request, [bill.assign.user.email], bill.pk, 'Счет завернут')
-		#if (state == 3) and (bill.rpoint.)
-	elif (state == 5):
-		if not bill.locked:
-			__emailto(request, [bill.assign.user.email], bill.pk, 'Счет оплачен')
-		else:
-			__emailto(request, [bill.assign.user.email], bill.pk, 'Счет частично оплачен')
-
 @login_required
 #transaction.commit_on_success
 @transaction.atomic
 def	bill_view(request, id, upload_form=None):
 	'''
-	View/Accept/Reject bill
+	View | Accept/Reject bill
 	ACL: (assignee & Draft & Route ok) | (approver & OnWay)
-	TODO: подменить approver от root где только можно
-	TODO: assignee+approver == bad way
+	= POST =
+	- Исполнитель & Draft
+	- Руководитель & Подписант [& Onway]
+	- Директор & Подписант.Роль [& Onway]
+	- Гендир & Подписант [& Onway]
+	- Бухгалтер & Подписант.Роль [& Onway]
+	= GET =
+	- root
+	- Исполнитель: только свои (где он - Исполнитель)
+	- Руководитель: только где он - текущий Подписант или в Истории
+	- *: все
 	'''
 	#bill = models.Bill.objects.get(pk=int(id))
 	bill = get_object_or_404(models.Bill, pk=int(id))
@@ -523,7 +355,7 @@ def	bill_view(request, id, upload_form=None):
 			file = request.FILES.get('file', None)
 			if (file):
 				fileseq = bill.fileseq
-				__update_fileseq(file, fileseq, upload_form.cleaned_data['rawpdf'])	# unicode error
+				update_fileseq(file, fileseq, upload_form.cleaned_data['rawpdf'])	# unicode error
 	    else:
 		#if (request.POST['resume'] in set(['accept', 'reject'])) and (\
 		#   ((bill_state_id == 1) and (approver == bill.assign)) or\
@@ -533,7 +365,7 @@ def	bill_view(request, id, upload_form=None):
 		#    ) \
 		#    )
 		#   ):
-		if (True):	# dummy
+		if (True):	# dummy ACL
 			resume = (request.POST['resume'] == 'accept')
 			form = forms.ResumeForm(request.POST)
 			if form.is_valid():
@@ -572,7 +404,7 @@ def	bill_view(request, id, upload_form=None):
 					bill.save()
 					if (bill.get_state_id() == 5) and (bill.locked == False):	# That's all
 						bill.route_set.all().delete()
-					__mailto(request, bill)
+					mailto(request, bill)
 					return redirect('bill_list')
 	else:
 		if (user.is_superuser or ((bill.assign == approver) and (bill_state_id == 1))):
@@ -594,7 +426,7 @@ def	bill_view(request, id, upload_form=None):
 	if (bill_state_id == 1):			# Draft
 		if (bill.assign == approver):
 			buttons['accept'] = 1		# Вперед
-	elif (bill_state_id == 2):		# OnWay
+	elif (bill_state_id == 2):			# OnWay
 		if (approver.role.pk != 6):		# not Accounter
 			if ((bill.rpoint.approve == None) and (bill.rpoint.role == approver.role)) or \
 			   ((bill.rpoint.approve != None) and (bill.rpoint.approve == approver)):
@@ -626,7 +458,7 @@ def	bill_view(request, id, upload_form=None):
 def	bill_delete(request, id):
 	'''
 	Delete bill
-	ACL: (root|assignee) & (Draft|Rejected (bad))
+	ACL: root | (Assignee & (Draft|Rejected) & (not Locked))
 	'''
 	bill = get_object_or_404(models.Bill, pk=int(id))
 	#bill = models.Bill.objects.get(pk=int(id))
@@ -646,6 +478,7 @@ def	bill_delete(request, id):
 def	bill_restart(request, id):
 	'''
 	Restart bill (partialy Done or Rejected)
+	ACL: root | (Assignee & (Rejected | (Done & Locked)))
 	'''
 	bill = get_object_or_404(models.Bill, pk=int(id))
 	#bill = models.Bill.objects.get(pk=int(id))
@@ -657,28 +490,33 @@ def	bill_restart(request, id):
 	return redirect('bills.views.bill_view', bill.pk)
 
 @login_required
-def	mailto(request, id):
+def	bill_mail(request, id):
 	'''
+	Test of email
 	@param id: bill id
+	ACL: root only
 	'''
 	bill = models.Bill.objects.get(pk=int(id))
-	utils.send_mail(
-		['ti.eugene@gmail.com'],
-		'Новый счет на подпись: %s' % id,
-		'Вам на подпись поступил новый счет: %s' % request.build_absolute_uri(reverse('bills.views.bill_view', kwargs={'id': bill.pk})),
-	)
+	if (request.user.is_superuser):
+		utils.send_mail(
+			['ti.eugene@gmail.com'],
+			'Новый счет на подпись: %s' % id,
+			'Вам на подпись поступил новый счет: %s' % request.build_absolute_uri(reverse('bills.views.bill_view', kwargs={'id': bill.pk})),
+		)
 	return redirect('bills.views.bill_view', bill.pk)
 
 @login_required
 @transaction.atomic
 def	bill_toscan(request, id):
 	'''
+	Move bill to scans.
+	ACL: root | ((Исполнитель | is_staff) && Done && !Locked)
 	'''
 	bill = get_object_or_404(models.Bill, pk=int(id))
 	#bill = models.Bill.objects.get(pk=int(id))
 	if (request.user.is_superuser) or (\
 	   ((bill.assign.user.pk == request.user.pk) or request.user.is_staff) and\
-	   ((bill.get_state_id() == 5) and (bill.locked==False))):
+	   ((bill.get_state_id() == 5) and (not bill.locked))):
 		scan = Scan.objects.create(
 			fileseq	= bill.fileseq,
 			place	= bill.place.name,
@@ -706,23 +544,49 @@ def	bill_toscan(request, id):
 
 @login_required
 def	bill_img_del(request, id):
+	'''
+	Delete bill img (one from).
+	ACL: root | (Исполнитель && Draft)
+	'''
 	fsi = FileSeqItem.objects.get(pk=int(id))
 	fs = fsi.fileseq
-	fs.del_file(int(id))
+	bill = fs.bill
+	if (request.user.is_superuser) or (\
+	   (bill.assign.user.pk == request.user.pk) and\
+	   (bill.get_state_id() == 1)):
+		fs.del_file(int(id))
 	return redirect('bills.views.bill_view', fs.pk)
 
 @login_required
 #transaction.atomic
 def	bill_img_up(request, id):
+	'''
+	Move img upper.
+	ACL: root | (Исполнитель && Draft)
+	'''
 	fsi = FileSeqItem.objects.get(pk=int(id))
-	if not fsi.is_first():
-		fsi.swap(fsi.order-1)
+	fs = fsi.fileseq
+	bill = fs.bill
+	if (request.user.is_superuser) or (\
+	   (bill.assign.user.pk == request.user.pk) and\
+	   (bill.get_state_id() == 1)):
+		if not fsi.is_first():
+			fsi.swap(fsi.order-1)
 	return redirect('bills.views.bill_view', fsi.fileseq.pk)
 
 @login_required
 #transaction.atomic
 def	bill_img_dn(request, id):
+	'''
+	Move img lower.
+	ACL: root | (Исполнитель && Draft)
+	'''
 	fsi = FileSeqItem.objects.get(pk=int(id))
-	if not fsi.is_last():
-		fsi.swap(fsi.order+1)
+	fs = fsi.fileseq
+	bill = fs.bill
+	if (request.user.is_superuser) or (\
+	   (bill.assign.user.pk == request.user.pk) and\
+	   (bill.get_state_id() == 1)):
+		if not fsi.is_last():
+			fsi.swap(fsi.order+1)
 	return redirect('bills.views.bill_view', fsi.fileseq.pk)

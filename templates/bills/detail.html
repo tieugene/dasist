@@ -1,6 +1,12 @@
 {% extends "bills/base.html" %}
 {% block js %}
 <script type="text/javascript">
+	$(document).ready(function() {
+		$('.image-link').magnificPopup({
+			type:'image',
+			image: { verticalFit: false }
+		});
+	});
 	function printimg(img, name) {
 		var mywindow = window.open('', name);
 		mywindow.document.write('<html><head><title>' + name + '</title>');
@@ -52,7 +58,7 @@
  <tr> <th> Оплачено </th> <td> {{ object.payedsum }} </td> </tr>
  <tr> <th> К оплате </th> <td> {{ object.topaysum }} </td> </tr>
  <tr> <th> Ответственный </th> <td> {{ object.assign.get_fio }} </td> </tr>
- <tr> <th> Подписант </th> <td> {{ object.rpoint.approve.get_fio|default:"---" }} </td> </tr>
+ <tr> <th> Подписант </th> <td> {% if object.rpoint %} {% if object.rpoint.approve %} {{ object.rpoint.approve.get_fio }} {% else %} [{{ object.rpoint.role.name }}] {% endif %} {% else %} --- {% endif %} </td> </tr>
  <tr> <th> Состояние </th> <td> <img src="{{ STATIC_URL }}img/32/{{ object.state.get_icon }}" width="16px" height="16px"/> ({{ object.get_state_name }}) </td> </tr>
  <tr> <th> Доплата </th> <td> {% if object.locked %} &radic; {% else %} - {% endif %} </td> </tr>
  <tr> <th> Маршрут </th> <td>
@@ -68,7 +74,7 @@
    {% for img in object.fileseq.list_items.all %}
     <tr> <td>
      {{ img.order }}
-     <a href="{% url 'core.views.file_get' img.pk %}" data-lightbox="roadtrip"> <img src="{{ STATIC_URL }}img/32/png.png" title="{{ img.file.name }}"/> </a>
+     <a href="{% url 'core.views.file_get' img.pk %}" class="image-link"> <img src="{{ STATIC_URL }}img/32/png.png" title="{{ img.file.name }}"/> </a>
      <a href="{% url 'core.views.file_get' img.pk %}"> <img src="{{ STATIC_URL }}img/32/download.png" title="Скачать"/> </a>
      <input type="image" src="{{ STATIC_URL }}img/32/document-print.png" onClick="printimg('{% url 'core.views.file_get' img.pk %}', '{{ img.pk }}');"/>
      {% if button.edit %}
@@ -120,7 +126,7 @@
 {% endif %}
 {% if button.del %}	<a href="{% url 'bills.views.bill_delete' object.pk %}">	{% include "button/delete.html" %} </a> {% endif %}
 {% if button.restart %}	<a href="{% url 'bills.views.bill_restart' object.pk %}">	{% include "button/restart.html" %} </a> {% endif %}
-{% if user.is_superuser %} <a href="{% url 'bills.views.mailto' object.pk %}"> {% include "button/mailto.html" %} </a> {% endif %}
+{% if user.is_superuser %} <a href="{% url 'bills.views.bill_mail' object.pk %}"> {% include "button/mailto.html" %} </a> {% endif %}
 </p>
 {% if upload_form %}
 <form enctype="multipart/form-data" action="" method="POST">

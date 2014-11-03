@@ -23,9 +23,9 @@ mime_available = set((
 	'application/pdf',
 ))
 
-class ApproverModelChoiceField(forms.ModelChoiceField):
-    def label_from_instance(self, obj):
-        return obj.get_fio()
+class	ApproverModelChoiceField(forms.ModelChoiceField):
+	def label_from_instance(self, obj):
+		return obj.get_fio()
 
 class	ResumeForm(forms.Form):
 	note	= forms.CharField(max_length=255, label='Комментарий', required = False, widget=forms.TextInput(attrs={'size':80}))
@@ -56,7 +56,7 @@ class	BillForm(forms.Form):
 	place		= forms.ModelChoiceField(queryset=Place.objects.all().order_by('name'), empty_label=None, label=u'Объект')
 	subject		= forms.ModelChoiceField(queryset=Subject.objects.all().order_by('name'), label=u'Подобъект', required=False)
 	depart		= forms.ModelChoiceField(queryset=Department.objects.all().order_by('name'), label=u'Направление', required=False)
-	payer		= forms.ModelChoiceField(queryset=Payer.objects.all().order_by('name'), empty_label=None, label=u'Плательщик')
+	payer		= forms.ModelChoiceField(queryset=Payer.objects.all().order_by('name'), empty_label='---', label=u'Плательщик')
 	#supplier	= forms.CharField(max_length=64, label=u'Поставщик')
 	suppinn		= InnField(min_length=10, max_length=12, label=u'ИНН Поставщика', required=True)
 	suppname	= forms.CharField(max_length=64, label=u'Поставщик (кратко)', required=True)

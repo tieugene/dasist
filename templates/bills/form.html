@@ -42,6 +42,11 @@ $(document).ready(function() {
 	clear_subj();
 	//console.log(place_id);
 	fill_subj(place_id, subj_id);
+	// image preview
+	$('.image-link').magnificPopup({
+		type:'image',
+		image: { verticalFit: false }
+	});
 });
 </script>
 {% include "handle_inn.html" %}
@@ -59,7 +64,7 @@ $(document).ready(function() {
 		   {% for img in object.fileseq.list_items.all %}
 		    <tr> <td>
 		     {{ img.order }}
-		     <a href="{% url 'core.views.file_get' img.pk %}" data-lightbox="roadtrip"> <img src="{{ STATIC_URL }}img/32/png.png" title="{{ img.file.name }}"/> </a>
+		     <a href="{% url 'core.views.file_get' img.pk %}" class="image-link"> <img src="{{ STATIC_URL }}img/32/png.png" title="{{ img.file.name }}"/> </a>
 		     <a href="{% url 'core.views.file_get' img.pk %}"> <img src="{{ STATIC_URL }}img/32/download.png" title="Скачать"/> </a>
 		    </td> </tr>
 		   {% endfor %}
