@@ -12,6 +12,7 @@ from django.db.models.fields.files import FieldFile
 
 #import models
 from bills.models import Approver, Place, Subject, Department, Payer
+from core.models import Org
 from core.forms import InnField, chk_new_org, chk_org_names
 
 import decimal
@@ -30,12 +31,17 @@ class	ApproverModelChoiceField(forms.ModelChoiceField):
 class	ResumeForm(forms.Form):
 	note	= forms.CharField(max_length=255, label='Комментарий', required = False, widget=forms.TextInput(attrs={'size':80}))
 
-class	FilterStateForm(forms.Form):
+class	FilterStateBillListForm(forms.Form):
 	draft	= forms.BooleanField(label='Черновики',	required = False)
 	onway	= forms.BooleanField(label='В пути',	required = False)
 	onpay	= forms.BooleanField(label='В оплате',	required = False)
 	done	= forms.BooleanField(label='Исполнены',	required = False)
 	dead	= forms.BooleanField(label='Завернуты',	required = False)
+
+class	FilterOtherBillListForm(forms.Form):
+	place	= forms.ModelChoiceField(queryset=Place.objects.all().order_by('name'), label=u'Объект', required=False)
+	shipper	= forms.ModelChoiceField(queryset=Org.objects.all().order_by('name'), label=u'Поставщик', required=False)
+	payer	= forms.ModelChoiceField(queryset=Payer.objects.all().order_by('name'), label=u'Поставщик', required=False)
 
 class	BillAddFileForm(forms.Form):
 	file		= forms.FileField(label=u'Файл')

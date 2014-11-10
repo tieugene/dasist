@@ -43,6 +43,13 @@ STATE_REJECTED	= 3
 STATE_ONPAY	= 4
 STATE_DONE	= 5
 
+ROLE_ASSIGNEE	= 1
+ROLE_OMTSCHIEF	= 2
+ROLE_CHEIF	= 3
+ROLE_BOSS	= 4
+ROLE_MEGABOSS	= 5
+ROLE_ACCOUNTER	= 6
+
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
@@ -70,31 +77,31 @@ class	BillList(ListView):
 		# 1. vars
 		self.paginate_by = self.request.session.get('lpp', 25)
 		user = self.request.user
-		self.approver = models.Approver.objects.get(user=user)	# user as approver
-		role_id = self.approver.role.pk				# user's role
+		self.approver = models.Approver.objects.get(user=user)
+		role_id = self.approver.role.pk
 		self.mode = int(self.request.session.get('mode', 1))
-		self.fsfilter = self.request.session.get(FSNAME, 31)	# default == all
+		self.fsfilter = self.request.session.get(FSNAME, 31)	# int 0..15: dropped|done|onway|draft
 		# 2. query
 		q = models.Bill.objects.all().order_by('-pk')
 		if (self.mode == 1):	# Everything
 			if (role_id == 1) and (not user.is_superuser):	# Исполнитель
 				q = q.filter(assign=self.approver)
-			elif (role_id == 3):				# Руководитель
+			elif (role_id == 3):	# Руководитель
 				self.fsform = None
 				b_list = models.Event.objects.filter(approve=self.approver).values_list('bill_id', flat=True)
 				q1 = q.filter(rpoint__approve=self.approver)
 				q2 = q.filter(pk__in=b_list)
 				q = q1 | q2
 			# 3. filter using Filter
-			fsfilter = self.request.session.get(FSNAME, None)
+			fsfilter = self.request.session.get(FSNAME, None)# int 0..15: dropped|done|onway|draft
 			if (fsfilter == None):
-				fsfilter = 31	# default == all
+				fsfilter = 31
 				self.request.session[FSNAME] = fsfilter
 			else:
 				fsfilter = int(fsfilter)
 			q = set_filter_state(q, fsfilter)
 			# 3. go
-			self.fsform = forms.FilterStateForm(initial={
+			self.fsform = forms.FilterStateBillListForm(initial={
 				'dead'	:bool(fsfilter&1),
 				'done'	:bool(fsfilter&2),
 				'onpay'	:bool(fsfilter&4),
@@ -129,7 +136,7 @@ def	bill_filter_state(request):
 	* redirect
 	ACL: *
 	'''
-	fsform = forms.FilterStateForm(request.POST)
+	fsform = forms.FilterStateBillListForm(request.POST)
 	if fsform.is_valid():
 		fsfilter = \
 			int(fsform.cleaned_data['dead'])  * 1 | \
@@ -138,7 +145,7 @@ def	bill_filter_state(request):
 			int(fsform.cleaned_data['onway']) * 8 | \
 			int(fsform.cleaned_data['draft']) * 16
 		#print 'Filter:', fsfilter
-		request.session[FSNAME] = fsfilter
+		request.session[FSNAME]		= fsfilter
 	return redirect('bill_list')
 
 @login_required
