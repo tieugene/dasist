@@ -9,6 +9,7 @@ from django.contrib.auth.decorators import login_required
 import views
 
 urlpatterns = patterns('bills.views',
+	#url(r'^$',			'bill_list'),		# GET; ACL: assign|approve=user
 	url(r'^$',			login_required(views.BillList.as_view()), name='bill_list'),
 	url(r'^lpp/(?P<lpp>\d+)/$',	'bill_set_lpp'),
 	url(r'^mode/(?P<mode>\d+)/$',	'bill_set_mode'),
@@ -23,6 +24,6 @@ urlpatterns = patterns('bills.views',
 	url(r'^(?P<id>\d+)/id/$',	'bill_img_del'),
 	url(r'^(?P<id>\d+)/iup/$',	'bill_img_up'),
 	url(r'^(?P<id>\d+)/idn/$',	'bill_img_dn'),
-	url(r'^(?P<id>\d+)/mail/$',	'bill_mail'),
+	url(r'^(?P<id>\d+)/mail/$',	'mailto'),
 #	url(r'^(?P<id>\d+)/g/$',	'bill_get'),		# GET; ACL: assign;
 )

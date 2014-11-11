@@ -1,12 +1,22 @@
 #!/bin/sh
-# Refresh DB (sqlite spec)
-echo "1. dump data (30'')"
-time ./manage.py dumpdata --format=json --indent=1 | gzip -c > data.json.gz
+# Refresh DB (mysql spec)
+#echo "1. dump data"
+#./manage.py dumpdata --format=json --indent=1 | gzip -c > data.json.gz
 echo "2. drop tables"
-time for i in `echo ".tables" | ./manage.py dbshell`; do echo "DROP TABLE IF EXISTS $i;" | ./manage.py dbshell; done
+TMP=`mktemp --suffix=.sql`
+echo "BEGIN;" > $TMP
+echo "SET FOREIGN_KEY_CHECKS = 0;" >> $TMP
+for i in `echo "SHOW TABLES;" | ./manage.py dbshell`; do echo "DROP TABLE IF EXISTS $i;" >> $TMP; done
+echo "COMMIT;" >> $TMP
+cat $TMP | ./manage.py dbshell
 echo "3. recreate db"
-time echo "no" | ./manage.py syncdb
+echo "no" | ./manage.py syncdb > /dev/null
 echo "4. clean tables"
-time for i in `echo ".tables" | ./manage.py dbshell`; do echo "DELETE FROM $i;" | ./manage.py dbshell; done
+echo "BEGIN;" > $TMP
+for i in `echo "SHOW TABLES;" | ./manage.py dbshell | grep -v ^Tables_in_dasist`; do echo "DELETE FROM $i;" >> $TMP; done
+echo "COMMIT;" >> $TMP
+cat $TMP | ./manage.py dbshell
 echo "5. load data"
-time ./manage.py loaddata data.json
+./manage.py loaddata data.json.gz
+# the end
+rm -f $TMP

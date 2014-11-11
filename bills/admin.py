@@ -53,7 +53,7 @@ class	BillAdmin(admin.ModelAdmin):
 
 class	StateAdmin(admin.ModelAdmin):
 	ordering	= ('id',)
-	list_display	= ('id', 'name', 'color')
+	list_display	= ('id', 'name',)
 
 admin.site.register(Role,	RoleAdmin)
 admin.site.register(Approver,	ApproverAdmin)

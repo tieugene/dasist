@@ -12,7 +12,6 @@ from django.db.models.fields.files import FieldFile
 
 #import models
 from bills.models import Approver, Place, Subject, Department, Payer
-from core.models import Org
 from core.forms import InnField, chk_new_org, chk_org_names
 
 import decimal
@@ -24,24 +23,19 @@ mime_available = set((
 	'application/pdf',
 ))
 
-class	ApproverModelChoiceField(forms.ModelChoiceField):
-	def label_from_instance(self, obj):
-		return obj.get_fio()
+class ApproverModelChoiceField(forms.ModelChoiceField):
+    def label_from_instance(self, obj):
+        return obj.get_fio()
 
 class	ResumeForm(forms.Form):
 	note	= forms.CharField(max_length=255, label='Комментарий', required = False, widget=forms.TextInput(attrs={'size':80}))
 
-class	FilterStateBillListForm(forms.Form):
+class	FilterStateForm(forms.Form):
 	draft	= forms.BooleanField(label='Черновики',	required = False)
 	onway	= forms.BooleanField(label='В пути',	required = False)
 	onpay	= forms.BooleanField(label='В оплате',	required = False)
 	done	= forms.BooleanField(label='Исполнены',	required = False)
 	dead	= forms.BooleanField(label='Завернуты',	required = False)
-
-class	FilterOtherBillListForm(forms.Form):
-	place	= forms.ModelChoiceField(queryset=Place.objects.all().order_by('name'), label=u'Объект', required=False)
-	shipper	= forms.ModelChoiceField(queryset=Org.objects.all().order_by('name'), label=u'Поставщик', required=False)
-	payer	= forms.ModelChoiceField(queryset=Payer.objects.all().order_by('name'), label=u'Поставщик', required=False)
 
 class	BillAddFileForm(forms.Form):
 	file		= forms.FileField(label=u'Файл')
@@ -62,7 +56,7 @@ class	BillForm(forms.Form):
 	place		= forms.ModelChoiceField(queryset=Place.objects.all().order_by('name'), empty_label=None, label=u'Объект')
 	subject		= forms.ModelChoiceField(queryset=Subject.objects.all().order_by('name'), label=u'Подобъект', required=False)
 	depart		= forms.ModelChoiceField(queryset=Department.objects.all().order_by('name'), label=u'Направление', required=False)
-	payer		= forms.ModelChoiceField(queryset=Payer.objects.all().order_by('name'), empty_label='---', label=u'Плательщик')
+	payer		= forms.ModelChoiceField(queryset=Payer.objects.all().order_by('name'), empty_label=None, label=u'Плательщик')
 	#supplier	= forms.CharField(max_length=64, label=u'Поставщик')
 	suppinn		= InnField(min_length=10, max_length=12, label=u'ИНН Поставщика', required=True)
 	suppname	= forms.CharField(max_length=64, label=u'Поставщик (кратко)', required=True)
