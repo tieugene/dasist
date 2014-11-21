@@ -34,8 +34,8 @@ from views_extras import *
 import logging
 logger = logging.getLogger(__name__)
 
-PAGE_SIZE = 25
-FSNAME = 'fstate'	# 0..3
+PAGE_SIZE	= 25
+FSNAME		= 'fstate'	# 0..3
 
 STATE_DRAFT	= 1
 STATE_ONWAY	= 2
@@ -45,7 +45,7 @@ STATE_DONE	= 5
 
 ROLE_ASSIGNEE	= 1
 ROLE_OMTSCHIEF	= 2
-ROLE_CHEIF	= 3
+ROLE_CHIEF	= 3
 ROLE_BOSS	= 4
 ROLE_MEGABOSS	= 5
 ROLE_ACCOUNTER	= 6
@@ -75,7 +75,7 @@ class	BillList(ListView):
 
 	def	get_queryset(self):
 		# 1. vars
-		self.paginate_by = self.request.session.get('lpp', 25)
+		self.paginate_by = self.request.session.get('lpp', PAGE_SIZE)
 		user = self.request.user
 		self.approver = models.Approver.objects.get(user=user)
 		role_id = self.approver.role.pk
@@ -84,9 +84,9 @@ class	BillList(ListView):
 		# 2. query
 		q = models.Bill.objects.all().order_by('-pk')
 		if (self.mode == 1):	# Everything
-			if (role_id == 1) and (not user.is_superuser):	# Исполнитель
+			if (role_id == ROLE_ASSIGNEE) and (not user.is_superuser):	# Исполнитель
 				q = q.filter(assign=self.approver)
-			elif (role_id == 3):	# Руководитель
+			elif (role_id == ROLE_CHIEF):	# Руководитель
 				self.fsform = None
 				b_list = models.Event.objects.filter(approve=self.approver).values_list('bill_id', flat=True)
 				q1 = q.filter(rpoint__approve=self.approver)
@@ -110,9 +110,9 @@ class	BillList(ListView):
 			})
 		else:			# Inbound
 			self.fsform = None
-			if (role_id == 1):		# Исполнитель
+			if (role_id == ROLE_ASSIGNEE):		# Исполнитель
 				q = q.filter(assign=self.approver, rpoint=None)
-			elif (role_id in set((4, 6))):	# Директор, Бухгалтер
+			elif (role_id in set((ROLE_BOSS, ROLE_ACCOUNTER))):	# Директор, Бухгалтер
 				q = q.filter(rpoint__role=self.approver.role)
 			else:
 				q = q.filter(rpoint__approve=self.approver)

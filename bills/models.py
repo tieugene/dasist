@@ -188,7 +188,7 @@ class	Bill(models.Model):
 	def	get_state_color(self):
 		#return state_color[self.__get_state()]
 		if (self.state.pk == 5) and (self.locked):
-			return 'lime'
+			return 'Auamarine'
 		else:
 			return self.state.color
 
