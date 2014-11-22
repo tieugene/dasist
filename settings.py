@@ -15,7 +15,7 @@ MANAGERS = ADMINS
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': '/mnt/shares/tmp/dasist_test.db',
+        'NAME': '/path/to/dasist_test.db',
         'USER': '',
         'PASSWORD': '',
         'HOST': '',
@@ -31,7 +31,7 @@ USE_L10N = True
 
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/home/media/media.lawrence.com/media/"
-MEDIA_ROOT = '/mnt/shares/tmp/bills'
+MEDIA_ROOT = '/path/to/media'
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a trailing slash.
 # Examples: "http://media.lawrence.com/media/", "http://example.com/media/"
@@ -134,7 +134,7 @@ LOGGING = {
     }
 }
 
-BILLS_ROOT = '/mnt/shares/tmp/bills'
+BILLS_ROOT = MEDIA_ROOT
 
 try:
         from local_settings import *
