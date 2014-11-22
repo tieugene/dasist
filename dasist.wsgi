@@ -1,7 +1,7 @@
 import os
 import sys
 
-sys.path.append('/usr/share/dasist')
+sys.path.append(os.path.dirname(__file__))
 os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
 
 import django.core.handlers.wsgi

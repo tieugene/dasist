@@ -1,3 +1,11 @@
+= Requires =
+* Django 1.4
+* django-sortedm2m (OBS)
+* pyPdf
+* python-pdfrw
+* python-wand (hand-made)
+* ImageMagick
+
 Done:
 * CRUD Bill (w/o m2ms)
 * CRUD Route to Bill (as m2m) - views, forms, tpl
