@@ -4,7 +4,6 @@ DEBUG = True
 STATIC_URL = '/static_dasist/'
 MEDIA_ROOT = '/mnt/shares/tmp/dasist/media/'
 LOGIN_URL = '/dasist001/accounts/login/
-
 DATABASES = {'default': {'ENGINE': 'django.db.backends.sqlite3', 'NAME': '/mnt/shares/tmp/dasist_real.db'}}
 CACHES = {
     'default': {
