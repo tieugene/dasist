@@ -190,9 +190,10 @@ def	scan_delete(request, id):
 	Delete bill
 	ACL: (root|assignee) & (Draft|Rejected (bad))
 	'''
-	scan = models.Scan.objects.get(pk=int(id))
-	scan.delete()
-	fileseq.purge()
+	if (request.user.is_superuser):
+		scan = models.Scan.objects.get(pk=int(id))
+		scan.delete()
+		fileseq.purge()
 	return redirect('scan_list')
 
 @login_required
