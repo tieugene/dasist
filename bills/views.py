@@ -25,10 +25,7 @@ from django.core.mail import send_mail
 import os, sys, imp, pprint, tempfile, subprocess, shutil
 
 # 3. 3rd party
-#from pyPdf import PdfFileReader
-#from pdfrw import PdfReader
 from PIL import Image as PIL_Image
-#from wand.image import Image as Wand_Image
 
 # 4. my
 import models, forms
@@ -68,7 +65,6 @@ def	bill_list(request):
 	# 1. pre
 	user = request.user
 	approver = models.Approver.objects.get(user=user)
-	#print approver.role.pk == 1
 	queryset = models.Bill.objects.all().order_by('-pk')
 	# 2. mode (1=All, 2=Inbound)
 	mode = request.session.get('mode', None)
