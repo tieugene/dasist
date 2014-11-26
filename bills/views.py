@@ -68,7 +68,6 @@ def	bill_list(request):
 		canadd = False
 	else:
 		canadd = models.Approver.objects.get(pk=user.pk).role.pk == 1
-	approver = models.Approver.objects.get(pk=user.pk)
 	queryset = models.Bill.objects.all()
 	# 2. filter
 	fsfilter = request.session.get(FSNAME, None)# int 0..15: dropped|done|onway|draft
