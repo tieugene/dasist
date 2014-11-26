@@ -2,7 +2,7 @@ import os, sys, locale
 
 locale.setlocale(locale.LC_TIME,'ru_RU.utf8')
 
-sys.path.append('/usr/share/dasist')
+sys.path.append(os.path.dirname(__file__))
 os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
 
 import django.core.handlers.wsgi
