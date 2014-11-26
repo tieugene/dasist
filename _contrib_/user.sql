@@ -1,0 +1,16 @@
+INSERT INTO "auth_user" VALUES(2,'user11','Исполнитель1','','','pbkdf2_sha256$10000$IenwLn9ZoPmW$v2S74KPSxPwnFdRyT7pDMYafn2rg82RdZFMFzx4X7fI=',0,1,0,'2014-11-26 12:20:26.494246','2014-11-26 12:02:03');
+INSERT INTO "auth_user" VALUES(3,'user12','Исполнитель2','','','pbkdf2_sha256$10000$U0TRbVxhZeod$ARhDFpj3KqQmyUKJtCvLnqX6J9+VEoLv6RXU3gPScBQ=',0,1,0,'2014-11-26 12:03:33','2014-11-26 12:03:33');
+INSERT INTO "auth_user" VALUES(4,'user13','Исполнитель3','','','pbkdf2_sha256$10000$XIXxVZNe0VZK$VKJ7V28B5uirP9F3Vfck/vOJ7/B60D1Lo/urbG1DLvo=',0,1,0,'2014-11-26 12:10:06','2014-11-26 12:10:06');
+INSERT INTO "auth_user" VALUES(5,'user21','НачальникОМТС','','','pbkdf2_sha256$10000$tZAPjS7Fxpqw$oXtYvsAQqegDeghIqEssC1+fp/DqZgRC3zT/SE/MwFM=',0,1,0,'2014-11-26 12:10:31','2014-11-26 12:10:31');
+INSERT INTO "auth_user" VALUES(6,'user31','Руководитель','','','pbkdf2_sha256$10000$lmVbnajH9Fg8$Sc6+RvInx1jAUxR+P0cDJksCl8MeOLVCU17QsKUtmpo=',0,1,0,'2014-11-26 12:11:03','2014-11-26 12:11:03');
+INSERT INTO "auth_user" VALUES(7,'user41','Директор','','','pbkdf2_sha256$10000$KzP17yMGvzMO$PNW3OOtKttZ8iK7Q079SGwgut7/sC2Ib+7RRBfv3+54=',0,1,0,'2014-11-26 12:11:54','2014-11-26 12:11:54');
+INSERT INTO "auth_user" VALUES(8,'user51','ГенДиректор','','','pbkdf2_sha256$10000$EVhUhJCVVG8B$QzMvM2lvRiTA7go7iV5xjDvjR/eCdEmYYJRaoKkv2tc=',0,1,0,'2014-11-26 12:12:19','2014-11-26 12:12:19');
+INSERT INTO "auth_user" VALUES(9,'user61','Бухгалтер1','','','pbkdf2_sha256$10000$zd4EP3FkT2sp$+fIwE05vXR5/6I9kYimL+up+IGusyjbuh3sdyqbhLu8=',0,1,0,'2014-11-26 12:12:50','2014-11-26 12:12:50');
+INSERT INTO "bills_approver" VALUES(2,1,'Менеджер ОМТС');
+INSERT INTO "bills_approver" VALUES(3,1,'Менеджер ОМТС');
+INSERT INTO "bills_approver" VALUES(4,1,'Менеджер ОМТС');
+INSERT INTO "bills_approver" VALUES(5,2,'Начальник ОМТС');
+INSERT INTO "bills_approver" VALUES(6,2,'Руководитель направления');
+INSERT INTO "bills_approver" VALUES(7,2,'Директор');
+INSERT INTO "bills_approver" VALUES(8,2,'Генеральный директор');
+INSERT INTO "bills_approver" VALUES(9,3,'Бухгалтер');

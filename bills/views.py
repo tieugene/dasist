@@ -64,8 +64,11 @@ def	bill_list(request):
 	'''
 	# 1. pre
 	user = request.user
+	if user.is_superuser:
+		canadd = False
+	else:
+		canadd = models.Approver.objects.get(pk=user.pk).role.pk == 1
 	approver = models.Approver.objects.get(pk=user.pk)
-	#print approver.role.pk == 1
 	queryset = models.Bill.objects.all()
 	# 2. filter
 	fsfilter = request.session.get(FSNAME, None)# int 0..15: dropped|done|onway|draft
@@ -74,14 +77,12 @@ def	bill_list(request):
 		request.session[FSNAME] = fsfilter
 	else:
 		fsfilter = int(fsfilter)
-	#print 'List:', fsfilter
 	fsform = forms.FilterStateForm(initial={
 		'dead'	:bool(fsfilter&1),
 		'done'	:bool(fsfilter&2),
 		'draft'	:bool(fsfilter&4),
 		'onway'	:bool(fsfilter&8),
 	})
-	#queryset = queryset.filter(isalive=True)	# ok
 	queryset = __set_filter_state(queryset, fsfilter)
 	# 3. go
 	#if not request.user.is_superuser:
@@ -93,7 +94,7 @@ def	bill_list(request):
 		page = int(request.GET.get('page', '1')),
 		template_name = 'bills/list.html',
 		extra_context = {
-			'canadd': approver.role.pk == 1,
+			'canadd': canadd,
 			'fsform': fsform,
 		}
 	)
