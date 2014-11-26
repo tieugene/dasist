@@ -7,7 +7,16 @@ ADMINS = (
     ('TI_Eugene', 'im@eap.su'),
 )
 MANAGERS = ADMINS
-DATABASES = { 'default': { 'ENGINE': 'django.db.backends.sqlite3', 'NAME': '/path/to/dasist_test.db', 'USER': '', 'PASSWORD': '', 'HOST': '', 'PORT': '', }
+DATABASES = {
+	'default': {
+		'ENGINE': 'django.db.backends.sqlite3',
+		'NAME': '/path/to/dasist_test.db',
+		'USER': '',
+		'PASSWORD': '',
+		'HOST': '',
+		'PORT': '',
+	}
+}
 TIME_ZONE = 'Europe/Moscow'
 LANGUAGE_CODE = 'ru-RU'
 SITE_ID = 1
