@@ -312,11 +312,10 @@ def	bill_add(request):
 			bill.save()
 			# 4. add route
 			std_route1 = [	# role_id, approve_id, state_id, button_title
-				(2, models.Approver.objects.get(pk=13), 1, 'Ok'),	# начОМТС
+				(2, models.Approver.objects.get(pk=settings.USER_CHIEF), 1, 'Ok'),	# начОМТС
 				(3, form.cleaned_data['approver'], 1, 'Ok'),		# Руководитель
 				(4, None, 1, 'Ok'),					# Директор
-				(5, models.Approver.objects.get(pk=3), 1, 'Согласовано'),	# Гендир
-				#(6, models.Approver.objects.get(pk=4), 2, 'Oплачено'),	# Бухгалтер
+				(5, models.Approver.objects.get(pk=settings.USER_BOSS), 1, 'Согласовано'),	# Гендир
 				(6, None, 2, 'Oплачено'),	# Бухгалтер
 			]
 			for i, r in enumerate(std_route1):
