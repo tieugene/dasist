@@ -71,7 +71,10 @@ class	BillList(ListView):
 	# custom:
 	approver = None
 	mode = None
-	fsfilter = None
+	#fsfilter = None
+	#place = None
+	#shipper = None
+	#payer = None
 
 	def	get_queryset(self):
 		# 1. vars
@@ -80,7 +83,7 @@ class	BillList(ListView):
 		self.approver = models.Approver.objects.get(user=user)
 		role_id = self.approver.role.pk
 		self.mode = int(self.request.session.get('mode', 1))
-		self.fsfilter = self.request.session.get(FSNAME, 31)	# int 0..15: dropped|done|onway|draft
+		#self.fsfilter = self.request.session.get(FSNAME, 31)	# int 0..15: dropped|done|onway|draft
 		# 2. query
 		q = models.Bill.objects.all().order_by('-pk')
 		if (self.mode == 1):	# Everything
@@ -100,14 +103,27 @@ class	BillList(ListView):
 			else:
 				fsfilter = int(fsfilter)
 			q = set_filter_state(q, fsfilter)
-			# 3. go
-			self.fsform = forms.FilterStateBillListForm(initial={
+			form_initial = {
 				'dead'	:bool(fsfilter&1),
 				'done'	:bool(fsfilter&2),
 				'onpay'	:bool(fsfilter&4),
 				'onway'	:bool(fsfilter&8),
 				'draft'	:bool(fsfilter&16),
-			})
+			}
+			place = int(self.request.session.get('place', 0))
+			if (place):
+				q = q.filter(place__pk=place)
+				form_initial['place'] = place
+			shipper = int(self.request.session.get('shipper', 0))
+			if (shipper):
+				q = q.filter(shipper__pk=shipper)
+				form_initial['shipper'] = shipper
+			payer = int(self.request.session.get('payer', 0))
+			if (payer):
+				q = q.filter(payer__pk=payer)
+				form_initial['payer'] = payer
+			# 5. go
+			self.fsform = forms.FilterBillListForm(initial=form_initial)
 		else:			# Inbound
 			self.fsform = None
 			if (role_id == ROLE_ASSIGNEE):		# Исполнитель
@@ -136,7 +152,7 @@ def	bill_filter_state(request):
 	* redirect
 	ACL: *
 	'''
-	fsform = forms.FilterStateBillListForm(request.POST)
+	fsform = forms.FilterBillListForm(request.POST)
 	if fsform.is_valid():
 		fsfilter = \
 			int(fsform.cleaned_data['dead'])  * 1 | \
@@ -146,6 +162,9 @@ def	bill_filter_state(request):
 			int(fsform.cleaned_data['draft']) * 16
 		#print 'Filter:', fsfilter
 		request.session[FSNAME]		= fsfilter
+		request.session['place']	= fsform.cleaned_data['place'].pk if fsform.cleaned_data['place'] else 0
+		request.session['shipper']	= fsform.cleaned_data['shipper'].pk if fsform.cleaned_data['shipper'] else 0
+		request.session['payer']	= fsform.cleaned_data['payer'].pk if fsform.cleaned_data['payer'] else 0
 	return redirect('bill_list')
 
 @login_required

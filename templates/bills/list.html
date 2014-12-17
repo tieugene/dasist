@@ -9,6 +9,7 @@
  }
 {% endblock %}
 {% block body_main %}
+<form action="{% url 'bills.views.bill_filter_state' %}" method="POST">
 <table border="0"> <tr>
 {% if canadd %}
 <td>
@@ -38,7 +39,6 @@
 </td>
 {% if fsform %}
 <td nowrap>
-<form action="{% url 'bills.views.bill_filter_state' %}" method="POST">
 {% csrf_token %}
  {{ fsform.draft }} {{ fsform.draft.label }} |
  {{ fsform.onway }} {{ fsform.onway.label }} |
@@ -46,7 +46,6 @@
  {{ fsform.done }} {{ fsform.done.label }} |
  {{ fsform.dead }} {{ fsform.dead.label }}
  {% include "button/filter.html" %}
-</form>
 </td>
 {% endif %}
 </tr> </table>
@@ -65,6 +64,21 @@
   <th> Подписант </th>
   <th> ? </th>
  </tr>
+{% if fsform %}
+ <tr>
+  <th/>
+  <th/>
+  <th> {{ fsform.place }} </th>
+  <th/>
+  <th/>
+  <th> {{ fsform.shipper }} </th>
+  <th> {{ fsform.payer }} </th>
+  <th/>
+  <th/>
+  <th/>
+  <th/>
+ </tr>
+{% endif %}
  </thead>
  <tbody>
 {% for object in object_list %}
@@ -93,4 +107,5 @@ onclick="window.document.location='{% url 'bills.views.bill_view' object.pk %}'"
  </tr>
 {% endfor %}
 </table>
+</form>
 {% endblock %}
