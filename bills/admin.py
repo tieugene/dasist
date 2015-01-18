@@ -48,7 +48,7 @@ class	PayerAdmin(admin.ModelAdmin):
 
 class	BillAdmin(admin.ModelAdmin):
 	ordering	= ('fileseq',)
-	list_display	= ('fileseq', 'place', 'subject', 'depart', 'shipper', 'supplier', 'assign', 'rpoint', 'state',)
+	list_display	= ('fileseq', 'place', 'subject', 'depart', 'shipper', 'assign', 'rpoint', 'state',)
 	inlines		= (RouteInLine, EventInLine,)
 
 class	StateAdmin(admin.ModelAdmin):

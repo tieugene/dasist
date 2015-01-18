@@ -151,10 +151,8 @@ class	Bill(models.Model):
 	subject		= models.ForeignKey(Subject, null=True, blank=True, db_index=True, verbose_name=u'ПодОбъект')
 	depart		= models.ForeignKey(Department, null=True, blank=True, db_index=True, verbose_name=u'Направление')
 	payer		= models.ForeignKey(Payer, null=False, blank=False, db_index=True, verbose_name=u'Плательщик')
-	# FIXME: null=False
-	shipper		= models.ForeignKey(Org, null=True, blank=True, db_index=True, verbose_name=u'Поставщик')
-	# FIXME: delete
-	supplier	= models.CharField(max_length=64, db_index=True, verbose_name=u'Продавец')	# max=38
+	shipper		= models.ForeignKey(Org, null=False, blank=False, db_index=True, verbose_name=u'Поставщик')
+	#supplier	= models.CharField(max_length=64, null=True, blank=True, db_index=False, verbose_name=u'Продавец')	# max=38
 	billno		= models.CharField(max_length=32, db_index=True, verbose_name=u'Номер счета')	# max=11
 	billdate	= models.DateField(db_index=True, verbose_name=u'Дата счета')
 	billsum		= models.DecimalField(max_digits=11, decimal_places=2, db_index=True, verbose_name=u'Сумма счета')
@@ -193,8 +191,8 @@ class	Bill(models.Model):
 			return self.state.color
 
 	class   Meta:
-		#unique_together	= (('scan', 'type', 'name'),)
-		#ordering		= ('id',)
+		unique_together		= (('shipper', 'billno', 'billdate'),)
+		#ordering		= ('-fileseq_id',)
 		verbose_name		= u'Счет'
 		verbose_name_plural	= u'Счета'
 

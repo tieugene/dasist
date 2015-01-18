@@ -214,7 +214,6 @@ def	bill_add(request):
 				depart		= form.cleaned_data['depart'],
 				payer		= form.cleaned_data['payer'],
 				shipper		= shipper,
-				supplier	= shipper.name,
 				billno		= form.cleaned_data['billno'],
 				billdate	= form.cleaned_data['billdate'],
 				billsum		= form.cleaned_data['billsum'],
@@ -264,7 +263,6 @@ def	bill_edit(request, id):
 			bill.depart =	form.cleaned_data['depart']
 			bill.payer =	form.cleaned_data['payer']
 			bill.shipper =	shipper
-			bill.supplier =	shipper.name
 			bill.billno =	form.cleaned_data['billno']
 			bill.billdate =	form.cleaned_data['billdate']
 			bill.billsum =	form.cleaned_data['billsum']
@@ -285,13 +283,14 @@ def	bill_edit(request, id):
 			return redirect('bills.views.bill_view', bill.pk)
 	else:	# GET
 		form = forms.BillEditForm(initial={
+			'id':		bill.fileseq.pk,
 			'place':	bill.place,
 			'subject':	bill.subject,
 			'depart':	bill.depart,
 			'payer':	bill.payer,
-			'suppinn':	bill.shipper.inn if bill.shipper else '',
-			'suppname':	bill.shipper.name if bill.shipper else bill.supplier,
-			'suppfull':	bill.shipper.fullname if bill.shipper else '',
+			'suppinn':	bill.shipper.inn,
+			'suppname':	bill.shipper.name,
+			'suppfull':	bill.shipper.fullname,
 			'billno':	bill.billno,
 			'billdate':	bill.billdate,
 			'billsum':	bill.billsum,
@@ -607,7 +606,7 @@ def	bill_toscan(request, id):
 			depart	= bill.depart.name if bill.depart else None,
 			payer	= bill.payer.name if bill.payer else None,
 			shipper	= bill.shipper,
-			supplier= bill.supplier,
+			supplier= bill.shipper.name,
 			no	= bill.billno,
 			date	= bill.billdate,
 			sum	= bill.billsum,

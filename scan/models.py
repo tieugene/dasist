@@ -25,7 +25,7 @@ class	Scan(models.Model):
 	# FIXME: null=False
 	shipper		= models.ForeignKey(Org, null=True, blank=True, db_index=True, verbose_name=u'Поставщик')
 	# FIXME: delete
-	supplier	= models.CharField(max_length=64, db_index=True, verbose_name=u'Продавец')	# 48
+	supplier	= models.CharField(max_length=64, null=True, blank=True, db_index=True, verbose_name=u'Продавец')	# 48
 	no		= models.CharField(max_length=32, db_index=True, verbose_name=u'Номер')		# max=22
 	date		= models.DateField(db_index=True, verbose_name=u'Дата')
 	# FIXME: null=False

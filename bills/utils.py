@@ -54,7 +54,7 @@ def	bill_toscan_json(request, id):
 			subject	= bill.subject.name,
 			depart	= bill.depart.name,
 			payer	= bill.payer.name,
-			supplier= bill.supplier,
+			shipper	= bill.shipper,
 			no	= bill.billno,
 			date	= bill.billdate,
 			sum	= bill.billsum,

@@ -11,11 +11,11 @@ from django.utils.safestring import mark_safe
 from django.db.models.fields.files import FieldFile
 
 #import models
-from bills.models import Approver, Place, Subject, Department, Payer
+from bills.models import Approver, Place, Subject, Department, Payer, Bill
 from core.models import Org
 from core.forms import InnField, chk_new_org, chk_org_names
 
-import decimal
+import decimal, pprint
 
 mime_available = set((
 	'image/png',
@@ -53,7 +53,7 @@ class	BillAddFileForm(forms.Form):
 
 class	BillForm(forms.Form):
 	'''
-	Parent form
+	Parent form; abstract only.
 	'''
 	file		= forms.FileField(label=u'Скан')
 	rawpdf		= forms.BooleanField(label=u'Конвертировать PDF', required=False)
@@ -61,7 +61,6 @@ class	BillForm(forms.Form):
 	subject		= forms.ModelChoiceField(queryset=Subject.objects.all().order_by('name'), label=u'Подобъект', required=False)
 	depart		= forms.ModelChoiceField(queryset=Department.objects.all().order_by('name'), label=u'Направление', required=False)
 	payer		= forms.ModelChoiceField(queryset=Payer.objects.all().order_by('name'), empty_label='---', label=u'Плательщик')
-	#supplier	= forms.CharField(max_length=64, label=u'Поставщик')
 	suppinn		= InnField(min_length=10, max_length=12, label=u'ИНН Поставщика', required=True)
 	suppname	= forms.CharField(max_length=64, label=u'Поставщик (кратко)', required=True)
 	suppfull	= forms.CharField(max_length=64, label=u'Поставщик (полностью)', required=True)
@@ -106,10 +105,22 @@ class	BillAddForm(BillForm):
 			raise forms.ValidationError('File must be PNG, TIF, JPG or PDF!')
 		return None
 
+	def clean(self):
+		cleaned_data = super(BillAddForm, self).clean()
+		# 4. chk unqueness
+		if Bill.objects.filter(
+			shipper__inn = cleaned_data['suppinn'],
+			billno = cleaned_data['billno'],
+			billdate = cleaned_data['billdate']
+		).exists():
+			raise forms.ValidationError('Такой счет уже есть.')
+		return cleaned_data
+
 class	BillEditForm(BillForm):
 	'''
 	Edit existance bill (not locked)
 	'''
+	id		= forms.IntegerField(label=u'ID', widget=forms.HiddenInput())
 	file		= forms.FileField(label=u'Скан', required=False, help_text=u'(Выберите файл, если хотите заменить скан)')
 
 	def clean_file(self):
@@ -118,6 +129,17 @@ class	BillEditForm(BillForm):
 			if (not isinstance(file, FieldFile)) and (file.content_type not in mime_available):
 				raise forms.ValidationError('File must be PNG, TIF, JPG or PDF!')
 		return None
+
+	def clean(self):
+		cleaned_data = super(BillEditForm, self).clean()
+		# 4. chk unqueness
+		if Bill.objects.filter(
+			shipper__inn = cleaned_data['suppinn'],
+			billno = cleaned_data['billno'],
+			billdate = cleaned_data['billdate']
+		).exclude(fileseq_id = int(cleaned_data['id'])).exists():
+			raise forms.ValidationError('Такой счет уже есть.')
+		return cleaned_data
 
 class	BillReEditForm(forms.Form):
 	'''
