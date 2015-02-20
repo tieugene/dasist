@@ -37,18 +37,18 @@ logger = logging.getLogger(__name__)
 PAGE_SIZE	= 25
 FSNAME		= 'fstate'	# 0..3
 
-STATE_DRAFT	= 1
-STATE_ONWAY	= 2
-STATE_REJECTED	= 3
-STATE_ONPAY	= 4
-STATE_DONE	= 5
+STATE_DRAFT	= 1	# Черновик
+STATE_ONWAY	= 2	# В пути
+STATE_REJECTED	= 3	# Завернут
+STATE_ONPAY	= 4	# В оплате
+STATE_DONE	= 5	# Исполнен
 
-ROLE_ASSIGNEE	= 1
-ROLE_OMTSCHIEF	= 2
-ROLE_CHIEF	= 3
-ROLE_BOSS	= 4
-ROLE_MEGABOSS	= 5
-ROLE_ACCOUNTER	= 6
+ROLE_ASSIGNEE	= 1	# Исполнитель (ОМТС)
+ROLE_OMTSCHIEF	= 2	# Начальник ОМТС
+ROLE_CHIEF	= 3	# Руководитель
+ROLE_BOSS	= 4	# Директор
+ROLE_MEGABOSS	= 5	# Гендиректор
+ROLE_ACCOUNTER	= 6	# Бухгалтер
 
 reload(sys)
 sys.setdefaultencoding('utf-8')
@@ -89,6 +89,8 @@ class	BillList(ListView):
 		if (self.mode == 1):	# Everything
 			if (role_id == ROLE_ASSIGNEE) and (not user.is_superuser):	# Исполнитель
 				q = q.filter(assign=self.approver)
+			elif (user.pk == 30):		# special
+				pass
 			elif (role_id == ROLE_CHIEF):	# Руководитель
 				self.fsform = None
 				b_list = models.Event.objects.filter(approve=self.approver).values_list('bill_id', flat=True)
