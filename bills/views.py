@@ -98,6 +98,7 @@ class	BillList(ListView):
 				q2 = q.filter(pk__in=b_list)
 				q = q1 | q2
 			# 3. filter using Filter
+			# - state
 			fsfilter = self.request.session.get(FSNAME, None)# int 0..15: dropped|done|onway|draft
 			if (fsfilter == None):
 				fsfilter = 31
@@ -112,14 +113,27 @@ class	BillList(ListView):
 				'onway'	:bool(fsfilter&8),
 				'draft'	:bool(fsfilter&16),
 			}
+			# - place
 			place = int(self.request.session.get('place', 0))
 			if (place):
 				q = q.filter(place__pk=place)
 				form_initial['place'] = place
+			# - subject
+			subject = int(self.request.session.get('subject', 0))
+			if (subject):
+				q = q.filter(subject__pk=subject)
+				form_initial['subject'] = subject
+			# - depart
+			depart = int(self.request.session.get('depart', 0))
+			if (depart):
+				q = q.filter(depart__pk=depart)
+				form_initial['depart'] = depart
+			# - shipper
 			shipper = int(self.request.session.get('shipper', 0))
 			if (shipper):
 				q = q.filter(shipper__pk=shipper)
 				form_initial['shipper'] = shipper
+			# - payer
 			payer = int(self.request.session.get('payer', 0))
 			if (payer):
 				q = q.filter(payer__pk=payer)
@@ -145,6 +159,17 @@ class	BillList(ListView):
 		context['fsform']	= self.fsform
 		return context
 
+def	bill_get_subjects(request):
+	'''
+	AJAX callback on place change
+	'''
+	place=request.GET.get('place')
+	ret=[dict(id='', value='---'),]
+	if place:
+		for subj in models.Scan.objects.filter(place=place).order_by('subject').distinct().exclude(subject=None).values_list('subject',):
+			ret.append(dict(id=subj, value=subj))
+	return HttpResponse(json.dumps(ret), content_type='application/json')
+
 @login_required
 def	bill_filter_state(request):
 	'''
@@ -165,6 +190,8 @@ def	bill_filter_state(request):
 		#print 'Filter:', fsfilter
 		request.session[FSNAME]		= fsfilter
 		request.session['place']	= fsform.cleaned_data['place'].pk if fsform.cleaned_data['place'] else 0
+		request.session['subject']	= fsform.cleaned_data['subject'].pk if fsform.cleaned_data['subject'] else 0
+		request.session['depart']	= fsform.cleaned_data['depart'].pk if fsform.cleaned_data['depart'] else 0
 		request.session['shipper']	= fsform.cleaned_data['shipper'].pk if fsform.cleaned_data['shipper'] else 0
 		request.session['payer']	= fsform.cleaned_data['payer'].pk if fsform.cleaned_data['payer'] else 0
 	return redirect('bill_list')
