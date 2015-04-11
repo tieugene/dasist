@@ -50,8 +50,8 @@ function json_to_select(url, select_selector) {
   <th> Объект </th>
   <th> Подобъект </th>
   <th> Направление </th>
+  <th> Плательщик </th>
   <th> Поставщик </th>
-  <th> Продавец </th>
   <th> Номер </th>
   <th> Дата </th>
   <th> Сумма </th>
@@ -63,8 +63,8 @@ function json_to_select(url, select_selector) {
   <th> {{ form.place }} <br/> {{ form.place.errors }} </th>
   <th> {{ form.subject }} <br/> {{ form.subject.errors }} </th>
   <th> {{ form.depart }} <br/> {{ form.depart.errors }} </th>
+  <th> {{ form.payer }} <br/> {{ form.payer.errors }} </th>
   <th> {{ form.shipper }} <br/> {{ form.shipper.errors }} </th>
-  <th/>
   <th> {{ form.billno }} <br/> {{ form.billno.errors }} </th>
   <th> {{ form.billdate }} <br/> {{ form.billdate.errors }} </th>
   <th> {% include "button/filter.html" %} </th>
@@ -75,14 +75,14 @@ function json_to_select(url, select_selector) {
 {% for object in object_list %}
  <tr>
   <td> <a href="{% url 'scan_view' object.pk %}"> {{ object.pk }} </a> </td>
-  <td> {{ object.place }} </td>
-  <td> {{ object.subject|default:"---" }} </td>
-  <td> {% if object.depart %} {{ object.depart }} {% else %} --- {% endif %} </td>
-  <td> {{ object.shipper|default:"---" }} </td>
-  <td> {{ object.supplier }} </td>
-  <td> {{ object.no }} </td>
-  <td> {{ object.date|date:"d.m.y" }} </td>
-  <td> {{ object.sum|default:"---" }} </td>
+  <td nowrap> {{ object.place }} </td>
+  <td nowrap> {{ object.subject|default:"---" }} </td>
+  <td nowrap> {% if object.depart %} {{ object.depart }} {% else %} --- {% endif %} </td>
+  <td nowrap> {{ object.payer|default:"---" }} </td>
+  <td nowrap> {{ object.shipper|default:"---" }} </td>
+  <td nowrap> {{ object.no }} </td>
+  <td nowrap> {{ object.date|date:"d.m.y" }} </td>
+  <td nowrap> {{ object.sum|default:"---" }} </td>
  </tr>
 {% endfor %}
 </table>

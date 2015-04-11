@@ -89,8 +89,8 @@ class	BillList(ListView):
 		if (self.mode == 1):	# Everything
 			if (role_id == ROLE_ASSIGNEE) and (not user.is_superuser):	# Исполнитель
 				q = q.filter(assign=self.approver)
-			elif (user.pk == 30):		# special
-				pass
+			#elif (user.pk == 30):		# special
+			#	pass
 			elif (role_id == ROLE_CHIEF):	# Руководитель
 				self.fsform = None
 				b_list = models.Event.objects.filter(approve=self.approver).values_list('bill_id', flat=True)
