@@ -1,0 +1,27 @@
+* dump db (data only):
+	mysqldump --compact -t -u dasist -pdasist dasist | gzip -c > data-`date +%y%m%d%H%M%S`.sql.gz
+* remake model Bill (uniq, not null):
+	shipper = ...(null=False, blank=False)
+	supplier = ...(null=True, blank=True, db_index=False...)
+	unique_together	= (('shipper', 'billno', 'billdate'),)
+* recreate db:
+	for i in `echo "SHOW TABLES;" | mysql -u dasist -pdasist dasist | grep -v ^Tables`; do echo "DROP TABLE $i;" | mysql -u dasist -pdasist dasist; done
+	./manage.py syncdb
+* delete all data from tables:
+	for i in `echo "SHOW TABLES;" | mysql -u dasist -pdasist dasist | grep -v ^Tables`; do echo "DELETE FROM $i;" | mysql -u dasist -pdasist dasist; done
+* load dump:
+	gunzip < $1 | mysql -u dasist -pdasist dasist
+* drop supplier (db and model):
+	echo "ALTER TABLE bills_bill DROP COLUMN supplier" | mysql -u dasist -pdasist dasist
+	#supplier = ...
+
+Or:
+
+* dump/restore all data
+* remake model
+* alter model:
+	cat 015_to_016.sql | mysql -u dasist -pdasist dasist
+
+scan:
+	SELECT COUNT(*) FROM scan_scan;
+	SELECT COUNT(*) FROM scan_scan WHERE shipper_id IS NULL;
