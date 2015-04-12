@@ -84,13 +84,15 @@
 {% for object in object_list %}
  <tr class="bill" bgcolor="{{object.get_state_color}}"
  {% if object.rpoint %}
-  {% ifequal object.rpoint.approve.pk user.pk %}
-   style="font-weight:bold"
+  {% if object.rpoint.approve %}
+   {% ifequal object.rpoint.approve.pk user.pk %}
+    style="font-weight:bold"
+   {% endifequal %}
   {% else %}
    {% ifequal object.rpoint.role role %}
     style="font-weight:bold"
    {% endifequal %}
-  {% endifequal %}
+  {% endif %}
  {% endif %}
 onclick="window.document.location='{% url 'bills.views.bill_view' object.pk %}'">
   <td> <img src="{{ STATIC_URL }}img/32/{{ object.state.get_icon }}" width="16px" height="16px" title="{{ object.get_state_name }}"/> </td>

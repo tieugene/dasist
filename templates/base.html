@@ -36,7 +36,7 @@
 	<div id="tm_index" class=""> <a href="{% url 'bill_list' %}"> <img src="{{ STATIC_URL }}img/16/icon-home.png" alt="Главная" title="Главная"/> </a> </div>
 	<div style="width: 100%"> <b> <a href="{% url 'index' %}"> Das Ist: </a> {% block menu_title %} ... {% endblock %} </b> </div>
 	{% if user.is_authenticated %}
-		<div> {{ user.username }} : </div>
+		<div> {{ user.username }} ({{ user.last_name }}) : </div>
 		<div> <a href="{% url 'django.contrib.auth.views.logout' %}?next={% url 'index' %}"> <img src="{{ STATIC_URL }}img/16/icon-exit.png" alt="Выход" title="Выход"/> </a> </div>
 		{% if user.is_superuser %}
 			<div id="tm_admin"> <a href="{% url 'admin:index' %}"> <img src="{{ STATIC_URL }}img/16/icon-settingsthree-gears.png" alt="Админка" title="Админка"/> </a> </div>

@@ -254,8 +254,9 @@ def	bill_add(request):
 				state		= models.State.objects.get(pk=1),
 			)
 			# 4. add route
-			mgr = form.cleaned_data['approver']
-			fill_route(bill, mgr)
+			mgr = form.cleaned_data['mgr']
+			boss = form.cleaned_data['boss']
+			fill_route(bill, mgr, boss)
 			return redirect('bills.views.bill_view', bill.pk)
 	else:
 		form = forms.BillAddForm()
@@ -268,7 +269,7 @@ def	bill_add(request):
 @transaction.atomic
 def	bill_edit(request, id):
 	'''
-	Update (edit) Draft bill
+	Update (edit) new Draft bill
 	ACL: root | (Испольнитель & Draft & !Locked)
 	TODO: transaction
 	'''
@@ -298,11 +299,16 @@ def	bill_edit(request, id):
 			bill.payedsum =	form.cleaned_data['payedsum']
 			bill.topaysum =	form.cleaned_data['topaysum']
 			bill.save()	# FIXME: update()
-			# 2. update approver (if required)
-			special = bill.route_set.get(order=2)	# OMTS boss
-			if (special.approve != form.cleaned_data['approver']):
-				special.approve = form.cleaned_data['approver']
-				special.save()
+			# 2. update mgr (if required)
+			mgr = bill.route_set.get(order=2)
+			if (mgr.approve != form.cleaned_data['mgr']):
+				mgr.approve = form.cleaned_data['mgr']
+				mgr.save()
+			# 2. update boss (if required)
+			boss = bill.route_set.get(order=4)
+			if (boss.approve != form.cleaned_data['boss']):
+				boss.approve = form.cleaned_data['boss']
+				boss.save()
 			# 3. update image
 			file = request.FILES.get('file', None)
 			if (file):
@@ -325,7 +331,8 @@ def	bill_edit(request, id):
 			'billsum':	bill.billsum,
 			'payedsum':	bill.payedsum,
 			'topaysum':	bill.topaysum,
-			'approver':	bill.route_set.get(order=2).approve,	# костыль для initial
+			'mgr':	bill.route_set.get(order=2).approve,	# костыль для initial
+			'boss':		bill.route_set.get(order=4).approve,	# костыль для initial
 			#'approver':	6,
 		})
 	return render_to_response('bills/form.html', context_instance=RequestContext(request, {
@@ -357,22 +364,29 @@ def	bill_reedit(request, id):
 			# 1. update bill
 			bill.topaysum =	form.cleaned_data['topaysum']
 			bill.save()
-			# 2. update approver (if required)
-			special = bill.route_set.get(order=2)	# Аня
-			if (special.approve != form.cleaned_data['approver']):
-				special.approve = form.cleaned_data['approver']
-				special.save()
+			# 2. update mgr (if required)
+			mgr = bill.route_set.get(order=2)
+			if (mgr.approve != form.cleaned_data['mgr']):
+				mgr.approve = form.cleaned_data['mgr']
+				mgr.save()
+			# 2. and boss (if required)
+			boss = bill.route_set.get(order=4)
+			if (boss.approve != form.cleaned_data['boss']):
+				boss.approve = form.cleaned_data['boss']
+				boss.save()
 			return redirect('bills.views.bill_view', bill.pk)
 	else:	# GET
 		# hack
 		if (bill.route_set.count() == 0):
 			#print "Fill route"
 			mgr = models.Approver.objects.get(pk=9)
-			fill_route(bill, mgr)
+			boss = models.Approver.objects.get(pk=3)
+			fill_route(bill, mgr, boss)
 		# /hack
 		form = forms.BillReEditForm(initial={
-			'topaysum': bill.topaysum if bill.topaysum else max_topaysum,
-			'approver':	bill.route_set.get(order=2).approve,
+			'topaysum':	bill.topaysum if bill.topaysum else max_topaysum,
+			'mgr':		bill.route_set.get(order=2).approve,
+			'boss':		bill.route_set.get(order=4).approve,
 		})
 	return render_to_response('bills/form_reedit.html', context_instance=RequestContext(request, {
 		'form': form,

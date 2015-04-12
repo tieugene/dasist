@@ -157,12 +157,12 @@ def	handle_shipper(form):
 		shipper.save()
 	return shipper
 
-def	fill_route(bill, mgr):
+def	fill_route(bill, mgr, boss):
 	std_route1 = [	# role_id, approve_id
 		(2, models.Approver.objects.get(pk=23)),	# Gorbunoff.N.V.
 		(3, mgr),					# Руководитель
 		(4, None),					# Директор
-		(5, models.Approver.objects.get(pk=3)),		# Гендир
+		(5, boss),					# Гендир
 		(6, None),					# Бухгалтер
 	]
 	for i, r in enumerate(std_route1):
