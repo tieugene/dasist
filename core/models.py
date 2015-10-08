@@ -60,7 +60,7 @@ class	File(RenameFilesModel):
 	mime	= models.CharField(null=False, blank=False, db_index=True, max_length=16, verbose_name=u'Тип Mime')	# max=10
 	ctime	= models.DateTimeField(null=False, blank=False, db_index=True, auto_now_add=True, verbose_name=u'Записано')
 	size	= models.PositiveIntegerField(null=False, blank=False, db_index=True, verbose_name=u'Размер')
-	md5	= models.CharField(null=False, blank=False, db_index=True, max_length=32, verbose_name=u'MD5')
+	md5     = models.CharField(null=False, blank=False, db_index=True, max_length=32, verbose_name=u'MD5')
 	#RENAME_FILES    = {'file': {'dest': settings.BILLS_ROOT, 'keep_ext': False}}
 	RENAME_FILES    = {'file': {'dest': '', 'keep_ext': False}}
 
@@ -95,6 +95,15 @@ class	File(RenameFilesModel):
 
 	def	get_path(self):
 		return os.path.join(settings.MEDIA_ROOT, '%08d' % self.pk)
+
+	def update_meta(self):
+	    '''
+	    Update md5 and size to real values
+	    '''
+	    path = self.get_path()
+	    self.size = os.path.getsize(self.get_path())
+	    self.md5 = file_md5(path)
+	    super(File, self).save()
 
 	class   Meta:
 		verbose_name            = u'Файл'

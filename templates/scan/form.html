@@ -2,6 +2,16 @@
 {% block js %}
 {{ form.media }}
 {% include "handle_inn.html" %}
+<script type="text/javascript">
+        $(document).ready(function() {
+                $('.image-pack').magnificPopup({
+                        delegate: 'a.image-link',
+                        type:'image',
+                        gallery: { enabled: true },
+                        image: { verticalFit: false }
+                });
+        });
+</script>
 {% endblock %}
 {% block body_main %}
    <form enctype="multipart/form-data" action="" method="POST">
@@ -10,17 +20,17 @@
 		{{ form.as_table }}
  <tr>
   <td> Оригинал: </td>
-  <td> <ol style="margin: 0">
+  <td> <ol style="margin: 0" class="image-pack">
    {% for img in object.fileseq.fileseqitem_set.all %}
     <li>
-     <a href="{% url 'core.views.file_get' img.pk %}" data-lightbox="roadtrip"> <img src="{{ STATIC_URL }}img/32/png.png" title="{{ img.file.name }}"/> </a>
-     <a href="{% url 'core.views.file_get' img.pk %}"> <img src="{{ STATIC_URL }}img/32/download.png" title="Скачать"/> </a>
+     <a href="{% url 'core.views.file_get' img.pk %}" class="image-link" style="text-decoration: none"> {% include "svgbutton/preview.html" %} </a>
+     <a href="{% url 'core.views.file_get' img.pk %}" style="text-decoration: none"> {% include "svgbutton/download.html" %} </a>
     </li>
    {% endfor %}
   </ol> </td>
  </tr>
 	</table>
-	<button type="submit"> Записать </button>
-	<a href="{% url 'scan_view' object.pk %}"> <button type="button"> Отказаться </button> </a>
+	<button type="submit"> {% include "svgbutton/save.html" %} </button>
+	<a href="{% url 'scan_view' object.pk %}"> <button type="button"> {% include "svgbutton/cancel.html" %} </button> </a>
    </form>
 {% endblock %}

@@ -6,25 +6,25 @@ $("#tm_index").addClass("active");
 <center>
 {% if user.is_authenticated %}
 <p>
- <a href="{% url 'org_list' %}"> <button type="button"> Организации </button> </a>
- <a href="{% url 'scan_list' %}"> <button type="button"> Сканы </button> </a>
- <a href="{% url 'bill_list' %}"> <button type="button"> Счета </button> </a>
+ <a href="{% url 'org_list'  %}" class="nou"> <button type="button" class="plain"> Организации </button> </a>
+ <a href="{% url 'scan_list' %}" class="nou"> {% include "svgbutton/archive.html" %} </a>
+ <a href="{% url 'bill_list' %}" class="nou"> <button type="button" class="plain"> Счета </button> </a>
 </p>
  {% if user.is_superuser %}
 <p>
- <a href="{% url 'file_list' %}"> <button type="button"> Файлы </button> </a>
- <a href="{% url 'fileseq_list' %}"> <button type="button"> Последовательности </button> </a>
+ <a href="{% url 'file_list' %}" class="nou"> {% include "svgbutton/file.html" %} </a>
+ <a href="{% url 'fileseq_list' %}" class="nou"> {% include "svgbutton/files.html" %} </a>
 </p>
-<p>
+<!--p>
  Не переключайтесь:
  <button type="button" disabled="disabled"> Заявки </button>
  <button type="button" disabled="disabled"> ХелпДеск </button>
  <button type="button" disabled="disabled"> Сертификаты </button>
  <button type="button" disabled="disabled"> Аудиенция </button>
-</p>
+</p-->
  {% endif %}
 {% else %}
-	<a href="{% url 'django.contrib.auth.views.login' %}?next={% url 'index' %}" rel="nofollow"> <button type="button" alt="Вход" title="Вход"> Вход </button> </a>
+	<a href="{% url 'django.contrib.auth.views.login' %}?next={% url 'index' %}" rel="nofollow" class="nou"> <button type="button" alt="Вход" title="Вход" class="plain"> Вход </button> </a>
 {% endif %}
 </center>
 {% endblock %}

@@ -43,8 +43,10 @@ $(document).ready(function() {
 	//console.log(place_id);
 	fill_subj(place_id, subj_id);
 	// image preview
-	$('.image-link').magnificPopup({
+	$('table.image-pack').magnificPopup({
+		delegate: 'a.image-link',
 		type:'image',
+		gallery: { enabled: true },
 		image: { verticalFit: false }
 	});
 });
@@ -60,7 +62,7 @@ $(document).ready(function() {
 		{% if object %}
 		 <tr>
 		  <td> Оригинал: </td>
-		  <td> <table border="0">
+		  <td> <table border="0" class="image-pack">
 		   {% for img in object.fileseq.list_items.all %}
 		    <tr> <td>
 		     {{ img.order }}

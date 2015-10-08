@@ -12,10 +12,11 @@
 	<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/colors.css"/>
 	<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/fieldset.css"/>
 	<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/thumbnails.css" />
-	<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/lightbox.css" />
+	<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/svgbutton.css" />
+	<!--link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/lightbox.css" /-->
 	<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/magnific-popup.css" />
 	<script type="text/javascript" src="{{ STATIC_URL }}js/jquery.min.js"></script>
-	<script type="text/javascript" src="{{ STATIC_URL }}js/lightbox.min.js"></script>
+	<!--script type="text/javascript" src="{{ STATIC_URL }}js/lightbox.min.js"></script-->
 	<script type="text/javascript" src="{{ STATIC_URL }}js/jquery.magnific-popup.js"></script>
 	<!-- admin -->
 	<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}admin/css/forms.css" />
@@ -33,18 +34,18 @@
 </head>
 <body>
 <div id="topmenu">
-	<div id="tm_index" class=""> <a href="{% url 'bill_list' %}"> <img src="{{ STATIC_URL }}img/16/icon-home.png" alt="Главная" title="Главная"/> </a> </div>
+	<div id="tm_index" class=""> <a href="{% url 'bill_list' %}"> {% include "svgbutton/home.html" %} </a> </div>
 	<div style="width: 100%"> <b> <a href="{% url 'index' %}"> Das Ist: </a> {% block menu_title %} ... {% endblock %} </b> </div>
 	{% if user.is_authenticated %}
 		<div> {{ user.username }} ({{ user.last_name }}) : </div>
-		<div> <a href="{% url 'django.contrib.auth.views.logout' %}?next={% url 'index' %}"> <img src="{{ STATIC_URL }}img/16/icon-exit.png" alt="Выход" title="Выход"/> </a> </div>
-		{% if user.is_superuser %}
-			<div id="tm_admin"> <a href="{% url 'admin:index' %}"> <img src="{{ STATIC_URL }}img/16/icon-settingsthree-gears.png" alt="Админка" title="Админка"/> </a> </div>
+		<div> <a href="{% url 'django.contrib.auth.views.logout' %}?next={% url 'index' %}"> {% include "svgbutton/logout.html" %} </a> </div>
+		{% if user.is_staff %}
+			<div id="tm_admin"> <a href="{% url 'admin:index' %}"> {% include "svgbutton/admin.html" %} </a> </div>
 		{% endif %}
 	{% else %}
-		<div id="tm_login"> <a href="{% url 'django.contrib.auth.views.login' %}?next={% url 'index' %}" rel="nofollow"> <img src="{{ STATIC_URL }}img/16/icon-enter.png" alt="Вход" title="Вход"/> </a> </div>
+		<div id="tm_login"> <a href="{% url 'django.contrib.auth.views.login' %}?next={% url 'index' %}" rel="nofollow"> {% include "svgbutton/login.html" %} </a> </div>
 	{% endif %}
-	<div id="tm_about"> <a href="{% url 'about' %}"> <img src="{{ STATIC_URL }}img/16/icon-info-sign.png" alt="О программе" title="О программе"/> </a> </div>
+	<div id="tm_about"> <a href="{% url 'about' %}"> {% include "svgbutton/about.html" %} </a> </div>
 </div>
 	<div>
 	{% block body_main %}

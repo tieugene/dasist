@@ -5,6 +5,7 @@ bills.views_extras
 # 1. django
 from django.conf import settings
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.core.urlresolvers import reverse
 
 # 2. system
 import os, sys, imp, pprint, tempfile, subprocess, shutil, json, decimal
@@ -216,3 +217,15 @@ def	mailto(request, bill):
 			__emailto(request, [bill.assign.user.email], bill.pk, 'Счет оплачен')
 		else:
 			__emailto(request, [bill.assign.user.email], bill.pk, 'Счет частично оплачен')
+
+def rotate_img(file, dir):
+	'''
+	Rotate given image 90 deg right or left. Reuires ImageMagic
+	@param file:core.File - file to rotate
+	@param dir:bool - direction (True - right, False - left)
+	'''
+	arglist = ['mogrify', '-rotate', '90' if dir else '-90', file.get_path()]
+	sp = subprocess.Popen(args=arglist, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+	sp.communicate()
+	file.update_meta()
+

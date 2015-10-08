@@ -707,11 +707,33 @@ def	bill_img_dn(request, id):
 	ACL: root | (Исполнитель && Draft)
 	'''
 	fsi = FileSeqItem.objects.get(pk=int(id))
-	fs = fsi.fileseq
-	bill = fs.bill
+	bill = fsi.fileseq.bill
 	if (request.user.is_superuser) or (\
 	   (bill.assign.user.pk == request.user.pk) and\
 	   (bill.get_state_id() == 1)):
 		if not fsi.is_last():
 			fsi.swap(fsi.order+1)
 	return redirect('bills.views.bill_view', fsi.fileseq.pk)
+
+def	__bill_img_r(request, id, dir):
+	fsi = FileSeqItem.objects.get(pk=int(id))
+	bill = fsi.fileseq.bill
+	if (request.user.is_superuser) or (\
+	   (bill.assign.user.pk == request.user.pk) and\
+	   (bill.get_state_id() == 1)):
+		rotate_img(fsi.file, dir)
+	return redirect('bills.views.bill_view', fsi.fileseq.pk)
+
+@login_required
+def	bill_img_rl(request, id):
+	'''
+	Rotate img left
+	'''
+	return __bill_img_r(request, id, False)
+
+@login_required
+def	bill_img_rr(request, id):
+	'''
+	Rotate img right
+	'''
+	return __bill_img_r(request, id, True)

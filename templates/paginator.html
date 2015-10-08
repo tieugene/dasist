@@ -1,20 +1,20 @@
 {% if is_paginated %}
 <span class="pagination" align="right">
 	{% if page_obj.has_previous %}
-		<input type="button" value="|<" title="Первая страница" onClick="window.location.href='?page=1'" style="cursor:pointer"/>
-		<input type="button" value="<" title="Предыдущая страница" onClick="window.location.href='?page={{ page_obj.previous_page_number }}'" style="cursor:pointer"/>
+		<a href="?page=1" class="nou"> {% include "svgbutton/page-first.html" %} </a>
+		<a href="?page={{ page_obj.previous_page_number }}" class="nou"> {% include "svgbutton/page-prev.html" %} </a>
 	{% else %}
-		<input type="button" value="|<" disabled/>
-		<input type="button" value="<" disabled/>
+		{% include "svgbutton/page-first.html" %}
+		{% include "svgbutton/page-prev.html" %}
 	{% endif %}
 	{{ page_obj.start_index }}..{{ page_obj.end_index }}/{{ paginator.count }}
 	({{ page_obj.number }}/{{ paginator.num_pages }})
 	{% if page_obj.has_next %}
-		<input type="button" value=">" title="Следующая страница" onClick="window.location.href='?page={{ page_obj.next_page_number }}'" style="cursor:pointer"/>
-		<input type="button" value=">|" title="Последняя страница" onClick="window.location.href='?page={{ paginator.num_pages }}'" style="cursor:pointer"/>
+		<a href="?page={{ page_obj.next_page_number }}" class="nou"> {% include "svgbutton/page-next.html" %} </a>
+		<a href="?page={{ paginator.num_pages }}" class="nou"> {% include "svgbutton/page-last.html" %} </a>
 	{% else %}
-		<input type="button" value=">" disabled/>
-		<input type="button" value=">|" disabled/>
+		{% include "svgbutton/page-next.html" %}
+		{% include "svgbutton/page-last.html" %}
 	{% endif %}
 </span>
 {% endif %}

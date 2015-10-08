@@ -2,8 +2,10 @@
 {% block js %}
 <script type="text/javascript">
 	$(document).ready(function() {
-		$('.image-link').magnificPopup({
+		$('ol.image-pack').magnificPopup({
+			delegate: 'a.image-link',
 			type:'image',
+			gallery: { enabled: true },
 			image: { verticalFit: false }
 		});
 	});
@@ -28,7 +30,7 @@
 	<tr> <th> Оплачено </th> <td> {{ object.payedsum }} </td> </tr>
 	<tr>
 	 <td> Оригинал: </td>
-	 <td> <ol style="margin: 0">
+	 <td> <ol style="margin: 0" class="image-pack">
 	  {% for img in object.fileseq.fileseqitem_set.all %}
 	   <li>
 	    <a href="{% url 'core.views.file_get' img.pk %}" class="image-link"> <img src="{{ STATIC_URL }}img/32/png.png" title="{{ img.file.name }}"/></a>

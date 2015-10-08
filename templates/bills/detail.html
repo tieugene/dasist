@@ -2,9 +2,11 @@
 {% block js %}
 <script type="text/javascript">
 	$(document).ready(function() {
-		$('.image-link').magnificPopup({
-			type:'image',
-			image: { verticalFit: false }
+		$('table.image-pack').magnificPopup({
+			delegate: 'a.image-link',
+			type: 'image',
+			image: { titleSrc: 'title', verticalFit: false },
+			gallery: { enabled: true },
 		});
 	});
 	function printimg(img, name) {
@@ -69,21 +71,22 @@
  </td> </tr>
  <tr>
   <td> Оригинал: </td>
-  <td> <table border="0">
+  <td> <table border="0" class="image-pack">
    {% for img in object.fileseq.list_items.all %}
     <tr> <td>
      {{ img.order }}
-     <a href="{% url 'core.views.file_get' img.pk %}" class="image-link"> <img src="{{ STATIC_URL }}img/32/png.png" title="{{ img.file.name }}"/> </a>
-     <a href="{% url 'core.views.file_get' img.pk %}"> <img src="{{ STATIC_URL }}img/32/download.png" title="Скачать"/> </a>
-     <input type="image" src="{{ STATIC_URL }}img/32/document-print.png" onClick="printimg('{% url 'core.views.file_get' img.pk %}', '{{ img.pk }}');"/>
+     <a href="{% url 'core.views.file_get' img.pk %}" class="image-link" title="{{ img.file.name }}" style="text-decoration: none;"> {% include "svgbutton/preview.html" %} </a>
+     <a href="{% url 'core.views.file_get' img.pk %}" style="text-decoration: none;"> {% include "svgbutton/download.html" %} </a>
+     <img src="{{ STATIC_URL }}img/svg/print.svg" class="svgbutton" title="Распечатать" onClick="printimg('{% url 'core.views.file_get' img.pk %}', '{{ img.pk }}');"/>
      {% if button.edit %}
-	<a href="{% url 'bills.views.bill_img_del' img.pk %}"> {% include "button/delete.html" %} </a>
+	<a href="{% url 'bills.views.bill_img_del' img.pk %}" style="text-decoration: none;"> {% include "svgbutton/delete.html" %} </a>
+     <a href="{% url 'bills.views.bill_img_rl' img.pk %}" style="text-decoration: none;"> {% include "svgbutton/rleft.html" %} </a>
+     <a href="{% url 'bills.views.bill_img_rr' img.pk %}" style="text-decoration: none;"> {% include "svgbutton/rright.html" %} </a>
      </td><td>
 	{% if not img.is_first %} <a href="{% url 'bills.views.bill_img_up' img.file.pk %}"> <button type="button"> <img src="{{ STATIC_URL }}img/up.png" alt="up"/> </button> </a> <br/> {% endif %}
 	{% if not img.is_last  %} <a href="{% url 'bills.views.bill_img_dn' img.file.pk %}"> <button type="button"> <img src="{{ STATIC_URL }}img/down.png" alt="down"/> </button> </a> {% endif %}
-     </td>
      {% endif %}
-    </tr>
+    </td> </tr>
    {% endfor %}
   </table> </td>
  </tr>
@@ -113,34 +116,44 @@
 </fieldset>
 
 <p style="margin: 0">
-{% if button.arch %}	<a href="{% url 'bills.views.bill_toscan' object.pk %}">	{% include "button/arch.html" %} </a> {% endif %}
+{% if button.arch %}	<a href="{% url 'bills.views.bill_toscan' object.pk %}" style="text-decoration: none;"> {% include "svgbutton/archive.html" %} </a> {% endif %}
 {% if button.edit %}
  {% if object.state.pk == 1 %}
   {% if object.locked %}
-	<a href="{% url 'bills.views.bill_reedit' object.pk %}"> {% include "button/edit.html" %} </a>
+	<a href="{% url 'bills.views.bill_reedit' object.pk %}" style="text-decoration: none;"> {% include "button/edit.html" %} </a>
   {% else %}
-	<a href="{% url 'bills.views.bill_edit' object.pk %}"> {% include "button/edit.html" %} </a>
+	<a href="{% url 'bills.views.bill_edit' object.pk %}" style="text-decoration: none;"> {% include "button/edit.html" %} </a>
   {% endif %}
  {% endif %}
 {% endif %}
-{% if button.del %}	<a href="{% url 'bills.views.bill_delete' object.pk %}">	{% include "button/delete.html" %} </a> {% endif %}
-{% if button.restart %}	<a href="{% url 'bills.views.bill_restart' object.pk %}">	{% include "button/restart.html" %} </a> {% endif %}
-{% if user.is_superuser %} <a href="{% url 'bills.views.bill_mail' object.pk %}"> {% include "button/mailto.html" %} </a> {% endif %}
+{% if button.del %}	<a href="{% url 'bills.views.bill_delete' object.pk %}" style="text-decoration: none;"> {% include "svgbutton/delete.html" %} </a> {% endif %}
+{% if button.restart %}	<a href="{% url 'bills.views.bill_restart' object.pk %}" style="text-decoration: none;"> {% include "button/restart.html" %} </a> {% endif %}
+{% if user.is_superuser %} <a href="{% url 'bills.views.bill_mail' object.pk %}" style="text-decoration: none;"> {% include "svgbutton/mailto.html" %} </a> {% endif %}
 </p>
 {% if upload_form %}
 <form enctype="multipart/form-data" action="" method="POST">
 	{% csrf_token %}
-	<table> <tr>
-	<td>
-	<table border="0">
-		{{ upload_form.as_table }}
+	<table>
+	    <tr>
+		<td>
+		    <table border="0">
+			{{ upload_form.as_table }}
+		    </table>
+		</td>
+		<td>
+		    <button type="submit"> {% include "svgbutton/upload.html" %} </button>
+		</td>
+		<input type="hidden" name="action" value="upload">
+	    </tr>
+	    <tr> <td>
+		<b> Внимание: </b>
+		<ul>
+		    <li> Первым должен быть счет </li>
+		    <li> Файлы счета желательно называть "Счет&lt;далее_по_вкусу&gt;" </li>
+		    <li> Изображения можно передвигать между собой вверх-вниз </li>
+		</ul>
+	    </td> </tr>
 	</table>
-	</td>
-	<td>
-	<button type="submit"> <img src="{{ STATIC_URL }}img/32/upload.png" alt="upload"/> </button>
-	</td>
-	<input type="hidden" name="action" value="upload">
-	</tr> </table>
 </form>
 {% endif %}
 {% if form %} {# was if canaccept #}
