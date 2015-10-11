@@ -120,14 +120,14 @@
 {% if button.edit %}
  {% if object.state.pk == 1 %}
   {% if object.locked %}
-	<a href="{% url 'bills.views.bill_reedit' object.pk %}" style="text-decoration: none;"> {% include "button/edit.html" %} </a>
+	<a href="{% url 'bills.views.bill_reedit' object.pk %}" style="text-decoration: none;"> {% include "svgbutton/edit.html" %} </a>
   {% else %}
-	<a href="{% url 'bills.views.bill_edit' object.pk %}" style="text-decoration: none;"> {% include "button/edit.html" %} </a>
+	<a href="{% url 'bills.views.bill_edit' object.pk %}" style="text-decoration: none;"> {% include "svgbutton/edit.html" %} </a>
   {% endif %}
  {% endif %}
 {% endif %}
 {% if button.del %}	<a href="{% url 'bills.views.bill_delete' object.pk %}" style="text-decoration: none;"> {% include "svgbutton/delete.html" %} </a> {% endif %}
-{% if button.restart %}	<a href="{% url 'bills.views.bill_restart' object.pk %}" style="text-decoration: none;"> {% include "button/restart.html" %} </a> {% endif %}
+{% if button.restart %}	<a href="{% url 'bills.views.bill_restart' object.pk %}" style="text-decoration: none;"> {% include "svgbutton/restart.html" %} </a> {% endif %}
 {% if user.is_superuser %} <a href="{% url 'bills.views.bill_mail' object.pk %}" style="text-decoration: none;"> {% include "svgbutton/mailto.html" %} </a> {% endif %}
 </p>
 {% if upload_form %}
@@ -141,7 +141,7 @@
 		    </table>
 		</td>
 		<td>
-		    <button type="submit"> {% include "svgbutton/upload.html" %} </button>
+		    <button type="submit" class="plain"> {% include "svgbutton/upload.html" %} </button>
 		</td>
 		<input type="hidden" name="action" value="upload">
 	    </tr>
@@ -163,9 +163,9 @@
  <p style="margin: 0"> <i> (комментарий обязателен только при Отказе) </i> </p>
  <p style="margin: 0">
  {% if button.accept %}
-  <button type="submit" name="resume" value="accept" style="padding: 10px; background-color: chartreuse">
+  <button type="submit" name="resume" value="accept" style="background-color: chartreuse">
   {% if button.accept == 1 %}
-   Вперед
+   {% include "svgbutton/fly.html" %}
   {% elif button.accept == 2 %}
    Согласовано
   {% elif button.accept == 3 %}
