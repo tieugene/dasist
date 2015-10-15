@@ -6,9 +6,9 @@ $("#tm_index").addClass("active");
 <center>
 {% if user.is_authenticated %}
 <p>
- <a href="{% url 'org_list'  %}" class="nou"> {% include "svgbutton/org.html" %} </a>
- <a href="{% url 'scan_list' %}" class="nou"> {% include "svgbutton/archive.html" %} </a>
- <a href="{% url 'bill_list' %}" class="nou"> <button type="button" class="plain"> Счета </button> </a>
+ <a href="{% url 'org_list'  %}" class="nou"> <button type="button" class="plain" style="padding: 5pt 10pt"> Организации </button> </a>
+ <a href="{% url 'scan_list' %}" class="nou"> <button type="button" class="plain" style="padding: 5pt 10pt"> Архив </button> </a>
+ <a href="{% url 'bill_list' %}" class="nou"> <button type="button" class="plain" style="padding: 5pt 10pt"> Счета </button> </a>
 </p>
  {% if user.is_superuser %}
 <p>
