@@ -49,6 +49,22 @@ $(document).ready(function() {
 		gallery: { enabled: true },
 		image: { verticalFit: false }
 	});
+	// percentage
+	$('#id_topaysum').blur(function() {
+		var re = /^\d{1,3}%$/;
+		v = $('#id_topaysum').val();
+		//console.log(v);
+		if (re.test(v)) {
+			v = Number(v.replace('%', '')) / 100;
+			//console.log(v);
+			if ((v > 0) && (v <= 100)) {
+				s = $('#id_billsum').val().replace(/\s/g, '').replace(',', '.');
+				n = (s * v).toFixed(2).replace('.', ',');
+				//console.log(n);
+				$('#id_topaysum').val(n);
+			};
+		};
+	});
 });
 </script>
 {% include "handle_inn.html" %}
