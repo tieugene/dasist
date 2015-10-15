@@ -111,7 +111,9 @@ class	File(RenameFilesModel):
 
 @receiver(pre_delete, sender=File)
 def _file_delete(sender, instance, **kwargs):
-	os.unlink(instance.get_path())
+	p = instance.get_path()
+	if (os.path.exists(p)):
+		os.unlink(p)
 
 class	FileSeq(models.Model):
 	'''
