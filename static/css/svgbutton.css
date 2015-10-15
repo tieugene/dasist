@@ -8,6 +8,18 @@ img.svgbutton {
 	cursor: pointer;
 	width: 24px;
 }
+
+img.svgbutton_s {
+	border: 1px solid silver;
+	background-color: #F0F0F0;
+	// border-color: black;
+	border-radius: 3px;
+	padding: 3px;
+	margin: 0px;
+	cursor: pointer;
+	width: 16px;
+}
+
 img.svgsubbutton {
 	border: 1px solid silver;
 	background-color: #F0F0F0;
@@ -23,6 +35,12 @@ img.svgimg {
 	cursor: pointer;
 	width: 24px;
 	padding: 5px;
+}
+
+img.svgimg_s {
+	cursor: pointer;
+	width: 16px;
+	padding: 3px;
 }
 
 button.plain {
