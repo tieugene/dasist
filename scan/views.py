@@ -67,7 +67,7 @@ class	ScanList(ListView):
 		self.filter['billno'] =		self.request.session.get('scan_billno', None)
 		self.filter['billdate'] =	self.request.session.get('scan_billdate', None)
 		# 2. create query
-		q = models.Scan.objects.all()
+		q = models.Scan.objects.all().order_by('-pk')
 		if self.filter['place']:
 			q = q.filter(place=self.filter['place'])
 			self.subjs = forms.EMPTY_VALUE + list(q.order_by('subject').distinct().exclude(subject=None).values_list('subject', 'subject'))
