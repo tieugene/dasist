@@ -8,7 +8,7 @@
 	<table border="1">
 		{{ form.as_table }}
 	</table>
-	<button type="submit"> {% include "svgbutton/save.html" %} </button>
-	<a href="{% url 'org_view' object.pk %}"> <button type="button"> {% include "svgbutton/cancel.html" %} </button> </a>
+	<button type="submit" title="Записать" class="plain"> {% include "svgbutton/save.html" %} </button>
+	<a href="{% url 'org_view' object.pk %}"> <button type="button" title="Отказаться" class="plain"> {% include "svgbutton/cancel.html" %} </button> </a>
    </form>
 {% endblock %}

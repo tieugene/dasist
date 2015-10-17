@@ -17,7 +17,7 @@
 	{% csrf_token %}
 	<table border="0"> <tr>
 	<td> {{ form.as_p }} </td>
-	<td> <button type="submit"> {% include "svgbutton/upload.html" %} </button> </td>
+	<td> <button type="submit" class="plain"> {% include "svgbutton/upload.html" %} </button> </td>
 	</tr> </table>
 </form>
 <a href="{% url 'core.views.fileseq_del' object.pk %}"> {% include "svgbutton/delete.html" %} </a>

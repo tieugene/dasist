@@ -23,8 +23,8 @@
   <tr> <th> Fileseq </th> <td> {% if object.fileseqitem %} <a href="{% url 'fileseq_view' object.fileseqitem.fileseq.pk %}"> {{ object.fileseqitem.fileseq.pk }} </a> {% else %} - {% endif %} </td> </tr>
  </tbody>
 </table>
+<a href="{% url 'core.views.file_get' object.pk %}" class="image-link" title="{{ object.file.name }}" style="text-decoration: none;"> {% include "svgbutton/preview.html" %} </a>
 <a href="{% url 'core.views.file_get' object.pk %}" style="text-decoration: none;"> {% include "svgbutton/download.html" %} </a>
 <a href="{% url 'core.views.file_preview' object.pk %}" style="text-decoration: none;"> {% include "svgbutton/expand.html" %} </a>
-<a href="{% url 'core.views.file_get' object.pk %}" class="image-link" title="{{ object.file.name }}" style="text-decoration: none;"> {% include "svgbutton/preview.html" %} </a>
 <a href="{% url 'core.views.file_del' object.pk %}" style="text-decoration: none;"> {% include "svgbutton/delete.html" %} </a>
 {% endblock %}

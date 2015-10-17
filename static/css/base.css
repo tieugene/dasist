@@ -48,12 +48,12 @@ p {
 }
 
 a:link {
-    text-decoration: underline ;
+    text-decoration: none;
     color: #4444ff ;
 }
 
 a.nou {
-    text-decoration: none ;
+    text-decoration: none;
 }
 
 a:visited {

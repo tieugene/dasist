@@ -34,8 +34,8 @@
 </head>
 <body>
 <div id="topmenu">
-	<div id="tm_index" class=""> <a href="{% url 'bill_list' %}"> {% include "svgbutton/home.html" %} </a> </div>
-	<div style="width: 100%"> <b> <a href="{% url 'index' %}"> Das Ist: </a> {% block menu_title %} ... {% endblock %} </b> </div>
+	<div id="tm_index" class=""> <a href="{% url 'index' %}"> {% include "svgbutton/home.html" %} </a> </div>
+	<div style="width: 100%"> <b> {% block menu_title %} ... {% endblock %} </b> </div>
 	{% if user.is_authenticated %}
 		<div> {{ user.username }} ({{ user.last_name }}) : </div>
 		<div> <a href="{% url 'django.contrib.auth.views.logout' %}?next={% url 'index' %}"> {% include "svgbutton/logout.html" %} </a> </div>

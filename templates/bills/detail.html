@@ -60,7 +60,7 @@
  <tr> <th> К оплате </th> <td> {{ object.topaysum }} </td> </tr>
  <tr> <th> Ответственный </th> <td> {{ object.assign.get_fio }} </td> </tr>
  <tr> <th> Подписант </th> <td> {% if object.rpoint %} {% if object.rpoint.approve %} {{ object.rpoint.approve.get_fio }} {% else %} [{{ object.rpoint.role.name }}] {% endif %} {% else %} --- {% endif %} </td> </tr>
- <tr> <th> Состояние </th> <td> <img src="{{ STATIC_URL }}img/32/{{ object.state.get_icon }}" width="16px" height="16px"/> ({{ object.get_state_name }}) </td> </tr>
+ <tr> <th> Состояние </th> <td> <img src="{{ STATIC_URL }}img/svg/{{ object.state.get_icon }}" width="16px" height="16px"/> ({{ object.get_state_name }}) </td> </tr>
  <tr> <th> Доплата </th> <td> {% if object.locked %} &radic; {% else %} - {% endif %} </td> </tr>
  <tr> <th> Маршрут </th> <td>
   <ol style="margin: 0">
@@ -75,16 +75,16 @@
    {% for img in object.fileseq.list_items.all %}
     <tr> <td>
      {{ img.order }}
-     <a href="{% url 'core.views.file_get' img.pk %}" class="image-link" title="{{ img.file.name }}" style="text-decoration: none;"> {% include "svgbutton/preview.html" %} </a>
-     <a href="{% url 'core.views.file_get' img.pk %}" style="text-decoration: none;"> {% include "svgbutton/download.html" %} </a>
-     <img src="{{ STATIC_URL }}img/svg/print.svg" class="svgbutton" title="Распечатать" onClick="printimg('{% url 'core.views.file_get' img.pk %}', '{{ img.pk }}');"/>
+     <a href="{% url 'core.views.file_get' img.pk %}" title="{{ img.file.name }}" class="nou image-link"> {% include "svgbutton/preview.html" %} </a>
+     <a href="{% url 'core.views.file_get' img.pk %}" class="nou"> {% include "svgbutton/download.html" %} </a>
+     <img src="{{ STATIC_URL }}img/svg/print.svg" class="svgimg" title="Распечатать" onClick="printimg('{% url 'core.views.file_get' img.pk %}', '{{ img.pk }}');"/>
      {% if button.edit %}
-	<a href="{% url 'bills.views.bill_img_del' img.pk %}" style="text-decoration: none;"> {% include "svgbutton/delete.html" %} </a>
-     <a href="{% url 'bills.views.bill_img_rl' img.pk %}" style="text-decoration: none;"> {% include "svgbutton/rleft.html" %} </a>
-     <a href="{% url 'bills.views.bill_img_rr' img.pk %}" style="text-decoration: none;"> {% include "svgbutton/rright.html" %} </a>
+     <a href="{% url 'bills.views.bill_img_rl' img.pk %}" class="nou"> {% include "svgbutton/rleft.html" %} </a>
+     <a href="{% url 'bills.views.bill_img_rr' img.pk %}" class="nou"> {% include "svgbutton/rright.html" %} </a>
+	<a href="{% url 'bills.views.bill_img_del' img.pk %}" class="nou"> {% include "svgbutton/delete.html" %} </a>
      </td><td>
-	{% if not img.is_first %} <a href="{% url 'bills.views.bill_img_up' img.file.pk %}"> <button type="button"> <img src="{{ STATIC_URL }}img/up.png" alt="up"/> </button> </a> <br/> {% endif %}
-	{% if not img.is_last  %} <a href="{% url 'bills.views.bill_img_dn' img.file.pk %}"> <button type="button"> <img src="{{ STATIC_URL }}img/down.png" alt="down"/> </button> </a> {% endif %}
+	{% if not img.is_first %} <a href="{% url 'bills.views.bill_img_up' img.file.pk %}"> {% include "svgbutton/move-up.html" %} </a> <br/> {% endif %}
+	{% if not img.is_last  %} <a href="{% url 'bills.views.bill_img_dn' img.file.pk %}"> {% include "svgbutton/move-down.html" %} </a> {% endif %}
      {% endif %}
     </td> </tr>
    {% endfor %}
@@ -105,7 +105,7 @@
 <tbody>
   {% for i in object.events.all %}
   <tr>
-   <td valign="top"> <img {% if i.resume %} src="{{ STATIC_URL }}img/32/dialog-ok.png" title="OK" {% else %} src="{{ STATIC_URL }}img/32/dialog-cancel.png" title="Canceled" {% endif %} width="16px" height="16px"/> </td>
+   <td valign="top"> {% if i.resume %} {% include "svgbutton/agreed.html" %} {% else %} {% include "svgbutton/canceled.html" %} {% endif %} </td>
    <td valign="top"> {{ i.ctime|date:"d.m H:i" }} </td>
    <td valign="top"> {{ i.approve.user.last_name }} </td>
    <td valign="top"> {{ i.comment }} </td>
@@ -116,19 +116,19 @@
 </fieldset>
 
 <p style="margin: 0">
-{% if button.arch %}	<a href="{% url 'bills.views.bill_toscan' object.pk %}" style="text-decoration: none;"> {% include "svgbutton/archive.html" %} </a> {% endif %}
+{% if button.arch %}	<a href="{% url 'bills.views.bill_toscan' object.pk %}" class="nou"> {% include "svgbutton/archive.html" %} </a> {% endif %}
 {% if button.edit %}
  {% if object.state.pk == 1 %}
   {% if object.locked %}
-	<a href="{% url 'bills.views.bill_reedit' object.pk %}" style="text-decoration: none;"> {% include "svgbutton/edit.html" %} </a>
+	<a href="{% url 'bills.views.bill_reedit' object.pk %}" class="nou"> {% include "svgbutton/edit.html" %} </a>
   {% else %}
-	<a href="{% url 'bills.views.bill_edit' object.pk %}" style="text-decoration: none;"> {% include "svgbutton/edit.html" %} </a>
+	<a href="{% url 'bills.views.bill_edit' object.pk %}" class="nou"> {% include "svgbutton/edit.html" %} </a>
   {% endif %}
  {% endif %}
 {% endif %}
-{% if button.del %}	<a href="{% url 'bills.views.bill_delete' object.pk %}" style="text-decoration: none;"> {% include "svgbutton/delete.html" %} </a> {% endif %}
-{% if button.restart %}	<a href="{% url 'bills.views.bill_restart' object.pk %}" style="text-decoration: none;"> {% include "svgbutton/restart.html" %} </a> {% endif %}
-{% if user.is_superuser %} <a href="{% url 'bills.views.bill_mail' object.pk %}" style="text-decoration: none;"> {% include "svgbutton/mailto.html" %} </a> {% endif %}
+{% if button.del %}	<a href="{% url 'bills.views.bill_delete' object.pk %}" class="nou"> {% include "svgbutton/delete.html" %} </a> {% endif %}
+{% if button.restart %}	<a href="{% url 'bills.views.bill_restart' object.pk %}" class="nou"> {% include "svgbutton/restart.html" %} </a> {% endif %}
+{% if user.is_superuser %} <a href="{% url 'bills.views.bill_mail' object.pk %}" class="nou"> {% include "svgbutton/mailto.html" %} </a> {% endif %}
 </p>
 {% if upload_form %}
 <form enctype="multipart/form-data" action="" method="POST">
@@ -138,7 +138,7 @@
 		<td>
 		    <table border="0">
 			{{ upload_form.as_table }}
-		    </table>
+		    </table>••••••••
 		</td>
 		<td>
 		    <button type="submit" class="plain"> {% include "svgbutton/upload.html" %} </button>
@@ -163,21 +163,21 @@
  <p style="margin: 0"> <i> (комментарий обязателен только при Отказе) </i> </p>
  <p style="margin: 0">
  {% if button.accept %}
-  <button type="submit" name="resume" value="accept" style="background-color: chartreuse">
+  <button type="submit" name="resume" value="accept" class="plain_big" style="background-color: chartreuse;">
   {% if button.accept == 1 %}
    {% include "svgbutton/fly.html" %}
   {% elif button.accept == 2 %}
-   Согласовано
+   {% include "svgbutton/agree.html" %}
   {% elif button.accept == 3 %}
-   В оплате
+   {% include "svgbutton/onpay.html" %} <!-- В оплате -->
   {% else %}
-   Оплачено
+   {% include "svgbutton/payed.html" %} <!-- Оплачено -->
   {% endif %}
   </button>
  {% endif %}
  {% if button.reject %}
-  <button type="submit" name="resume" value="reject" style="padding: 10px; background-color: red">
-   Отказать
+  <button type="submit" name="resume" value="reject" class="plain_big" style="background-color: red;">
+   {% include "svgbutton/disagree.html" %}
   </button>
  {% endif %}
  </p>

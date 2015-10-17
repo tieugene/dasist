@@ -21,12 +21,12 @@ from core.models import File, FileSeq, Org
 #import core
 
 STATE_ICON = (
-	'document-edit.png',
-	'running-man.png',
-	'dialog-cancel.png',
-	'dollar.png',
-	'dialog-ok.png',
-	'ark.png',
+	'pencil.svg',
+	'paper-plane-o.svg',
+	'ban.svg',
+	'money.svg',
+	'check.svg',
+	'archive.svg',
 )
 
 # Refs

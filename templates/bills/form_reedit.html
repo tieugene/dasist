@@ -33,9 +33,8 @@
 	 <td> <ol style="margin: 0" class="image-pack">
 	  {% for img in object.fileseq.fileseqitem_set.all %}
 	   <li>
-	    <a href="{% url 'core.views.file_get' img.pk %}" class="image-link"> <img src="{{ STATIC_URL }}img/32/png.png" title="{{ img.file.name }}"/></a>
-	    <!--a href="#" onClick="window.open('{% url 'core.views.file_get' img.pk %}', '_blank', 'toolbar=0, location=0, directories=0, status=0, scrollbars=0, resizable=0, copyhistory=0, menuBar=0, width=500, height=500');return(false)"> <img src="{{ STATIC_URL }}img/16/png.png" title="{{ img.file.name }}"/> </a-->
-	    <a href="{% url 'core.views.file_get' img.pk %}"> <img src="{{ STATIC_URL }}img/32/download.png" title="Download"/> </a>
+	    <a href="{% url 'core.views.file_get' img.pk %}" class="image-link"> {% include "svgbutton/preview.html" %} </a>
+	    <a href="{% url 'core.views.file_get' img.pk %}"> {% include "svgbutton/download.html" %} </a>
 	   </li>
 	  {% endfor %}
 	 </ol> </td>
@@ -43,7 +42,7 @@
 	{{ form.as_table }}
    <tbody>
   </table>
-  <button type="submit"> Записать </button>
-  <a href="{% url 'bills.views.bill_view' object.pk %}"> <button type="button"> Отказаться </button> </a>
+  <button type="submit" title="Записать" class="plain"> {% include "svgbutton/save.html" %} </button>
+  <a href="{% url 'bills.views.bill_view' object.pk %}"> <button type="button" title="Отказаться" class="plain"> {% include "svgbutton/cancel.html" %} </button> </a>
  </form>
 {% endblock %}
