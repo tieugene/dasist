@@ -66,6 +66,17 @@ button.plain_big {
 	//height: 24px;
 }
 
+button.plain_mid {
+	border: 1px solid silver;
+	background-color: #F0F0F0;
+	cursor: pointer;
+	border-radius: 2pt;
+	padding: 3pt 5pt;
+	margin: 0;
+	//color: none;
+	//height: 24px;
+}
+
 //path {
 	//width: 16pt;
 	//height: 16pt;

@@ -24,7 +24,7 @@ STATE_ICON = (
 	'pencil.svg',
 	'paper-plane-o.svg',
 	'ban.svg',
-	'money.svg',
+	'usd.svg',
 	'check.svg',
 	'archive.svg',
 )
