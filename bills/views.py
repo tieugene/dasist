@@ -23,7 +23,7 @@ from django.utils.encoding import smart_unicode
 from django.db import transaction
 
 # 2. system
-import sys, pprint, decimal
+import sys, pprint, decimal, json
 
 # 4. my
 import models, forms
@@ -166,8 +166,8 @@ def	bill_get_subjects(request):
 	place=request.GET.get('place')
 	ret=[dict(id='', value='---'),]
 	if place:
-		for subj in models.Scan.objects.filter(place=place).order_by('subject').distinct().exclude(subject=None).values_list('subject',):
-			ret.append(dict(id=subj, value=subj))
+		for subj in models.Subject.objects.filter(place=place).order_by('name'):
+			ret.append(dict(id=subj.pk, value=subj.name))
 	return HttpResponse(json.dumps(ret), content_type='application/json')
 
 @login_required

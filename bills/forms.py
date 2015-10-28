@@ -39,9 +39,18 @@ class	FilterBillListForm(forms.Form):
 	dead	= forms.BooleanField(label='Завернуты',	required = False)
 	place	= forms.ModelChoiceField(queryset=Place.objects.all().order_by('name'), label=u'Объект', required=False)
 	subject	= forms.ModelChoiceField(queryset=Subject.objects.none().order_by('name'), label=u'Подобъект', required=False)
+	#subject = forms.ChoiceField(choices=EMPTY_VALUE, label=u'Подобъект', required=False)
 	depart	= forms.ModelChoiceField(queryset=Department.objects.all().order_by('name'), label=u'Направление', required=False)
 	shipper	= forms.ModelChoiceField(queryset=Org.objects.all().order_by('name'), label=u'Поставщик', required=False)
 	payer	= forms.ModelChoiceField(queryset=Payer.objects.all().order_by('name'), label=u'Поставщик', required=False)
+
+	def __init__(self, *args, **kwargs):
+		forms.Form.__init__(self, *args, **kwargs)
+		# None or unicode/int
+		place = self.fields['place'].initial or self.initial.get('place') or self._raw_value('place')
+		if place:
+			# parent is known. Now I can display the matching children.
+			self.fields['subject'].queryset = Subject.objects.filter(place__pk=int(place)).order_by('name')
 
 class	BillAddFileForm(forms.Form):
 	file		= forms.FileField(label=u'Файл')

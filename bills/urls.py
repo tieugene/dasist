@@ -13,6 +13,7 @@ urlpatterns = patterns('bills.views',
 	url(r'^lpp/(?P<lpp>\d+)/$',	'bill_set_lpp'),
 	url(r'^mode/(?P<mode>\d+)/$',	'bill_set_mode'),
 	url(r'^fs/$',			'bill_filter_state'),
+	url(r'^get_subjs/$',		'bill_get_subjects'),
 	url(r'^a/$',			'bill_add'),		# GET/POST; ACL: assign, Cancel > list; save > view (Draft)
 	url(r'^(?P<id>\d+)/$',		'bill_view'),		# GET; ACL: assign|approv
 	url(r'^(?P<id>\d+)/u/$',	'bill_edit'),		# GET/POST; ACL: assign+draft;
