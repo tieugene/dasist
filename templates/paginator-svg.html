@@ -1,0 +1,20 @@
+{% if is_paginated %}
+<span class="pagination" align="right">
+	{% if page_obj.has_previous %}
+		<a href="?page=1" class="nou"> {% include "svgbutton/page-first.html" %} </a>
+		<a href="?page={{ page_obj.previous_page_number }}" class="nou"> {% include "svgbutton/page-prev.html" %} </a>
+	{% else %}
+		{% include "svgbutton/page-first.html" %}
+		{% include "svgbutton/page-prev.html" %}
+	{% endif %}
+	{{ page_obj.start_index }}..{{ page_obj.end_index }}/{{ paginator.count }}
+	({{ page_obj.number }}/{{ paginator.num_pages }})
+	{% if page_obj.has_next %}
+		<a href="?page={{ page_obj.next_page_number }}" class="nou"> {% include "svgbutton/page-next.html" %} </a>
+		<a href="?page={{ paginator.num_pages }}" class="nou"> {% include "svgbutton/page-last.html" %} </a>
+	{% else %}
+		{% include "svgbutton/page-next.html" %}
+		{% include "svgbutton/page-last.html" %}
+	{% endif %}
+</span>
+{% endif %}
