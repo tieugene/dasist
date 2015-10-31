@@ -92,6 +92,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.admin',
+    'simple_autocomplete',
     'core',
     'bills',
     'scan',
@@ -130,3 +131,4 @@ try:
         from local_settings import *
 except ImportError:
         pass
+SIMPLE_AUTOCOMPLETE = {'core.org': {'search_field': 'name'}}
