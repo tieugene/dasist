@@ -6,6 +6,7 @@ Requires:
 * ?python-pillow
 * ghostscript
 * poppler-utils (pdfimages)
+* django-simple-autocomplete (https://github.com/praekelt/django-simple-autocomplete/)
 
 = Starting =
 * httpd

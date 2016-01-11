@@ -86,10 +86,14 @@ class	BillForm(forms.Form):
 	def clean(self):
 		cleaned_data = super(BillForm, self).clean()
 		# 1. chk inn<>suppname
-		if ('suppinn' in cleaned_data) and ('suppname' in cleaned_data):
-			chk_new_org(cleaned_data['suppinn'], cleaned_data['suppname'])
+		suppinn = cleaned_data.get('suppinn')
+		suppname = cleaned_data.get('suppname')
+		suppfull = cleaned_data.get('suppfull')
+		if (suppinn and suppname):
+			chk_new_org(suppinn, suppname)
 		# 2. chk supp names
-		chk_org_names(cleaned_data['suppname'], cleaned_data['suppfull'])
+		if (suppname and suppfull):
+			chk_org_names(suppname, suppfull)
 		# 3. chk summs
 		billsum = cleaned_data.get('billsum')
 		payedsum = cleaned_data.get('payedsum')
@@ -120,12 +124,16 @@ class	BillAddForm(BillForm):
 	def clean(self):
 		cleaned_data = super(BillAddForm, self).clean()
 		# 4. chk unqueness
-		if Bill.objects.filter(
-			shipper__inn = cleaned_data['suppinn'],
-			billno = cleaned_data['billno'],
-			billdate = cleaned_data['billdate']
-		).exists():
-			raise forms.ValidationError('Такой счет уже есть.')
+		shipper__inn = cleaned_data.get('suppinn')
+		billno = cleaned_data.get('billno')
+		billdate = cleaned_data.get('billdate')
+		if (shipper__inn and billno and billdate):
+			if Bill.objects.filter(
+				shipper__inn = shipper__inn,
+				billno = billno,
+				billdate = billdate
+			).exists():
+				raise forms.ValidationError('Такой счет уже есть.')
 		return cleaned_data
 
 class	BillEditForm(BillForm):

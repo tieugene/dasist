@@ -53,3 +53,4 @@ def	chk_org_names(shortname, fullname):
 class	OrgEditForm(forms.ModelForm):
 	class Meta:
 		model = models.Org
+		exclude = []

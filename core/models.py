@@ -121,7 +121,7 @@ class	FileSeq(models.Model):
 	TODO:
 	- del file
 	'''
-	files	= models.ManyToManyField(File, null=True, blank=True, through='FileSeqItem', verbose_name=u'Файлы')
+	files	= models.ManyToManyField(File, through='FileSeqItem', verbose_name=u'Файлы')
 
 	def     __unicode__(self):
 		return str(self.pk)
