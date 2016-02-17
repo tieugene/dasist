@@ -673,7 +673,7 @@ def	bill_img_del(request, id):
 	Delete bill img (one from).
 	ACL: root | (Исполнитель && Draft)
 	'''
-	fsi = FileSeqItem.objects.get(pk=int(id))
+	fsi = get_object_or_404(FileSeqItem, pk=int(id))
 	fs = fsi.fileseq
 	bill = fs.bill
 	if (request.user.is_superuser) or (\
