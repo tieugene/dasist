@@ -21,6 +21,6 @@ urlpatterns = patterns('',
 	url(r'^core/',			include('core.urls')),
 	url(r'^bills/',			include('bills.urls')),
 	url(r'^scan/',			include('scan.urls')),
-	url(r'^simple-autocomplete/',	include('simple_autocomplete.urls')),
+#	url(r'^simple-autocomplete/',	include('simple_autocomplete.urls')),
 )
 urlpatterns += staticfiles_urlpatterns()
