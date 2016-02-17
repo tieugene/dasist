@@ -131,4 +131,4 @@ try:
         from local_settings import *
 except ImportError:
         pass
-SIMPLE_AUTOCOMPLETE = {'core.org': {'search_field': 'name'}}
+#SIMPLE_AUTOCOMPLETE = {'core.org': {'search_field': 'name'}}
