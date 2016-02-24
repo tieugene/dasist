@@ -8,26 +8,26 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 	{% block meta %} {% endblock %}
 	<title> Das Ist {% block title %} ... {% endblock %} </title>
+	<!-- 1. me -->
 	<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/base.css">
-	<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/colors.css"/>
+	<!--link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/colors.css"/-->
 	<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/fieldset.css"/>
 	<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/thumbnails.css" />
 	<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/svgbutton.css" />
-	<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}js/jquery-ui/jquery-ui.css" />
-	<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}js/jquery-ui/jquery-ui.theme.css" />
-	<!--link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/lightbox.css" /-->
-	<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/magnific-popup.css" />
-	<script type="text/javascript" src="{{ STATIC_URL }}js/jquery.min.js"></script>
-	<!--script type="text/javascript" src="{{ STATIC_URL }}js/lightbox.min.js"></script-->
-	<script type="text/javascript" src="{{ STATIC_URL }}js/jquery.magnific-popup.js"></script>
-	<script type="text/javascript" src="{{ STATIC_URL }}js/jquery-ui/jquery-ui.min.js"></script>
-	<!-- admin -->
+	<!-- 2. admin (symlink) -->
 	<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}admin/css/forms.css" />
 	<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}admin/css/widgets.css" />
 	<!--script type="text/javascript" src="/admin/jsi18n/"></script-->
 	<script type="text/javascript">window.__admin_media_prefix__ = "{{ STATIC_URL }}admin/";</script>
 	<script type="text/javascript" src="{{ STATIC_URL }}admin/js/core.js"></script>
-	<!-- /admin -->
+	<!-- 3. jquery -->
+	<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}js/jquery-ui/jquery-ui.css" />
+	<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}js/jquery-ui/jquery-ui.theme.css" />
+	<script type="text/javascript" src="{{ STATIC_URL }}js/jquery.min.js"></script>
+	<script type="text/javascript" src="{{ STATIC_URL }}js/jquery-ui/jquery-ui.min.js"></script>
+	<!-- 4. jquery.magnific-popup -->
+	<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/magnific-popup.css" />
+	<script type="text/javascript" src="{{ STATIC_URL }}js/jquery.magnific-popup.js"></script>
 	{% block js %}
 	{% endblock %}
 	<style>

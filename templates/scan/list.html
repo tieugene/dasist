@@ -25,6 +25,7 @@ function json_to_select(url, select_selector) {
 </script>
 {% endblock %}
 {% block body_main %}
+{{ form.media }}
 <table border="0">
 <tr>
 <td>
@@ -57,7 +58,7 @@ function json_to_select(url, select_selector) {
   <th> Сумма </th>
  </tr>
 <form action="{% url 'scan.views.scan_set_filter' %}" method="POST">
-{% csrf_token %}
+ {% csrf_token %}
  <tr>
   <th/>
   <th> {{ form.place }} <br/> {{ form.place.errors }} </th>

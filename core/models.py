@@ -13,7 +13,6 @@ from django.dispatch.dispatcher import receiver
 from django.db import transaction
 
 # 2. 3rd parties
-#from sortedm2m.fields import SortedManyToManyField
 
 # 3. system
 import os, datetime, hashlib, uuid
@@ -30,7 +29,7 @@ def    my_upload_to(instance, filename):
 	#return u'temp/%s' % filename
 	return u'temp/%s' % uuid.uuid4().hex.upper()
 
-def file_md5(file, block_size=1024*14):
+def	file_md5(file, block_size=1024*14):
 	'''
 	file_md5(file, use_system = False) -> md5sum of "file" as hexdigest string.
 	"file" may be a file name or file object, opened for read.
@@ -61,7 +60,6 @@ class	File(RenameFilesModel):
 	ctime	= models.DateTimeField(null=False, blank=False, db_index=True, auto_now_add=True, verbose_name=u'Записано')
 	size	= models.PositiveIntegerField(null=False, blank=False, db_index=True, verbose_name=u'Размер')
 	md5     = models.CharField(null=False, blank=False, db_index=True, max_length=32, verbose_name=u'MD5')
-	#RENAME_FILES    = {'file': {'dest': settings.BILLS_ROOT, 'keep_ext': False}}
 	RENAME_FILES    = {'file': {'dest': '', 'keep_ext': False}}
 
 	def	save(self):
@@ -110,7 +108,7 @@ class	File(RenameFilesModel):
 		verbose_name_plural     = u'Файлы'
 
 @receiver(pre_delete, sender=File)
-def _file_delete(sender, instance, **kwargs):
+def	_file_delete(sender, instance, **kwargs):
 	p = instance.get_path()
 	if (os.path.exists(p)):
 		os.unlink(p)

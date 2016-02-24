@@ -3,13 +3,17 @@
 scan.forms
 '''
 
+# 1. django
 from django import forms
 from django.db.models.fields import BLANK_CHOICE_DASH
 
+# 2. system
 import datetime
 
-#from simple_autocomplete.widgets import AutoCompleteWidget
+# 3. 3rd
+from dal import autocomplete
 
+# 4. my
 from models import Scan
 from bills.models import Place, Subject
 from core.models import Org
@@ -24,8 +28,8 @@ class	FilterScanListForm(forms.Form):
 	subject		= forms.ChoiceField(choices=EMPTY_VALUE, label=u'Подобъект', required=False)
 	depart		= forms.ChoiceField(choices=EMPTY_VALUE + list(Scan.objects.order_by('depart').distinct().exclude(depart=None).values_list('depart', 'depart')), label=u'Направление', required=False)
 	payer		= forms.ChoiceField(choices=EMPTY_VALUE + list(Scan.objects.order_by('payer').distinct().exclude(payer=None).values_list('payer', 'payer')), label=u'Плательщик', required=False)
-#	shipper		= forms.ModelChoiceField(queryset=Org.objects.all().order_by('name'), label=u'Поставщик', required=False, widget=AutoCompleteWidget())
-	shipper		= forms.ModelChoiceField(queryset=Org.objects.all().order_by('name'), label=u'Поставщик', required=False)
+	#shipper	= forms.ModelChoiceField(queryset=Org.objects.all(), label=u'Поставщик', required=False)
+	shipper		= forms.ModelChoiceField(queryset=Org.objects.all(), required=False, widget=autocomplete.ModelSelect2(url='org-autocomplete'))
 	billno		= forms.CharField(max_length=64, label=u'Номер счета', required=False)
 	#billdate	= forms.DateField(label=u'Дата счета', required=False, widget=forms.TextInput(attrs={'size':8}))
 	billdate	= forms.CharField(label=u'Дата счета', required=False, widget=forms.TextInput(attrs={'size':8}))

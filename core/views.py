@@ -15,6 +15,9 @@ from django.db import transaction
 # 2. system
 import json
 
+# 3. 3rd parties
+from dal import autocomplete
+
 # 4. my
 import models, forms
 
@@ -153,3 +156,12 @@ def	org_get_by_inn(request):
 	else:
 		ret = None
 	return HttpResponse(json.dumps(ret), content_type='application/json')
+
+class	OrgAutocomplete(autocomplete.Select2QuerySetView):
+	def get_queryset(self):
+		if not self.request.user.is_authenticated():
+			return models.Org.objects.none()
+		qs = models.Org.objects.all()
+		if self.q:
+			qs = qs.filter(name__istartswith=self.q)
+		return qs

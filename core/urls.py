@@ -29,4 +29,6 @@ urlpatterns = patterns('core.views',
 	url(r'^o/(?P<pk>\d+)/r/$',	login_required(views.OrgDetail.as_view()), name='org_view'),
 	url(r'^o/(?P<id>\d+)/u/$',	'org_edit'),
 	url(r'^o/get_by_inn/$',		'org_get_by_inn'),
+	url('org-autocomplete/$',	views.OrgAutocomplete.as_view(), name='org-autocomplete',),
+
 )

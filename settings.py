@@ -92,13 +92,18 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.admin',
-#    'simple_autocomplete',
+    'dal',
+    'dal_select2',
     'core',
     'bills',
     'scan',
 )
 
 ALLOWED_HOSTS = ['localhost']
+
+AJAX_LOOKUP_CHANNELS = {
+	'shipper'   : ('core.lookups', 'ShipperLookup')
+}
 
 LOGIN_REDIRECT_URL = '/'
 LOGGING = {
@@ -118,12 +123,6 @@ LOGGING = {
         },
     }
 }
-#try:
-#	from logging_settings import LOGGING
-#except ImportError:
-#	pass
-BILLS_ROOT = '/mnt/shares/tmp/bills'
-
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 #SESSION_COOKIE_AGE = 86400
 
@@ -131,4 +130,3 @@ try:
         from local_settings import *
 except ImportError:
         pass
-#SIMPLE_AUTOCOMPLETE = {'core.org': {'search_field': 'name'}}
