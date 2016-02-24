@@ -9,8 +9,6 @@ from django.contrib.auth.views import login, logout
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.views.generic.base import TemplateView
 
-import ajax_select
-
 admin.autodiscover()
 
 urlpatterns = patterns('',
@@ -23,6 +21,5 @@ urlpatterns = patterns('',
 	url(r'^core/',			include('core.urls')),
 	url(r'^bills/',			include('bills.urls')),
 	url(r'^scan/',			include('scan.urls')),
-	url(r'^ajax_lookup/(?P<channel>[-\w]+)$', 'ajax_select.views.ajax_lookup', name = 'ajax_lookup'),
 )
 urlpatterns += staticfiles_urlpatterns()
