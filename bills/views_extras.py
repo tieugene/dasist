@@ -197,7 +197,7 @@ def	mailto(request, bill):
 	- Accept/Reject - to assignee
 	@param bill:Bill
 	'''
-	if not settings.MAILTO:
+	if settings.MAILTO == False:
 		return
 	state = bill.get_state_id()
 	if (state == 2):	# OnWay

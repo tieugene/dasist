@@ -17,7 +17,6 @@ from django.db.models import F, Q
 from django.core.files.storage import default_storage	# MEDIA_ROOT
 from django.core.files.base import ContentFile
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.core.mail import send_mail
 from django.core import serializers
 from django.utils.encoding import smart_unicode
 from django.db import transaction
