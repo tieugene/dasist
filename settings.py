@@ -7,7 +7,7 @@ DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
-    ('TI_Eugene', 'ti.eugene@gmail.com'),
+    ('TI_Eugene', 'ti.eugene@gsmail.pro'),
 )
 
 MANAGERS = ADMINS
@@ -69,7 +69,6 @@ MIDDLEWARE_CLASSES = (
 )
 
 #STATIC_ROOT = os.path.join(PROJECT_DIR, 'static')
-STATIC_ROOT = ''
 
 STATIC_URL = '/static_dasist/'
 
@@ -125,6 +124,7 @@ LOGGING = {
 }
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 #SESSION_COOKIE_AGE = 86400
+MAILTO=False
 
 try:
         from local_settings import *

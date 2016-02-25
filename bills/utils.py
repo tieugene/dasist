@@ -5,18 +5,22 @@ from django.conf import settings
 import smtplib, email
 
 def	send_mail(to, subj, body):
+	if settings.MAILTO == False:
+		return
 	msg=email.mime.text.MIMEText(body, _charset='utf-8')
 	msg['From'] = settings.EMAIL_FROM
 	msg['Subject'] = subj
 	#email.encoders.encode_quopri(msg)
 	if (1):
-		server = smtplib.SMTP(settings.EMAIL_HOST, settings.EMAIL_PORT, timeout=5)
-		server.ehlo()
-		if (settings.EMAIL_USE_TLS):
-			server.starttls()
+		server = smtplib.SMTP_SSL()
+		server.connect(settings.EMAIL_HOST)	# , settings.EMAIL_PORT
+		#server.ehlo()
+		#if (settings.EMAIL_USE_TLS):
+		#	print "3."
+		#	server.starttls()
 		server.login(settings.EMAIL_HOST_USER, settings.EMAIL_HOST_PASSWORD)
 		server.sendmail(settings.EMAIL_FROM, to, msg.as_string())
-		server.close()
+		server.quit()
 	#except:
 	#	pass
 
