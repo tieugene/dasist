@@ -23,6 +23,26 @@ from core.models import File, FileSeq, FileSeqItem, Org
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
+STATE_DRAFT	= 1	# Черновик
+STATE_ONWAY	= 2	# В пути
+STATE_REJECTED	= 3	# Завернут
+STATE_ONPAY	= 4	# В оплате
+STATE_DONE	= 5	# Исполнен
+
+ROLE_ASSIGNEE	= 1	# Исполнитель (ОМТС) (*)
+ROLE_OMTSCHIEF	= 2	# Начальник ОМТС (1)
+ROLE_CHIEF	= 3	# Руководитель (*)
+ROLE_LAWER	= 4	# Юрист (1)
+ROLE_BOSS	= 5	# Гендиректор (2)
+ROLE_ACCOUNTER	= 6	# Бухгалтер (3)
+ROLE_CHIEFACC	= 7	# Главбух (1) - B4 4
+ROLE_GUEST	= 8	# Гость (*)
+
+# Special asigneies
+USER_OMTSCHIEF	= 23
+USER_LAWER	= 5
+USER_CHIEFACC	= 44
+
 def	set_filter_state(q, s):
 	'''
 	q - original QuerySet (all)
@@ -30,15 +50,15 @@ def	set_filter_state(q, s):
 	'''
 	retvalue = q
 	if (not bool(s&1)):	# Rejected
-		retvalue = retvalue.exclude(state=3)
+		retvalue = retvalue.exclude(state=STATE_REJECTED)
 	if (not bool(s&2)):	# Done
-		retvalue = retvalue.exclude(state=5)
+		retvalue = retvalue.exclude(state=STATE_DONE)
 	if (not bool(s&4)):	# OnPay
-		retvalue = retvalue.exclude(state=4)
+		retvalue = retvalue.exclude(state=STATE_ONPAY)
 	if (not bool(s&8)):	# OnWay
-		retvalue = retvalue.exclude(state=2)
+		retvalue = retvalue.exclude(state=STATE_ONWAY)
 	if (not bool(s&16)):	# Draft
-		retvalue = retvalue.exclude(state=1)
+		retvalue = retvalue.exclude(state=STATE_DRAFT)
 	return retvalue
 
 def	__pdf2png2(src_path, basename):
@@ -160,11 +180,12 @@ def	handle_shipper(form):
 
 def	fill_route(bill, mgr, boss):
 	std_route1 = [	# role_id, approve_id
-		(2, models.Approver.objects.get(pk=23)),	# Gorbunoff.N.V.
-		(3, mgr),					# Руководитель
-		(4, None),					# Директор
-		(5, boss),					# Гендир
-		(6, None),					# Бухгалтер
+		(ROLE_OMTSCHIEF, models.Approver.objects.get(pk=USER_OMTSCHIEF)),	# Gorbunoff.N.V.
+		(ROLE_CHIEF, mgr),							# Руководитель
+		#(ROLE_LAWER, None),							# Юрист
+		(ROLE_LAWER, models.Approver.objects.get(pk=USER_LAWER)),		# Юрист
+		(ROLE_BOSS, boss),							# Гендир
+		(ROLE_ACCOUNTER, None),							# Бухгалтер
 	]
 	for i, r in enumerate(std_route1):
 		bill.route_set.add(
@@ -218,7 +239,7 @@ def	mailto(request, bill):
 		else:
 			__emailto(request, [bill.assign.user.email], bill.pk, 'Счет частично оплачен')
 
-def rotate_img(file, dir):
+def	rotate_img(file, dir):
 	'''
 	Rotate given image 90 deg right or left. Reuires ImageMagic
 	@param file:core.File - file to rotate

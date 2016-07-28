@@ -36,18 +36,8 @@ logger = logging.getLogger(__name__)
 PAGE_SIZE	= 25
 FSNAME		= 'fstate'	# 0..3
 
-STATE_DRAFT	= 1	# Черновик
-STATE_ONWAY	= 2	# В пути
-STATE_REJECTED	= 3	# Завернут
-STATE_ONPAY	= 4	# В оплате
-STATE_DONE	= 5	# Исполнен
-
-ROLE_ASSIGNEE	= 1	# Исполнитель (ОМТС)
-ROLE_OMTSCHIEF	= 2	# Начальник ОМТС
-ROLE_CHIEF	= 3	# Руководитель
-ROLE_BOSS	= 4	# Директор
-ROLE_MEGABOSS	= 5	# Гендиректор
-ROLE_ACCOUNTER	= 6	# Бухгалтер
+DEFAULT_MGR	= 8
+DEFAULT_BOSS	= 3
 
 reload(sys)
 sys.setdefaultencoding('utf-8')
@@ -100,7 +90,7 @@ class	BillList(ListView):
 			# - state
 			fsfilter = self.request.session.get(FSNAME, None)# int 0..15: dropped|done|onway|draft
 			if (fsfilter == None):
-				fsfilter = 31
+				fsfilter = 31 # all together
 				self.request.session[FSNAME] = fsfilter
 			else:
 				fsfilter = int(fsfilter)
@@ -143,7 +133,7 @@ class	BillList(ListView):
 			self.fsform = None
 			if (role_id == ROLE_ASSIGNEE):		# Исполнитель
 				q = q.filter(assign=self.approver, rpoint=None)
-			elif (role_id in set((ROLE_BOSS, ROLE_ACCOUNTER))):	# Директор, Бухгалтер
+			elif (role_id in set((ROLE_LAWER, ROLE_ACCOUNTER))):	# Юрист, Бухгалтер
 				q = q.filter(rpoint__role=self.approver.role)
 			else:
 				q = q.filter(rpoint__approve=self.approver)
@@ -250,7 +240,7 @@ def	bill_add(request):
 				assign		= approver,
 				rpoint		= None,
 				#done		= None,
-				state		= models.State.objects.get(pk=1),
+				state		= models.State.objects.get(pk=STATE_DRAFT),
 			)
 			# 4. add route
 			mgr = form.cleaned_data['mgr']
@@ -278,7 +268,7 @@ def	bill_edit(request, id):
 	approver = models.Approver.objects.get(pk=user.pk)
 	if not (request.user.is_superuser or (\
 	   (bill.assign == approver) and\
-	   (bill.get_state_id() == 1) and\
+	   (bill.get_state_id() == STATE_DRAFT) and\
 	   (not bill.locked))):
 		return redirect('bills.views.bill_view', bill.pk)
 	if request.method == 'POST':
@@ -299,12 +289,12 @@ def	bill_edit(request, id):
 			bill.topaysum =	form.cleaned_data['topaysum']
 			bill.save()	# FIXME: update()
 			# 2. update mgr (if required)
-			mgr = bill.route_set.get(order=2)
+			mgr = bill.get_mgr()
 			if (mgr.approve != form.cleaned_data['mgr']):
 				mgr.approve = form.cleaned_data['mgr']
 				mgr.save()
 			# 2. update boss (if required)
-			boss = bill.route_set.get(order=4)
+			boss = bill.get_boss()
 			if (boss.approve != form.cleaned_data['boss']):
 				boss.approve = form.cleaned_data['boss']
 				boss.save()
@@ -330,8 +320,8 @@ def	bill_edit(request, id):
 			'billsum':	bill.billsum,
 			'payedsum':	bill.payedsum,
 			'topaysum':	bill.topaysum,
-			'mgr':	bill.route_set.get(order=2).approve,	# костыль для initial
-			'boss':		bill.route_set.get(order=4).approve,	# костыль для initial
+			'mgr':		bill.get_mgr().approve,	# костыль для initial
+			'boss':		bill.get_boss().approve,	# костыль для initial
 			#'approver':	6,
 		})
 	return render_to_response('bills/form.html', context_instance=RequestContext(request, {
@@ -353,7 +343,7 @@ def	bill_reedit(request, id):
 	approver = models.Approver.objects.get(pk=user.pk)
 	if not (request.user.is_superuser or (\
 	   (bill.assign == approver) and\
-	   (bill.get_state_id() == 1) and\
+	   (bill.get_state_id() == STATE_DRAFT) and\
 	   (bill.locked))):
 		return redirect('bills.views.bill_view', bill.pk)
 	max_topaysum = bill.billsum - bill.payedsum
@@ -364,12 +354,12 @@ def	bill_reedit(request, id):
 			bill.topaysum =	form.cleaned_data['topaysum']
 			bill.save()
 			# 2. update mgr (if required)
-			mgr = bill.route_set.get(order=2)
+			mgr = bill.get_mgr()
 			if (mgr.approve != form.cleaned_data['mgr']):
 				mgr.approve = form.cleaned_data['mgr']
 				mgr.save()
 			# 2. and boss (if required)
-			boss = bill.route_set.get(order=4)
+			boss = bill.get_boss()
 			if (boss.approve != form.cleaned_data['boss']):
 				boss.approve = form.cleaned_data['boss']
 				boss.save()
@@ -378,14 +368,14 @@ def	bill_reedit(request, id):
 		# hack
 		if (bill.route_set.count() == 0):
 			#print "Fill route"
-			mgr = models.Approver.objects.get(pk=9)
-			boss = models.Approver.objects.get(pk=3)
+			mgr = models.Approver.objects.get(pk=DEFAULT_MGR)
+			boss = models.Approver.objects.get(pk=DEFAULT_BOSS)
 			fill_route(bill, mgr, boss)
 		# /hack
 		form = forms.BillReEditForm(initial={
 			'topaysum':	bill.topaysum if bill.topaysum else max_topaysum,
-			'mgr':		bill.route_set.get(order=2).approve,
-			'boss':		bill.route_set.get(order=4).approve,
+			'mgr':		bill.get_mgr().approve,
+			'boss':		bill.get_boss().approve,
 		})
 	return render_to_response('bills/form_reedit.html', context_instance=RequestContext(request, {
 		'form': form,
@@ -421,7 +411,7 @@ def	bill_view(request, id, upload_form=None):
 		ACL to uppload img.
 		user == bill.approver && bill.state == Draft
 		'''
-		return (approver == bill.assign) and (bill.get_state_id() == 1)
+		return (approver == bill.assign) and (bill.get_state_id() == STATE_DRAFT)
 
 	def	__upload(request, bill):
 		'''
@@ -480,26 +470,26 @@ def	bill_view(request, id, upload_form=None):
 				# 2. update bill
 				if resume:	# Ok
 					route_list = bill.route_set.all().order_by('order')
-					if (bill_state_id == 1):	# 1. 1st (draft)
+					if (bill_state_id == STATE_DRAFT):	# 1. 1st (draft)
 						bill.rpoint = route_list[0]
-						bill.set_state_id(2)
-					elif (bill_state_id == 2):	# 2. onway
+						bill.set_state_id(STATE_ONWAY)
+					elif (bill_state_id == STATE_ONWAY):	# 2. onway
 						rpoint = bill.rpoint
 						if (rpoint.order == len(route_list)):	# 2. last (accounter)
-							bill.set_state_id(4)
+							bill.set_state_id(STATE_ONPAY)
 						else:					# 3. intermediate
 							bill.rpoint = bill.route_set.get(order=rpoint.order+1)
-					elif (bill_state_id == 4):	# OnPay
+					elif (bill_state_id == STATE_ONPAY):	# OnPay
 						bill.rpoint = None
 						bill.payedsum += bill.topaysum
 						bill.topaysum = decimal.Decimal('0.00')
-						bill.set_state_id(5)
+						bill.set_state_id(STATE_DONE)
 						bill.locked = (bill.payedsum < bill.billsum)
 				else:		# Reject
-					bill.set_state_id(3)
+					bill.set_state_id(STATE_REJECTED)
 					bill.rpoint = None
 				bill.save()
-				if (bill.get_state_id() == 5) and (bill.locked == False):	# That's all
+				if (bill.get_state_id() == STATE_DONE) and (bill.locked == False):	# That's all
 					bill.route_set.all().delete()
 				mailto(request, bill)
 				ok = True
@@ -530,19 +520,19 @@ def	bill_view(request, id, upload_form=None):
 				if (ok):
 					return redirect('bill_list')
 	else:	# GET
-		if (user.is_superuser or ((bill.assign == approver) and (bill_state_id == 1))):
+		if (user.is_superuser or ((bill.assign == approver) and (bill_state_id == STATE_DRAFT))):
 			upload_form = forms.BillAddFileForm()
 	if (resume_form == None):
 		resume_form = forms.ResumeForm()
 	buttons = {
 		'edit':		# assignee & Draft*
-			(user.is_superuser or ((bill.assign == approver) and (bill_state_id == 1))),
+			(user.is_superuser or ((bill.assign == approver) and (bill_state_id == STATE_DRAFT))),
 		'del':		# assignee & (Draft|Rejected)
-			(user.is_superuser or ((bill.assign == approver) and (bill_state_id in set([1, 3])) and (bill.locked == False))),
+			(user.is_superuser or ((bill.assign == approver) and (bill_state_id in set([STATE_DRAFT, STATE_REJECTED])) and (bill.locked == False))),
 		'restart':	# assignee & (Rejected*|Done?)
-			(user.is_superuser or ((bill.assign == approver) and ((bill_state_id == 3) or ((bill_state_id == 5) and (bill.locked == True))))),
+			(user.is_superuser or ((bill.assign == approver) and ((bill_state_id == STATE_REJECTED) or ((bill_state_id == STATE_DONE) and (bill.locked == True))))),
 		'arch':		# assignee & Done
-			(user.is_superuser or (((bill.assign == approver) or user.is_staff) and (bill_state_id == 5) and (bill.locked == False))),
+			(user.is_superuser or (((bill.assign == approver) or user.is_staff) and (bill_state_id == STATE_DONE) and (bill.locked == False))),
 	}
 	# Accepting (Вперед, Согласовано, В оплате, Исполнено)
 	buttons['accept'] = 0
@@ -558,16 +548,16 @@ def	bill_view(request, id, upload_form=None):
 			if (bill.rpoint.role == approver.role):
 				buttons['accept'] = 3		# В оплате
 	elif (bill_state_id == STATE_ONPAY):		# OnPay
-		if (approver.role.pk == 6):		# Accounter
+		if (approver.role.pk == ROLE_ACCOUNTER):		# Accounter
 			buttons['accept'] = 4		# Оплачен
 	# Rejecting
 	buttons['reject'] = 0
-	if (approver.role.pk != 6):
-		if (bill_state_id == 2) and (((bill.rpoint.approve == None) and (bill.rpoint.role == approver.role)) or \
+	if (approver.role.pk != ROLE_ACCOUNTER):
+		if (bill_state_id == STATE_ONWAY) and (((bill.rpoint.approve == None) and (bill.rpoint.role == approver.role)) or \
 		   ((bill.rpoint.approve != None) and (bill.rpoint.approve == approver))):
 			buttons['reject'] = 1
 	else:
-		if (bill_state_id in set([2, 4])) and (bill.rpoint.role == approver.role):
+		if (bill_state_id in set([STATE_ONWAY, STATE_ONPAY])) and (bill.rpoint.role == approver.role):
 			buttons['reject'] = 1
 	return render_to_response('bills/detail.html', context_instance=RequestContext(request, {
 		'object': bill,
@@ -588,7 +578,7 @@ def	bill_delete(request, id):
 	#bill = models.Bill.objects.get(pk=int(id))
 	if (request.user.is_superuser) or (\
 	   (bill.assign.user.pk == request.user.pk) and\
-	   (bill.get_state_id() in set([1, 3])) and\
+	   (bill.get_state_id() in set([STATE_DRAFT, STATE_REJECTED])) and\
 	   (bill.locked == False)):
 		fileseq = bill.fileseq
 		bill.delete()
@@ -608,8 +598,8 @@ def	bill_restart(request, id):
 	#bill = models.Bill.objects.get(pk=int(id))
 	if (request.user.is_superuser) or (\
 	   (bill.assign.user.pk == request.user.pk) and\
-	   ((bill.get_state_id() == 3) or ((bill.get_state_id() == 5) and (bill.locked == True)))):
-		bill.set_state_id(1)
+	   ((bill.get_state_id() == STATE_REJECTED) or ((bill.get_state_id() == STATE_DONE) and (bill.locked == True)))):
+		bill.set_state_id(STATE_DRAFT)
 		bill.save()
 	return redirect('bills.views.bill_view', bill.pk)
 
@@ -640,7 +630,7 @@ def	bill_toscan(request, id):
 	#bill = models.Bill.objects.get(pk=int(id))
 	if (request.user.is_superuser) or (\
 	   ((bill.assign.user.pk == request.user.pk) or request.user.is_staff) and\
-	   ((bill.get_state_id() == 5) and (not bill.locked))):
+	   ((bill.get_state_id() == STATE_DONE) and (not bill.locked))):
 		scan = Scan.objects.create(
 			fileseq	= bill.fileseq,
 			place	= bill.place.name,
@@ -677,7 +667,7 @@ def	bill_img_del(request, id):
 	bill = fs.bill
 	if (request.user.is_superuser) or (\
 	   (bill.assign.user.pk == request.user.pk) and\
-	   (bill.get_state_id() == 1)):
+	   (bill.get_state_id() == STATE_DRAFT)):
 		fs.del_file(int(id))
 	return redirect('bills.views.bill_view', fs.pk)
 
@@ -693,7 +683,7 @@ def	bill_img_up(request, id):
 	bill = fs.bill
 	if (request.user.is_superuser) or (\
 	   (bill.assign.user.pk == request.user.pk) and\
-	   (bill.get_state_id() == 1)):
+	   (bill.get_state_id() == STATE_DRAFT)):
 		if not fsi.is_first():
 			fsi.swap(fsi.order-1)
 	return redirect('bills.views.bill_view', fsi.fileseq.pk)
@@ -709,7 +699,7 @@ def	bill_img_dn(request, id):
 	bill = fsi.fileseq.bill
 	if (request.user.is_superuser) or (\
 	   (bill.assign.user.pk == request.user.pk) and\
-	   (bill.get_state_id() == 1)):
+	   (bill.get_state_id() == STATE_DRAFT)):
 		if not fsi.is_last():
 			fsi.swap(fsi.order+1)
 	return redirect('bills.views.bill_view', fsi.fileseq.pk)
@@ -719,7 +709,7 @@ def	__bill_img_r(request, id, dir):
 	bill = fsi.fileseq.bill
 	if (request.user.is_superuser) or (\
 	   (bill.assign.user.pk == request.user.pk) and\
-	   (bill.get_state_id() == 1)):
+	   (bill.get_state_id() == STATE_DRAFT)):
 		rotate_img(fsi.file, dir)
 	return redirect('bills.views.bill_view', fsi.fileseq.pk)
 

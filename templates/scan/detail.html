@@ -72,7 +72,7 @@
   {% for i in object.event_set.all %}
   <tr>
    <td valign="top"> {% if i.resume %} {% include "svgbutton/agreed.html" %} {% else %} {% include "svgbutton/canceled.html" %} {% endif %} </td>
-   <td valign="top"> {{ i.ctime }} </td>
+   <td valign="top" nowrap> {{ i.ctime|date:"d.m.y H:i" }} </td>
    <td valign="top"> {{ i.approve }} </td>
    <td valign="top"> {{ i.comment }} </td>
   </tr>

@@ -20,6 +20,11 @@ from StringIO import StringIO
 from core.models import File, FileSeq, Org
 #import core
 
+from views_extras import ROLE_CHIEF, ROLE_BOSS
+
+ORD_MGR		= 2
+ORD_BOSS	= 4
+
 STATE_ICON = (
 	'pencil.svg',
 	'paper-plane-o.svg',
@@ -189,6 +194,13 @@ class	Bill(models.Model):
 			return 'Aquamarine'
 		else:
 			return self.state.color
+	def	get_mgr(self):
+		return self.route_set.get(order=ORD_MGR)
+		#return self.route_set.get(role=ROLE_CHIEF)
+
+	def	get_boss(self):
+		return self.route_set.get(order=ORD_BOSS)
+		#return self.route_set.get(role=ROLE_BOSS)
 
 	class   Meta:
 		unique_together		= (('shipper', 'billno', 'billdate'),)
@@ -198,6 +210,7 @@ class	Bill(models.Model):
 
 class	Route(models.Model):
 	bill	= models.ForeignKey(Bill, db_index=True, verbose_name=u'Счет')
+	# 1-based route point (assignee excluded)
 	order	= models.PositiveSmallIntegerField(null=False, blank=False, db_index=True, verbose_name=u'#')
 	role	= models.ForeignKey(Role, db_index=True, verbose_name=u'Роль')
 	approve	= models.ForeignKey(Approver, null=True, blank=True, db_index=True, verbose_name=u'Подписант')
@@ -212,7 +225,7 @@ class	Route(models.Model):
 		return self.approve.user.last_name if self.approve else self.role.name
 
 	class   Meta:
-		unique_together		= (('bill', 'order',),)
+		unique_together		= (('bill', 'order',), ('bill', 'role'))
 		ordering                = ('bill', 'order',)
 		verbose_name            = u'Точка маршрута'
 		verbose_name_plural     = u'Точки маршрута'
