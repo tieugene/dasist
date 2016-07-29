@@ -21,5 +21,6 @@ urlpatterns = patterns('',
 	url(r'^core/',			include('core.urls')),
 	url(r'^bills/',			include('bills.urls')),
 	url(r'^scan/',			include('scan.urls')),
+	url(r'^ledger/',		include('ledger.urls')),
 )
 urlpatterns += staticfiles_urlpatterns()

@@ -1,0 +1,68 @@
+{% extends "ledger/base.html" %}
+{% block body_main %}
+{{ form.media }}
+<table border="0">
+<tr>
+<td>
+{% include "paginator.html" %}
+</td>
+<td>
+ <label for="ledger_lpp">Строк:</label>
+ <!--select onchange="document.location=this.options[this.selectedIndex].value"-->
+ <select onchange="document.location=this.options[this.selectedIndex].value">
+  <option value="{% url 'ledger.views.ledger_set_lpp' 10 %}" {% ifequal ledger_lpp 10 %}selected{% endifequal %}>10</option>
+  <option value="{% url 'ledger.views.ledger_set_lpp' 15 %}" {% ifequal ledger_lpp 15 %}selected{% endifequal %}>15</option>
+  <option value="{% url 'ledger.views.ledger_set_lpp' 20 %}" {% ifequal ledger_lpp 20 %}selected{% endifequal %}>20</option>
+  <option value="{% url 'ledger.views.ledger_set_lpp' 25 %}" {% ifequal ledger_lpp 25 %}selected{% endifequal %}>25</option>
+  <option value="{% url 'ledger.views.ledger_set_lpp' 50 %}" {% ifequal ledger_lpp 50 %}selected{% endifequal %}>50</option>
+ </select>
+</td>
+<td>
+
+<form action="{% url 'ledger.views.ledger_set_filter' %}" method="POST">
+ {% csrf_token %}
+ Плательщик: {{ form.payer }}
+ <button type="submit" title="Фильтровать" class="plain"> {% include "svgbutton/filter.html" %} </button>
+</form>
+</tr>
+</table>
+<table>
+ <thead>
+ <tr>
+  <th> # </th>
+  <th> Поставщик </th>
+  <th> ИНН </th>
+  <th> Номер </th>
+  <th> Дата </th>
+  <th> Объект </th>
+  <th> Подобъект </th>
+  <th> Исполнитель </th>
+ </tr>
+ </thead>
+ <tbody>
+{% for object in object_list %}
+ <tr>
+ {% if object.scan %}
+  <td> <a href="{% url 'scan_view' object.pk %}"> {{ object.pk }} </a> </td>
+  <td nowrap> {{ object.scan.shipper.name|default:"---" }} </td>
+  <td nowrap> {{ object.scan.shipper.inn|default:"---" }} </td>
+  <td nowrap> {{ object.scan.no }} </td>
+  <td nowrap> {{ object.scan.date|date:"d.m.y" }} </td>
+  <td nowrap> {{ object.scan.place }} </td>
+  <td nowrap> {{ object.scan.subject|default:"---" }} </td>
+  <td nowrap> {{ object.scan.event_set.all.first.get_approve_lname }} </td>
+ {% elif object.bill %}
+  <td> <a href="{% url 'bills.views.bill_view' object.pk %}"> {{ object.pk }} </a> </td>
+  <td nowrap> {{ object.bill.shipper.name }} </td>
+  <td nowrap> {{ object.bill.shipper.inn }} </td>
+  <td nowrap> {{ object.bill.billno }} </td>
+  <td nowrap> {{ object.bill.billdate|date:"d.m.y" }} </td>
+  <td nowrap> {{ object.bill.place }} </td>
+  <td nowrap> {{ object.bill.subject|default:"---" }} </td>
+  <td nowrap> {{ object.bill.assign.user.last_name }} </td>
+ {% endif %}
+ </tr>
+{% endfor %}
+ </tbody>
+</table>
+{% endblock %}

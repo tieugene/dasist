@@ -7,6 +7,7 @@ $("#tm_index").addClass("active");
 {% if user.is_authenticated %}
 <p>
  <a href="{% url 'org_list'  %}" class="nou"> <button type="button" class="plain" style="padding: 5pt 10pt"> Организации </button> </a>
+ <a href="{% url 'ledger_list' %}" class="nou"> <button type="button" class="plain" style="padding: 5pt 10pt"> Табличка </button> </a>
  <a href="{% url 'scan_list' %}" class="nou"> <button type="button" class="plain" style="padding: 5pt 10pt"> Архив </button> </a>
  <a href="{% url 'bill_list' %}" class="nou"> <button type="button" class="plain" style="padding: 5pt 10pt"> Счета </button> </a>
 </p>
