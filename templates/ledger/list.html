@@ -44,27 +44,27 @@
 {% for object in object_list %}
  <tr>
  {% if object.scan %}
-  <td> <a href="{% url 'scan_view' object.pk %}"> {{ object.pk }} </a> </td>
-  <!--td nowrap> {# object.scan.payer|default:"---" #} </td-->
-  <td nowrap> {{ object.scan.shipper.name|default:"---" }} </td>
-  <td nowrap> {{ object.scan.shipper.inn|default:"---" }} </td>
-  <td nowrap> {{ object.scan.no }} </td>
-  <td nowrap> {{ object.scan.date|date:"d.m.y" }} </td>
-  <td nowrap> {{ object.scan.place }} </td>
-  <td nowrap> {{ object.scan.subject|default:"---" }} </td>
-  <td nowrap> {{ object.scan.event_set.all.first.get_approve_lname }} </td>
+  <td><a href="{% url 'scan_view' object.pk %}">{{ object.pk }}</a></td>
+  <!--td nowrap>{# object.scan.payer|default:"---" #}</td-->
+  <td nowrap>{{ object.scan.shipper.name|default:"---" }}</td>
+  <td nowrap>{{ object.scan.shipper.inn|default:"---" }}</td>
+  <td nowrap>{{ object.scan.no }}</td>
+  <td nowrap>{{ object.scan.date|date:"d.m.Y" }}</td>
+  <td nowrap>{{ object.scan.place }}</td>
+  <td nowrap>{{ object.scan.subject|default:"---" }}</td>
+  <td nowrap>{{ object.scan.event_set.all.first.get_approve_lname }}</td>
  {% elif object.bill %}
-  <td> <a href="{% url 'bills.views.bill_view' object.pk %}"> {{ object.pk }} </a> </td>
+  <td><a href="{% url 'bills.views.bill_view' object.pk %}">{{ object.pk }}</a></td>
   <!--td nowrap> {# object.bill.payer.name #} </td-->
-  <td nowrap> {{ object.bill.shipper.name }} </td>
-  <td nowrap> {{ object.bill.shipper.inn }} </td>
-  <td nowrap> {{ object.bill.billno }} </td>
-  <td nowrap> {{ object.bill.billdate|date:"d.m.y" }} </td>
-  <td nowrap> {{ object.bill.place }} </td>
-  <td nowrap> {{ object.bill.subject|default:"---" }} </td>
-  <td nowrap> {{ object.bill.assign.user.last_name }} </td>
+  <td nowrap>{{ object.bill.shipper.name }}</td>
+  <td nowrap>{{ object.bill.shipper.inn }}</td>
+  <td nowrap>{{ object.bill.billno }}</td>
+  <td nowrap>{{ object.bill.billdate|date:"d.m.Y" }}</td>
+  <td nowrap>{{ object.bill.place }}</td>
+  <td nowrap>{{ object.bill.subject|default:"---" }}</td>
+  <td nowrap>{{ object.bill.assign.user.last_name }}</td>
  {% else %}
-  <td> {{ object.pk }} </td>
+  <td>{{ object.pk }}</td>
   <td colspan="7"> Is not Bill nor Scan </td>
  {% endif %}
  </tr>
