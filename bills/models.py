@@ -75,12 +75,7 @@ class	Role(models.Model):
 		verbose_name_plural     = u'Роли'
 
 class	Approver(models.Model):
-	'''
-	"Foreign key constraint is incorrectly formed"
-	Refers to non-existant table User?
-	class Approver(User) not helps
-	'''
-	user	= models.OneToOneField(User, primary_key=True, verbose_name=u'Пользователь')	# FAIL!
+	user	= models.OneToOneField(User, primary_key=True, verbose_name=u'Пользователь')
 	role	= models.ForeignKey(Role, db_index=True, verbose_name=u'Роль')
 	jobtit	= models.CharField(max_length=32, db_index=True, verbose_name=u'Должность')	# max=28
 	canadd	= models.BooleanField(db_index=True, verbose_name=u'Может создавать')
@@ -149,7 +144,6 @@ class	Payer(models.Model):
 		verbose_name_plural     = u'Плательщики'
 
 # Working
-
 class	Bill(models.Model):
 	fileseq		= models.OneToOneField(FileSeq, primary_key=True, verbose_name=u'Файлы')
 	place		= models.ForeignKey(Place, null=False, blank=False, db_index=True, verbose_name=u'Объект')
