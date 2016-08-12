@@ -76,8 +76,11 @@ class	Role(models.Model):
 
 class	Approver(models.Model):
 	'''
+	"Foreign key constraint is incorrectly formed"
+	Refers to non-existant table User?
+	class Approver(User) not helps
 	'''
-	user	= models.OneToOneField(User, primary_key=True, verbose_name=u'Пользователь')
+	user	= models.OneToOneField(User, primary_key=True, verbose_name=u'Пользователь')	# FAIL!
 	role	= models.ForeignKey(Role, db_index=True, verbose_name=u'Роль')
 	jobtit	= models.CharField(max_length=32, db_index=True, verbose_name=u'Должность')	# max=28
 	canadd	= models.BooleanField(db_index=True, verbose_name=u'Может создавать')
@@ -95,7 +98,6 @@ class	Approver(models.Model):
 		return '%s %s (%s, %s)' % (self.user.last_name, self.user.first_name, self.jobtit, self.role.name)
 
 class	Place(models.Model):
-	#id	= models.PositiveSmallIntegerField(primary_key=True, verbose_name=u'#')
 	name	= models.CharField(max_length=24, db_index=True, verbose_name=u'Наименование')	# max=22
 
 	def	__unicode__(self):
@@ -108,7 +110,6 @@ class	Place(models.Model):
 		verbose_name_plural     = u'Объекты'
 
 class	Subject(models.Model):
-	#id	= models.PositiveSmallIntegerField(primary_key=True, verbose_name=u'#')
 	place	= models.ForeignKey(Place, db_index=True, related_name='subjects', verbose_name=u'Объект')
 	name	= models.CharField(max_length=32, db_index=True, verbose_name=u'Наименование')	# max=28
 
@@ -148,9 +149,8 @@ class	Payer(models.Model):
 		verbose_name_plural     = u'Плательщики'
 
 # Working
+
 class	Bill(models.Model):
-	'''
-	'''
 	fileseq		= models.OneToOneField(FileSeq, primary_key=True, verbose_name=u'Файлы')
 	place		= models.ForeignKey(Place, null=False, blank=False, db_index=True, verbose_name=u'Объект')
 	subject		= models.ForeignKey(Subject, null=True, blank=True, db_index=True, verbose_name=u'ПодОбъект')

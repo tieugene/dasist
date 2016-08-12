@@ -3,6 +3,7 @@ from django.contrib import admin
 from models import *
 
 # 1. inlines
+
 class   RouteInLine(admin.TabularInline):
         model           = Route
         extra           = 1
@@ -23,7 +24,7 @@ class   SubjectInLine(admin.TabularInline):
 class	RoleAdmin(admin.ModelAdmin):
 	ordering	= ('id',)
 	list_display	= ('id', 'name')
-	inlines		= (ApproverInLine,)
+#	inlines		= (ApproverInLine,)
 
 class	ApproverAdmin(admin.ModelAdmin):
 	#ordering	= ('user.last_name', 'user.first_name')

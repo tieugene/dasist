@@ -9,6 +9,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.db import transaction
+from django.db.models import Q
 from django.http import HttpResponse
 from django.shortcuts import render_to_response, render, redirect
 from django.template import RequestContext, Context, loader
@@ -25,6 +26,8 @@ import os, sys, pprint
 # 4. my
 import forms
 from core.models import FileSeq
+from bills.models import Payer, Bill
+from scan.models import Scan
 
 reload(sys)
 sys.setdefaultencoding('utf-8')
@@ -37,23 +40,24 @@ class	LedgerList(ListView):
 	}
 
 	def	get_queryset(self):
-		#print 'LedgerList get_queryset'
 		# 1. handle session
 		self.paginate_by = self.request.session.get('ledger_lpp', 25)
-		self.filter['payer'] =		self.request.session.get('ledger_payer', None)
+		self.filter['payer'] = self.request.session.get('ledger_payer', None)
 		# 2. create query
-		q = FileSeq.objects.all().order_by('-pk')[:100]
 		if self.filter['payer']:
-			pass
-		#	q = q.filter(payer__contains=self.filter['payer'])
+			payer = Payer.objects.get(pk=self.filter['payer'])
+			q = FileSeq.objects.filter(Q(bill__payer=payer) | Q(scan__payer=payer.name))
+		else:
+			q = FileSeq.objects.all()
+		q = q.order_by('-pk')[:100]
+		#print q.query
 		return q
 
 	def	get_context_data(self, **kwargs):
-		#print 'LedgerList get_context_data'
 		context = super(LedgerList, self).get_context_data(**kwargs)
 		context['ledger_lpp']	= self.paginate_by
 		context['form']	= forms.FilterLedgerListForm(initial={
-			'payer':	self.filter['payer'],
+			'payer': self.filter['payer'],
 		})
 		return context
 
@@ -64,9 +68,8 @@ def	ledger_set_lpp(request, lpp):
 
 @login_required
 def	ledger_set_filter(request):
-	form = forms.FilterScanListForm(request.POST)
+	form = forms.FilterLedgerListForm(request.POST)
 	if form.is_valid():
 		filter = form.cleaned_data
-		#print "Set filter:", filter['billdate']
-		request.session['ledger_payer'] =		filter['payer']
+		request.session['ledger_payer'] = filter['payer'].pk if filter['payer'] else None
 	return redirect('ledger_list')

@@ -5,7 +5,6 @@ ledger.forms
 
 # 1. django
 from django import forms
-from django.db.models.fields import BLANK_CHOICE_DASH
 
 # 2. system
 
