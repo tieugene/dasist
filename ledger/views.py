@@ -6,50 +6,52 @@ ledger.views
 # 1. django
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
-from django.core.urlresolvers import reverse
-from django.db import transaction
 from django.db.models import Q
-from django.http import HttpResponse
-from django.shortcuts import render_to_response, render, redirect
-from django.template import RequestContext, Context, loader
-from django.views.generic import ListView, DetailView
-from django.utils.datastructures import SortedDict
-from django.db.models import F
-from django.core.files.storage import default_storage	# MEDIA_ROOT
-from django.utils.decorators import method_decorator
+from django.shortcuts import redirect
+from django.views.generic import ListView
 
 # 2. system
-import os, sys, pprint
+import sys
 
 # 3. 3rd party
+
 # 4. my
 import forms
 from core.models import FileSeq
-from bills.models import Payer, Bill
-from scan.models import Scan
+from bills.models import Payer, Approver
+from bills.views_extras import ROLE_ASSIGNEE, ROLE_BOSS, ROLE_ACCOUNTER
 
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
 class	LedgerList(ListView):
+	'''
+	TODO: Гендир, Бухгалтер, Исполнитель
+	'''
 	template_name = 'ledger/list.html'
 	paginate_by = 25
 	filter = {
 		'payer':	None,
 	}
+	enabled_users = set([ROLE_ASSIGNEE, ROLE_BOSS, ROLE_ACCOUNTER])
 
 	def	get_queryset(self):
+		user = self.request.user
+		self.approver = Approver.objects.get(user=user)
+		role_id = self.approver.role.pk
 		# 1. handle session
 		self.paginate_by = self.request.session.get('ledger_lpp', 25)
 		self.filter['payer'] = self.request.session.get('ledger_payer', None)
 		# 2. create query
-		if self.filter['payer']:
-			payer = Payer.objects.get(pk=self.filter['payer'])
-			q = FileSeq.objects.filter(Q(bill__payer=payer) | Q(scan__payer=payer.name))
+		if (role_id in self.enabled_users) or user.is_superuser:
+			if self.filter['payer']:
+				payer = Payer.objects.get(pk=self.filter['payer'])
+				q = FileSeq.objects.filter(Q(bill__payer=payer) | Q(scan__payer=payer.name))
+			else:
+				q = FileSeq.objects.all()
+			q = q.order_by('-pk')	#[:100]
 		else:
-			q = FileSeq.objects.all()
-		q = q.order_by('-pk')[:100]
+			q = FileSeq.objects.none()
 		#print q.query
 		return q
 
