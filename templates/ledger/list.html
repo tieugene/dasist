@@ -35,6 +35,7 @@
   <th> ИНН </th>
   <th> Номер </th>
   <th> Дата </th>
+  <th> Сумма </th>
   <th> Объект </th>
   <th> Подобъект </th>
   <th> Исполнитель </th>
@@ -50,6 +51,7 @@
   <td nowrap>{{ object.scan.shipper.inn|default:"---" }}</td>
   <td nowrap>{{ object.scan.no }}</td>
   <td nowrap>{{ object.scan.date|date:"d.m.Y" }}</td>
+  <td nowrap align="right">{{ object.scan.sum }}</td>
   <td nowrap>{{ object.scan.place }}</td>
   <td nowrap>{{ object.scan.subject|default:"---" }}</td>
   <td nowrap>{{ object.scan.event_set.all.first.get_approve_lname }}</td>
@@ -60,6 +62,7 @@
   <td nowrap>{{ object.bill.shipper.inn }}</td>
   <td nowrap>{{ object.bill.billno }}</td>
   <td nowrap>{{ object.bill.billdate|date:"d.m.Y" }}</td>
+  <td nowrap align="right">{{ object.bill.billsum }}</td>
   <td nowrap>{{ object.bill.place }}</td>
   <td nowrap>{{ object.bill.subject|default:"---" }}</td>
   <td nowrap>{{ object.bill.assign.user.last_name }}</td>
