@@ -22,6 +22,7 @@
 <form action="{% url 'ledger.views.ledger_set_filter' %}" method="POST">
  {% csrf_token %}
  Плательщик: {{ form.payer }}
+ Поставщик: {{ form.shipper }}
  <button type="submit" title="Фильтровать" class="plain"> {% include "svgbutton/filter.html" %} </button>
 </form>
 </tr>
