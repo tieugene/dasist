@@ -3,21 +3,22 @@
 dasist.scan.urls
 '''
 
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 from django.contrib.auth.decorators import login_required
 
-import views
+from . import views
 
-urlpatterns = patterns('scan.views',
-	url(r'^$',			login_required(views.ScanList.as_view()), name='scan_list'),
-	url(r'^lpp/(?P<lpp>\d+)/$',	'scan_set_lpp'),
-	url(r'^filter/$',		'scan_set_filter'),
-	url(r'^get_subjs/$',		'scan_get_subjects'),
-	#url(r'^a/$',			'scan_add'),
-	url(r'^(?P<pk>\d+)/$',		login_required(views.ScanDetail.as_view()), name='scan_view'),
-	url(r'^(?P<id>\d+)/u/$',	'scan_edit'),
-	url(r'^(?P<id>\d+)/d/$',	'scan_delete'),
-	url(r'^clean_spaces/$',		'scan_clean_spaces'),
-	url(r'^replace_depart/$',	'scan_replace_depart'),
-	url(r'^replace_place/$',	'scan_replace_place'),
+urlpatterns = (
+    # 'scan.views',
+    url(r'^$',            login_required(views.ScanList.as_view()), name='scan_list'),
+    url(r'^lpp/(?P<lpp>\d+)/$', views.scan_set_lpp),
+    url(r'^filter/$',           views.scan_set_filter),
+    url(r'^get_subjs/$',        views.scan_get_subjects),
+    # url(r'^a/$',              views.scan_add),
+    url(r'^(?P<pk>\d+)/$',      login_required(views.ScanDetail.as_view()), name='scan_view'),
+    url(r'^(?P<id>\d+)/u/$',    views.scan_edit),
+    url(r'^(?P<id>\d+)/d/$',    views.scan_delete),
+    url(r'^clean_spaces/$',     views.scan_clean_spaces),
+    url(r'^replace_depart/$',   views.scan_replace_depart),
+    url(r'^replace_place/$',    views.scan_replace_place),
 )

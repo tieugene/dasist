@@ -3,29 +3,30 @@
 bills.urls
 '''
 
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 from django.contrib.auth.decorators import login_required
 
-import views
+from . import views
 
-urlpatterns = patterns('bills.views',
-	url(r'^$',			login_required(views.BillList.as_view()), name='bill_list'),
-	url(r'^lpp/(?P<lpp>\d+)/$',	'bill_set_lpp'),
-	url(r'^mode/(?P<mode>\d+)/$',	'bill_set_mode'),
-	url(r'^fs/$',			'bill_filter_state'),
-	url(r'^get_subjs/$',		'bill_get_subjects'),
-	url(r'^a/$',			'bill_add'),		# GET/POST; ACL: assign, Cancel > list; save > view (Draft)
-	url(r'^(?P<id>\d+)/$',		'bill_view'),		# GET; ACL: assign|approv
-	url(r'^(?P<id>\d+)/u/$',	'bill_edit'),		# GET/POST; ACL: assign+draft;
-	url(r'^(?P<id>\d+)/ru/$',	'bill_reedit'),		# GET/POST; ACL: assign+draft?;
-	url(r'^(?P<id>\d+)/d/$',	'bill_delete'),		# GET; ACL: assign;
-	url(r'^(?P<id>\d+)/s/$',	'bill_toscan'),
-	url(r'^(?P<id>\d+)/r/$',	'bill_restart'),
-	url(r'^(?P<id>\d+)/id/$',	'bill_img_del'),
-	url(r'^(?P<id>\d+)/iup/$',	'bill_img_up'),
-	url(r'^(?P<id>\d+)/idn/$',	'bill_img_dn'),
-	url(r'^(?P<id>\d+)/irl/$',	'bill_img_rl'),
-	url(r'^(?P<id>\d+)/irr/$',	'bill_img_rr'),
-	url(r'^(?P<id>\d+)/mail/$',	'bill_mail'),
-#	url(r'^(?P<id>\d+)/g/$',	'bill_get'),		# GET; ACL: assign;
+urlpatterns = (
+    # 'bills.views',
+    url(r'^$',                      login_required(views.BillList.as_view()), name='bill_list'),
+    url(r'^lpp/(?P<lpp>\d+)/$',     views.bill_set_lpp),
+    url(r'^mode/(?P<mode>\d+)/$',   views.bill_set_mode),
+    url(r'^fs/$',                   views.bill_filter_state),
+    url(r'^get_subjs/$',            views.bill_get_subjects),
+    url(r'^a/$',                    views.bill_add),        # GET/POST; ACL: assign, Cancel > list; save > view (Draft)
+    url(r'^(?P<id>\d+)/$',          views.bill_view),       # GET; ACL: assign|approv
+    url(r'^(?P<id>\d+)/u/$',        views.bill_edit),       # GET/POST; ACL: assign+draft;
+    url(r'^(?P<id>\d+)/ru/$',       views.bill_reedit),     # GET/POST; ACL: assign+draft?;
+    url(r'^(?P<id>\d+)/d/$',        views.bill_delete),     # GET; ACL: assign;
+    url(r'^(?P<id>\d+)/s/$',        views.bill_toscan),
+    url(r'^(?P<id>\d+)/r/$',        views.bill_restart),
+    url(r'^(?P<id>\d+)/id/$',       views.bill_img_del),
+    url(r'^(?P<id>\d+)/iup/$',      views.bill_img_up),
+    url(r'^(?P<id>\d+)/idn/$',      views.bill_img_dn),
+    url(r'^(?P<id>\d+)/irl/$',      views.bill_img_rl),
+    url(r'^(?P<id>\d+)/irr/$',      views.bill_img_rr),
+    url(r'^(?P<id>\d+)/mail/$',     views.bill_mail),
+    # url(r'^(?P<id>\d+)/g/$',       'bill_get'),  # GET; ACL: assign;
 )

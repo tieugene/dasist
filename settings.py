@@ -1,6 +1,6 @@
 # Django settings for dasist project.
 
-import sys, os
+import os
 PROJECT_DIR = os.path.dirname(__file__)
 
 DEBUG = True
@@ -34,7 +34,7 @@ DECIMAL_SEPARATOR = ','
 MEDIA_ROOT = '/mnt/shares/tmp/bills'
 MEDIA_URL = ''
 
-#STATIC_ROOT = os.path.join(PROJECT_DIR, 'static'),
+# STATIC_ROOT = os.path.join(PROJECT_DIR, 'static'),
 
 ADMIN_MEDIA_PREFIX = '/static/admin/'
 
@@ -52,13 +52,20 @@ TEMPLATE_LOADERS = (
 
 TEMPLATE_CONTEXT_PROCESSORS = (
     'django.contrib.auth.context_processors.auth',
-    'django.core.context_processors.debug',
-    'django.core.context_processors.i18n',
-    'django.core.context_processors.media',
-    'django.core.context_processors.static',
-    'django.core.context_processors.request',
+    'django.template.context_processors.debug',
+    'django.template.context_processors.i18n',
+    'django.template.context_processors.media',
+    'django.template.context_processors.static',
+    'django.template.context_processors.request',
     'django.contrib.messages.context_processors.messages'
 )
+
+# TEMPLATES = [
+#    {
+#        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+#        'APP_DIRS': True,
+#    },
+# ]
 
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
@@ -68,7 +75,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
 )
 
-#STATIC_ROOT = os.path.join(PROJECT_DIR, 'static')
+# STATIC_ROOT = os.path.join(PROJECT_DIR, 'static')
 
 STATIC_URL = '/static_dasist/'
 
@@ -102,7 +109,7 @@ INSTALLED_APPS = (
 ALLOWED_HOSTS = ['localhost']
 
 AJAX_LOOKUP_CHANNELS = {
-	'shipper'   : ('core.lookups', 'ShipperLookup')
+    'shipper': ('core.lookups', 'ShipperLookup')
 }
 
 LOGIN_REDIRECT_URL = '/'
@@ -124,10 +131,10 @@ LOGGING = {
     }
 }
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
-#SESSION_COOKIE_AGE = 86400
-MAILTO=False
+# SESSION_COOKIE_AGE = 86400
+MAILTO = False
 
 try:
-        from local_settings import *
+    from local_settings import *
 except ImportError:
-        pass
+    pass
