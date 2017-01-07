@@ -10,7 +10,7 @@ from . import views
 
 urlpatterns = (
     # 'scan.views',
-    url(r'^$',            login_required(views.ScanList.as_view()), name='scan_list'),
+    url(r'^$',                  login_required(views.ScanList.as_view()), name='scan_list'),
     url(r'^lpp/(?P<lpp>\d+)/$', views.scan_set_lpp),
     url(r'^filter/$',           views.scan_set_filter),
     url(r'^get_subjs/$',        views.scan_get_subjects),

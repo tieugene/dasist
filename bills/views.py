@@ -735,6 +735,9 @@ def bill_img_dn(request, id):
 
 
 def __bill_img_r(request, id, dir):
+    '''
+    Rotate image
+    '''
     fsi = FileSeqItem.objects.get(pk=int(id))
     bill = fsi.fileseq.bill
     if (request.user.is_superuser) or (

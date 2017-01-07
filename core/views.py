@@ -61,12 +61,15 @@ def file_preview(request, id):
 @login_required
 def file_get(request, id):
     '''
+    Download file
     '''
     file = models.File.objects.get(pk=int(id))
     response = HttpResponse(content_type=file.mime)
     response['Content-Transfer-Encoding'] = 'binary'
     response['Content-Disposition'] = '; filename=\"%s\"' % file.name.encode('utf-8')
+    print "core.file_get: file read:", file.get_path()
     response.write(open(file.get_path()).read())
+    print "core.file_get: return"
     return response
 
 
