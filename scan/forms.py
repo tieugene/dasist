@@ -28,8 +28,8 @@ EMPTY_VALUE = [('', '---'), ]
 class FilterScanListForm(forms.Form):
     # place        = forms.ChoiceField(choices=Scan.objects.order_by('place').distinct().values_list('place', 'place'), label=u'Объект', required=False)
     place = forms.ChoiceField(choices=EMPTY_VALUE + list(Scan.objects.order_by('place').distinct().values_list('place', 'place')), label=u'Объект', required=False)
-    # subject = forms.ChoiceField(choices=EMPTY_VALUE + list(Scan.objects.order_by('subject').distinct().values_list('subject', 'subject')), label=u'Подобъект', required=False)
-    subject = forms.ChoiceField(choices=EMPTY_VALUE, label=u'Подобъект', required=False)
+    subject = forms.ChoiceField(choices=EMPTY_VALUE + list(Scan.objects.order_by('subject').distinct().values_list('subject', 'subject')), label=u'Подобъект', required=False)
+    # subject = forms.ChoiceField(choices=EMPTY_VALUE, label=u'Подобъект', required=False)
     depart = forms.ChoiceField(choices=EMPTY_VALUE + list(Scan.objects.order_by('depart').distinct().exclude(depart=None).values_list('depart', 'depart')), label=u'Направление', required=False)
     payer = forms.ChoiceField(choices=EMPTY_VALUE + list(Scan.objects.order_by('payer').distinct().exclude(payer=None).values_list('payer', 'payer')), label=u'Плательщик', required=False)
     # shipper = forms.ModelChoiceField(queryset=Org.objects.all(), label=u'Поставщик', required=False)

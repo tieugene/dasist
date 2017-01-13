@@ -22,5 +22,6 @@ urlpatterns = [
     url(r'^bills/',             include('bills.urls')),
     url(r'^scan/',              include('scan.urls')),
     url(r'^ledger/',            include('ledger.urls')),
+    # url(r'^contract/',          include('contract.urls')),
 ]
 urlpatterns += staticfiles_urlpatterns()

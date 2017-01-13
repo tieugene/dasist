@@ -32,7 +32,7 @@ import utils
 from views_extras import \
     ROLE_ACCOUNTER, ROLE_ASSIGNEE, ROLE_CHIEF, ROLE_LAWER, \
     STATE_DONE, STATE_DRAFT, STATE_ONPAY, STATE_ONWAY, STATE_REJECTED
-from views_extras import fill_route, handle_shipper, mailto, rotate_img, set_filter_state, update_fileseq
+from views_extras import fill_route, get_std_route, handle_shipper, mailto, rotate_img, set_filter_state, update_fileseq
 
 logger = logging.getLogger(__name__)
 
@@ -221,7 +221,7 @@ def bill_add(request):
     '''
     user = request.user
     approver = models.Approver.objects.get(user=user)
-    if (approver.role.pk != 1):
+    if (approver.role.pk != ROLE_ASSIGNEE):
         return redirect('bill_list')
     if request.method == 'POST':
         # path = request.POST['path']
@@ -248,13 +248,16 @@ def bill_add(request):
                 topaysum=form.cleaned_data['topaysum'],
                 assign=approver,
                 rpoint=None,
-                # done=None,
                 state=models.State.objects.get(pk=STATE_DRAFT),
             )
             # 4. add route
             mgr = form.cleaned_data['mgr']
             boss = form.cleaned_data['boss']
-            fill_route(bill, mgr, boss)
+            print 'Boss found'
+            # fill_route(bill, mgr, boss)
+            for i, r in enumerate(get_std_route(mgr, boss)):
+                bill.route_set.add(models.Route(bill=bill, order=i + 1, role=models.Role.objects.get(pk=r[0]), approve=r[1]))
+            print 'Bill routed'
             return redirect('bills.views.bill_view', bill.pk)
     else:
         form = forms.BillAddForm()

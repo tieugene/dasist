@@ -31,22 +31,22 @@ import utils
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
-STATE_DRAFT = 1    # Черновик
-STATE_ONWAY = 2    # В пути
-STATE_REJECTED = 3    # Завернут
-STATE_ONPAY = 4    # В оплате
-STATE_DONE = 5    # Исполнен
+STATE_DRAFT = 1     # Черновик
+STATE_ONWAY = 2     # В пути
+STATE_REJECTED = 3  # Завернут
+STATE_ONPAY = 4     # В оплате
+STATE_DONE = 5      # Исполнен
 
-ROLE_ASSIGNEE = 1    # Исполнитель (ОМТС) (*)
-ROLE_OMTSCHIEF = 2    # Начальник ОМТС (1)
-ROLE_CHIEF = 3    # Руководитель (*)
-ROLE_LAWER = 4    # Юрист (1)
-ROLE_BOSS = 5    # Гендиректор (2)
-ROLE_ACCOUNTER = 6    # Бухгалтер (3)
-ROLE_CHIEFACC = 7    # Главбух (1) - B4 4
-ROLE_GUEST = 8    # Гость (*)
+ROLE_ASSIGNEE = 1   # Исполнитель (ОМТС) (*)
+ROLE_OMTSCHIEF = 2  # Начальник ОМТС (1)
+ROLE_CHIEF = 3      # Руководитель (*)
+ROLE_LAWER = 4      # Юрист (1)
+ROLE_BOSS = 5       # Гендиректор (2)
+ROLE_ACCOUNTER = 6  # Бухгалтер (3)
+ROLE_CHIEFACC = 7   # Главбух (1) - B4 4
+ROLE_GUEST = 8      # Гость (*)
 
-# Special asigneies
+# Special assigneies
 USER_OMTSCHIEF = 23
 USER_LAWER = 5
 USER_CHIEFACC = 44
@@ -193,24 +193,44 @@ def handle_shipper(form):
     return shipper
 
 
+def get_std_route(mgr, boss):
+    return [    # role_id, approve_id
+        (ROLE_OMTSCHIEF, models.Approver.objects.get(pk=USER_OMTSCHIEF)),   # Gorbunoff.N.V.
+        (ROLE_CHIEF, mgr),                                                  # Руководитель
+        (ROLE_LAWER, models.Approver.objects.get(pk=USER_LAWER)),           # Юрист
+        (ROLE_BOSS, boss),                                                  # Гендир
+        (ROLE_ACCOUNTER, None),                                             # Бухгалтер
+    ]
+
+
 def fill_route(bill, mgr, boss):
     std_route1 = [    # role_id, approve_id
-        (ROLE_OMTSCHIEF, models.Approver.objects.get(pk=USER_OMTSCHIEF)),    # Gorbunoff.N.V.
-        (ROLE_CHIEF, mgr),                            # Руководитель
-        # (ROLE_LAWER, None),                            # Юрист
-        (ROLE_LAWER, models.Approver.objects.get(pk=USER_LAWER)),        # Юрист
-        (ROLE_BOSS, boss),                            # Гендир
-        (ROLE_ACCOUNTER, None),                            # Бухгалтер
+        (ROLE_OMTSCHIEF, models.Approver.objects.get(pk=USER_OMTSCHIEF)),   # Gorbunoff.N.V.
+        (ROLE_CHIEF, mgr),                                                  # Руководитель
+        (ROLE_LAWER, models.Approver.objects.get(pk=USER_LAWER)),           # Юрист
+        (ROLE_BOSS, boss),                                                  # Гендир
+        (ROLE_ACCOUNTER, None),                                             # Бухгалтер
     ]
+    print 'fill_route: start add'
     for i, r in enumerate(std_route1):
-        bill.route_set.add(
-            models.Route(
-                bill=bill,
-                order=i + 1,
-                role=models.Role.objects.get(pk=r[0]),
-                approve=r[1],
-            ),
+        rl = models.Role.objects.get(pk=r[0])
+        print 'Role found'
+#        bill.route_set.add(
+#            models.Route(
+#                bill=bill,
+#                order=i + 1,
+#                role=r[1],
+#                approve=ap,
+#            ),
+#        )
+        models.Route.create(
+            bill=bill,
+            order=i + 1,
+            role=rl,
+            approve=r[1]
         )
+        print 'fill_route: point added'
+    print 'fill_route: end'
 
 
 def __emailto(request, emails, bill_id, subj):

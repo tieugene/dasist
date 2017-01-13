@@ -13,12 +13,12 @@ from django.db import models
 ORD_MGR = 2
 ORD_BOSS = 4
 STATE_ICON = (
-    'pencil.svg',
-    'paper-plane-o.svg',
-    'ban.svg',
-    'usd.svg',
-    'check.svg',
-    'archive.svg',
+    'pencil.svg',           # Edit
+    'paper-plane-o.svg',    # OnWay
+    'ban.svg',              # unlike
+    'usd.svg',              # ?
+    'check.svg',            # liked
+    'archive.svg',          # put 2 archieve
 )
 
 
