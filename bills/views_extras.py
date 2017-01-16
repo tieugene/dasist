@@ -193,16 +193,6 @@ def handle_shipper(form):
     return shipper
 
 
-def get_std_route(mgr, boss):
-    return [    # role_id, approve_id
-        (ROLE_OMTSCHIEF, models.Approver.objects.get(pk=USER_OMTSCHIEF)),   # Gorbunoff.N.V.
-        (ROLE_CHIEF, mgr),                                                  # Руководитель
-        (ROLE_LAWER, models.Approver.objects.get(pk=USER_LAWER)),           # Юрист
-        (ROLE_BOSS, boss),                                                  # Гендир
-        (ROLE_ACCOUNTER, None),                                             # Бухгалтер
-    ]
-
-
 def fill_route(bill, mgr, boss):
     std_route1 = [    # role_id, approve_id
         (ROLE_OMTSCHIEF, models.Approver.objects.get(pk=USER_OMTSCHIEF)),   # Gorbunoff.N.V.
@@ -211,29 +201,13 @@ def fill_route(bill, mgr, boss):
         (ROLE_BOSS, boss),                                                  # Гендир
         (ROLE_ACCOUNTER, None),                                             # Бухгалтер
     ]
-    print 'fill_route: start add'
-    for i, r in enumerate(std_route1):
-        rl = models.Role.objects.get(pk=r[0])
-        print 'bill:', bill
-        print 'i:', i + 1
-        print 'role: (%d) %s' % (rl.pk, rl)
-        print 'approver: (%d) %s' % (r[1].pk, r[1])
-#        bill.route_set.add(
-#            models.Route(
-#                bill=bill,
-#                order=i + 1,
-#                role=rl,
-#                approve=r[1],
-#            ),
-#        )
-#        models.Route.create(
-#            bill=bill,
-#            order=i + 1,
-#            role=rl,
-#            approve=r[1]
-#        )
-        print 'fill_route: point added'
-    print 'fill_route: end'
+    for i, r in enumerate(std_route1):  # https://docs.djangoproject.com/en/1.10/ref/models/relations/#django.db.models.fields.related.RelatedManager.set
+        bill.route_set.create(
+                bill=bill,
+                order=i + 1,
+                role=models.Role.objects.get(pk=r[0]),
+                approve=r[1],
+        )
 
 
 def __emailto(request, emails, bill_id, subj):

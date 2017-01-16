@@ -32,7 +32,7 @@ import utils
 from views_extras import \
     ROLE_ACCOUNTER, ROLE_ASSIGNEE, ROLE_CHIEF, ROLE_LAWER, \
     STATE_DONE, STATE_DRAFT, STATE_ONPAY, STATE_ONWAY, STATE_REJECTED
-from views_extras import fill_route, get_std_route, handle_shipper, mailto, rotate_img, set_filter_state, update_fileseq
+from views_extras import fill_route, handle_shipper, mailto, rotate_img, set_filter_state, update_fileseq
 
 logger = logging.getLogger(__name__)
 
@@ -253,10 +253,8 @@ def bill_add(request):
             # 4. add route
             mgr = form.cleaned_data['mgr']
             boss = form.cleaned_data['boss']
-            print 'Boss found'
             fill_route(bill, mgr, boss)
-            print 'Bill routed'
-            return redirect('bills.views.bill_view', bill.pk)
+            return redirect('bill_view', bill.pk)
     else:
         form = forms.BillAddForm()
     return render_to_response('bills/form.html', context_instance=RequestContext(request, {
