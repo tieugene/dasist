@@ -607,7 +607,7 @@ def bill_delete(request, id):
         fileseq.purge()
         return redirect('bill_list')
     else:
-        return redirect('bills.views.bill_view', bill.pk)
+        return redirect('bill_view', bill.pk)
 
 
 @login_required
@@ -624,7 +624,7 @@ def bill_restart(request, id):
        ((bill.get_state_id() == STATE_REJECTED) or ((bill.get_state_id() == STATE_DONE) and (bill.locked is True)))):
         bill.set_state_id(STATE_DRAFT)
         bill.save()
-    return redirect('bills.views.bill_view', bill.pk)
+    return redirect('bill_view', bill.pk)
 
 
 @login_required
@@ -641,7 +641,7 @@ def bill_mail(request, id):
             'Новый счет на подпись: %s' % id,
             'Вам на подпись поступил новый счет: %s' % request.build_absolute_uri(reverse('bills.views.bill_view', kwargs={'id': bill.pk})),
         )
-    return redirect('bills.views.bill_view', bill.pk)
+    return redirect('bill_view', bill.pk)
 
 
 @login_required
