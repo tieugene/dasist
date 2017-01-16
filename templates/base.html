@@ -41,12 +41,12 @@
 	<div style="width: 100%"> <b> <a href="{% url 'index' %}"> DasIst </a> {% block menu_title %} ... {% endblock %} </b> </div>
 	{% if user.is_authenticated %}
 		<div> {{ user.username }} ({{ user.last_name }}) : </div>
-		<div> <a href="{% url 'django.contrib.auth.views.logout' %}?next={% url 'index' %}"> {% include "svgbutton/logout.html" %} </a> </div>
+		<div> <a href="{% url 'logout' %}?next={% url 'index' %}"> {% include "svgbutton/logout.html" %} </a> </div>
 		{% if user.is_staff %}
 			<div id="tm_admin"> <a href="{% url 'admin:index' %}"> {% include "svgbutton/admin.html" %} </a> </div>
 		{% endif %}
 	{% else %}
-		<div id="tm_login"> <a href="{% url 'django.contrib.auth.views.login' %}?next={% url 'index' %}" rel="nofollow"> {% include "svgbutton/login.html" %} </a> </div>
+		<div id="tm_login"> <a href="{% url 'login' %}?next={% url 'index' %}" rel="nofollow"> {% include "svgbutton/login.html" %} </a> </div>
 	{% endif %}
 	<div id="tm_about"> <a href="{% url 'about' %}"> {% include "svgbutton/about.html" %} </a> </div>
 </div>

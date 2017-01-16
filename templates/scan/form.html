@@ -23,8 +23,8 @@
   <td> <ol style="margin: 0" class="image-pack">
    {% for img in object.fileseq.fileseqitem_set.all %}
     <li>
-     <a href="{% url 'core.views.file_get' img.pk %}" class="image-link" style="text-decoration: none"> {% include "svgbutton/preview.html" %} </a>
-     <a href="{% url 'core.views.file_get' img.pk %}" style="text-decoration: none"> {% include "svgbutton/download.html" %} </a>
+     <a href="{% url 'file_get' img.pk %}" class="image-link" style="text-decoration: none"> {% include "svgbutton/preview.html" %} </a>
+     <a href="{% url 'file_get' img.pk %}" style="text-decoration: none"> {% include "svgbutton/download.html" %} </a>
     </li>
    {% endfor %}
   </ol> </td>

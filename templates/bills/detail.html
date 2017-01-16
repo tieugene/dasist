@@ -75,16 +75,16 @@
    {% for img in object.fileseq.list_items.all %}
     <tr> <td>
      {{ img.order }}
-     <a href="{% url 'core.views.file_get' img.pk %}" title="{{ img.file.name }}" class="nou image-link"> {% include "svgbutton/preview.html" %} </a>
-     <a href="{% url 'core.views.file_get' img.pk %}" class="nou"> {% include "svgbutton/download.html" %} </a>
-     <img src="{{ STATIC_URL }}img/svg/print.svg" class="svgimg" title="Распечатать" onClick="printimg('{% url 'core.views.file_get' img.pk %}', '{{ img.pk }}');"/>
+     <a href="{% url 'file_get' img.pk %}" title="{{ img.file.name }}" class="nou image-link"> {% include "svgbutton/preview.html" %} </a>
+     <a href="{% url 'file_get' img.pk %}" class="nou"> {% include "svgbutton/download.html" %} </a>
+     <img src="{{ STATIC_URL }}img/svg/print.svg" class="svgimg" title="Распечатать" onClick="printimg('{% url 'file_get' img.pk %}', '{{ img.pk }}');"/>
      {% if button.edit %}
-     <a href="{% url 'bills.views.bill_img_rl' img.pk %}" class="nou"> {% include "svgbutton/rleft.html" %} </a>
-     <a href="{% url 'bills.views.bill_img_rr' img.pk %}" class="nou"> {% include "svgbutton/rright.html" %} </a>
-	<a href="{% url 'bills.views.bill_img_del' img.pk %}" class="nou"> {% include "svgbutton/delete.html" %} </a>
+     <a href="{% url 'bill_img_rl' img.pk %}" class="nou"> {% include "svgbutton/rleft.html" %} </a>
+     <a href="{% url 'bill_img_rr' img.pk %}" class="nou"> {% include "svgbutton/rright.html" %} </a>
+	<a href="{% url 'bill_img_del' img.pk %}" class="nou"> {% include "svgbutton/delete.html" %} </a>
      </td><td>
-	{% if not img.is_first %} <a href="{% url 'bills.views.bill_img_up' img.file.pk %}"> {% include "svgbutton/move-up.html" %} </a> <br/> {% endif %}
-	{% if not img.is_last  %} <a href="{% url 'bills.views.bill_img_dn' img.file.pk %}"> {% include "svgbutton/move-down.html" %} </a> {% endif %}
+	{% if not img.is_first %} <a href="{% url 'bill_img_up' img.file.pk %}"> {% include "svgbutton/move-up.html" %} </a> <br/> {% endif %}
+	{% if not img.is_last  %} <a href="{% url 'bill_img_dn' img.file.pk %}"> {% include "svgbutton/move-down.html" %} </a> {% endif %}
      {% endif %}
     </td> </tr>
    {% endfor %}
@@ -116,19 +116,19 @@
 </fieldset>
 
 <p style="margin: 0">
-{% if button.arch %}	<a href="{% url 'bills.views.bill_toscan' object.pk %}" class="nou"> {% include "svgbutton/archive.html" %} </a> {% endif %}
+{% if button.arch %}	<a href="{% url 'bill_toscan' object.pk %}" class="nou"> {% include "svgbutton/archive.html" %} </a> {% endif %}
 {% if button.edit %}
  {% if object.state.pk == 1 %}
   {% if object.locked %}
-	<a href="{% url 'bills.views.bill_reedit' object.pk %}" class="nou"> {% include "svgbutton/edit.html" %} </a>
+	<a href="{% url 'bill_reedit' object.pk %}" class="nou"> {% include "svgbutton/edit.html" %} </a>
   {% else %}
-	<a href="{% url 'bills.views.bill_edit' object.pk %}" class="nou"> {% include "svgbutton/edit.html" %} </a>
+	<a href="{% url 'bill_edit' object.pk %}" class="nou"> {% include "svgbutton/edit.html" %} </a>
   {% endif %}
  {% endif %}
 {% endif %}
-{% if button.del %}	<a href="{% url 'bills.views.bill_delete' object.pk %}" class="nou"> {% include "svgbutton/delete.html" %} </a> {% endif %}
-{% if button.restart %}	<a href="{% url 'bills.views.bill_restart' object.pk %}" class="nou"> {% include "svgbutton/restart.html" %} </a> {% endif %}
-{% if user.is_superuser %} <a href="{% url 'bills.views.bill_mail' object.pk %}" class="nou"> {% include "svgbutton/mailto.html" %} </a> {% endif %}
+{% if button.del %}	<a href="{% url 'bill_delete' object.pk %}" class="nou"> {% include "svgbutton/delete.html" %} </a> {% endif %}
+{% if button.restart %}	<a href="{% url 'bill_restart' object.pk %}" class="nou"> {% include "svgbutton/restart.html" %} </a> {% endif %}
+{% if user.is_superuser %} <a href="{% url 'bill_mail' object.pk %}" class="nou"> {% include "svgbutton/mailto.html" %} </a> {% endif %}
 </p>
 {% if upload_form %}
 <form enctype="multipart/form-data" action="" method="POST">

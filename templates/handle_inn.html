@@ -12,7 +12,7 @@
 			v = $('#id_suppinn').val()
 			result = checkINN(v);
 			if (result == null) {								// INN seems ok
-				json_to_suppX('{% url "core.views.org_get_by_inn" %}?inn=' + v);	// find inn in db
+				json_to_suppX('{% url "org_get_by_inn" %}?inn=' + v);	// find inn in db
 			} else {									// bad inn
 				$("<p id='innerror'>"+result+"</p>").insertBefore("#id_suppinn");
 			};

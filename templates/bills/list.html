@@ -4,7 +4,7 @@
 <script type="text/javascript">
 $(document).ready(function() {
 	$('#id_place').change(function(){
-		json_to_select('{% url "bills.views.bill_get_subjects" %}?place=' + $(this).val(), '#id_subject');
+		json_to_select('{% url "bill_get_subjects" %}?place=' + $(this).val(), '#id_subject');
 	});
 });
 function json_to_select(url, select_selector) {
@@ -34,11 +34,11 @@ function json_to_select(url, select_selector) {
  }
 {% endblock %}
 {% block body_main %}
-<form action="{% url 'bills.views.bill_filter_state' %}" method="POST">
+<form action="{% url 'bill_filter_state' %}" method="POST">
 <table border="0"> <tr>
 {% if canadd %}
 <td>
-<a href="{% url 'bills.views.bill_add' %}"> {% include "svgbutton/new.html" %} </a>
+<a href="{% url 'bill_add' %}"> {% include "svgbutton/new.html" %} </a>
 </td>
 {% endif %}
 <td nowrap>
@@ -48,18 +48,18 @@ function json_to_select(url, select_selector) {
  <label for="lpp">Строк:</label>
  <!--select onchange="document.location=this.options[this.selectedIndex].value"-->
  <select onchange="document.location=this.options[this.selectedIndex].value">
-  <option value="{% url 'bills.views.bill_set_lpp' 10 %}" {% ifequal lpp 10 %}selected{% endifequal %}>10</option>
-  <option value="{% url 'bills.views.bill_set_lpp' 15 %}" {% ifequal lpp 15 %}selected{% endifequal %}>15</option>
-  <option value="{% url 'bills.views.bill_set_lpp' 20 %}" {% ifequal lpp 20 %}selected{% endifequal %}>20</option>
-  <option value="{% url 'bills.views.bill_set_lpp' 25 %}" {% ifequal lpp 25 %}selected{% endifequal %}>25</option>
-  <option value="{% url 'bills.views.bill_set_lpp' 50 %}" {% ifequal lpp 50 %}selected{% endifequal %}>50</option>
+  <option value="{% url 'bill_set_lpp' 10 %}" {% ifequal lpp 10 %}selected{% endifequal %}>10</option>
+  <option value="{% url 'bill_set_lpp' 15 %}" {% ifequal lpp 15 %}selected{% endifequal %}>15</option>
+  <option value="{% url 'bill_set_lpp' 20 %}" {% ifequal lpp 20 %}selected{% endifequal %}>20</option>
+  <option value="{% url 'bill_set_lpp' 25 %}" {% ifequal lpp 25 %}selected{% endifequal %}>25</option>
+  <option value="{% url 'bill_set_lpp' 50 %}" {% ifequal lpp 50 %}selected{% endifequal %}>50</option>
  </select>
 </td>
 <td nowrap> Открыть:
  {% ifequal mode 1 %}
-  <a href="{% url 'bills.views.bill_set_mode' 2 %}"> <button type="button" class="rounded" title="Входящие"> Входящие </button> </a>
+  <a href="{% url 'bill_set_mode' 2 %}"> <button type="button" class="rounded" title="Входящие"> Входящие </button> </a>
  {% else %}
-  <a href="{% url 'bills.views.bill_set_mode' 1 %}"> <button type="button" class="rounded" title="Все"> Все </button> </a>
+  <a href="{% url 'bill_set_mode' 1 %}"> <button type="button" class="rounded" title="Все"> Все </button> </a>
  {% endifequal %}
 </td>
 {% if fsform %}
@@ -119,7 +119,7 @@ function json_to_select(url, select_selector) {
    {% endifequal %}
   {% endif %}
  {% endif %}
-onclick="window.document.location='{% url 'bills.views.bill_view' object.pk %}'">
+onclick="window.document.location='{% url 'bill_view' object.pk %}'">
   <td> <img src="{{ STATIC_URL }}img/svg/{{ object.state.get_icon }}" width="16px" height="16px" title="{{ object.get_state_name }}"/> </td>
   <td> {{ object.pk }} </td>
   <td> {{ object.place }} </td>

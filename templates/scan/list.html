@@ -3,7 +3,7 @@
 <script type="text/javascript">
 $(document).ready(function() {
 	$('#id_place').change(function(){
-		json_to_select('{% url "scan.views.scan_get_subjects" %}?place=' + $(this).val(), '#id_subject');
+		json_to_select('{% url "scan_get_subjects" %}?place=' + $(this).val(), '#id_subject');
 	});
 });
 function json_to_select(url, select_selector) {
@@ -35,11 +35,11 @@ function json_to_select(url, select_selector) {
  <label for="lpp">Строк:</label>
  <!--select onchange="document.location=this.options[this.selectedIndex].value"-->
  <select onchange="document.location=this.options[this.selectedIndex].value">
-  <option value="{% url 'scan.views.scan_set_lpp' 10 %}" {% ifequal lpp 10 %}selected{% endifequal %}>10</option>
-  <option value="{% url 'scan.views.scan_set_lpp' 15 %}" {% ifequal lpp 15 %}selected{% endifequal %}>15</option>
-  <option value="{% url 'scan.views.scan_set_lpp' 20 %}" {% ifequal lpp 20 %}selected{% endifequal %}>20</option>
-  <option value="{% url 'scan.views.scan_set_lpp' 25 %}" {% ifequal lpp 25 %}selected{% endifequal %}>25</option>
-  <option value="{% url 'scan.views.scan_set_lpp' 50 %}" {% ifequal lpp 50 %}selected{% endifequal %}>50</option>
+  <option value="{% url 'scan_set_lpp' 10 %}" {% ifequal lpp 10 %}selected{% endifequal %}>10</option>
+  <option value="{% url 'scan_set_lpp' 15 %}" {% ifequal lpp 15 %}selected{% endifequal %}>15</option>
+  <option value="{% url 'scan_set_lpp' 20 %}" {% ifequal lpp 20 %}selected{% endifequal %}>20</option>
+  <option value="{% url 'scan_set_lpp' 25 %}" {% ifequal lpp 25 %}selected{% endifequal %}>25</option>
+  <option value="{% url 'scan_set_lpp' 50 %}" {% ifequal lpp 50 %}selected{% endifequal %}>50</option>
  </select>
 </td>
 </tr>
@@ -57,7 +57,7 @@ function json_to_select(url, select_selector) {
   <th> Дата </th>
   <th> Сумма </th>
  </tr>
-<form action="{% url 'scan.views.scan_set_filter' %}" method="POST">
+<form action="{% url 'scan_set_filter' %}" method="POST">
  {% csrf_token %}
  <tr>
   <th/>

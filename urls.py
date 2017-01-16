@@ -14,8 +14,8 @@ admin.autodiscover()
 urlpatterns = [
     url(r'^admin/',             include(admin.site.urls)),
     url(r'^admin/jsi18n',       javascript_catalog),    # hack to use admin form widgets
-    url(r'^accounts/login/$',   login),
-    url(r'^logout$',            logout),
+    url(r'^accounts/login/$',   login, name='login'),
+    url(r'^logout$',            logout, name='logout'),
     url(r'^$',                  TemplateView.as_view(template_name='index.html'), name='index'),
     url(r'^about$',             TemplateView.as_view(template_name='about.html'), name='about'),
     url(r'^core/',              include('core.urls')),

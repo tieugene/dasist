@@ -214,21 +214,24 @@ def fill_route(bill, mgr, boss):
     print 'fill_route: start add'
     for i, r in enumerate(std_route1):
         rl = models.Role.objects.get(pk=r[0])
-        print 'Role found'
+        print 'bill:', bill
+        print 'i:', i + 1
+        print 'role: (%d) %s' % (rl.pk, rl)
+        print 'approver: (%d) %s' % (r[1].pk, r[1])
 #        bill.route_set.add(
 #            models.Route(
 #                bill=bill,
 #                order=i + 1,
-#                role=r[1],
-#                approve=ap,
+#                role=rl,
+#                approve=r[1],
 #            ),
 #        )
-        models.Route.create(
-            bill=bill,
-            order=i + 1,
-            role=rl,
-            approve=r[1]
-        )
+#        models.Route.create(
+#            bill=bill,
+#            order=i + 1,
+#            role=rl,
+#            approve=r[1]
+#        )
         print 'fill_route: point added'
     print 'fill_route: end'
 

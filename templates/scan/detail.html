@@ -14,7 +14,7 @@
 {% block body_main %}
 
 {% if user.is_staff %}
-<a href="{% url 'scan.views.scan_edit' object.pk %}" style="text-decoration: none;"> {% include "svgbutton/edit.html" %} </a>
+<a href="{% url 'scan_edit' object.pk %}" style="text-decoration: none;"> {% include "svgbutton/edit.html" %} </a>
 {% endif %}
 {% if next %}
  <a href="{% url 'scan_view' next.pk %}" style="text-decoration: none;"> {% include "svgbutton/page-prev.html" %} </a>
@@ -49,8 +49,8 @@
   <td> Оригинал: </td>
   <td margin="0" padding="0" class="image-pack">
    {% for img in object.fileseq.fileseqitem_set.all %}
-     <a href="{% url 'core.views.file_get' img.pk %}" class="image-link" style="text-decoration: none;"> {% include "svgbutton/preview.html" %} </a>
-     <a href="{% url 'core.views.file_get' img.pk %}" style="text-decoration: none;"> {% include "svgbutton/download.html" %} </a>
+     <a href="{% url 'file_get' img.pk %}" class="image-link" style="text-decoration: none;"> {% include "svgbutton/preview.html" %} </a>
+     <a href="{% url 'file_get' img.pk %}" style="text-decoration: none;"> {% include "svgbutton/download.html" %} </a>
     <br/>
    {% endfor %}
   </td>

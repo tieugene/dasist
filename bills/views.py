@@ -254,9 +254,7 @@ def bill_add(request):
             mgr = form.cleaned_data['mgr']
             boss = form.cleaned_data['boss']
             print 'Boss found'
-            # fill_route(bill, mgr, boss)
-            for i, r in enumerate(get_std_route(mgr, boss)):
-                bill.route_set.add(models.Route(bill=bill, order=i + 1, role=models.Role.objects.get(pk=r[0]), approve=r[1]))
+            fill_route(bill, mgr, boss)
             print 'Bill routed'
             return redirect('bills.views.bill_view', bill.pk)
     else:

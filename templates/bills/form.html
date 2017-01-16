@@ -82,8 +82,8 @@ $(document).ready(function() {
 		   {% for img in object.fileseq.list_items.all %}
 		    <tr> <td>
 		     {{ img.order }}
-		     <a href="{% url 'core.views.file_get' img.pk %}" class="image-link"> {% include "svgbutton/preview.html" %} </a>
-		     <a href="{% url 'core.views.file_get' img.pk %}"> {% include "svgbutton/download.html" %} </a>
+		     <a href="{% url 'file_get' img.pk %}" class="image-link"> {% include "svgbutton/preview.html" %} </a>
+		     <a href="{% url 'file_get' img.pk %}"> {% include "svgbutton/download.html" %} </a>
 		    </td> </tr>
 		   {% endfor %}
 		  </table> </td>
@@ -91,6 +91,6 @@ $(document).ready(function() {
 		{% endif %}
 	</table>
 	<button type="submit" title="Записать" class="plain"> {% include "svgbutton/save.html" %} </button>
-	<a href="{% if object %} {% url 'bills.views.bill_view' object.pk %} {% else %} {% url 'bill_list' %} {% endif %}"> <button type="button" title="Отказаться" class="plain"> {% include "svgbutton/cancel.html" %} </button> </a>
+	<a href="{% if object %} {% url 'bill_view' object.pk %} {% else %} {% url 'bill_list' %} {% endif %}"> <button type="button" title="Отказаться" class="plain"> {% include "svgbutton/cancel.html" %} </button> </a>
    </form>
 {% endblock %}

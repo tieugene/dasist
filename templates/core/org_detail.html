@@ -8,6 +8,6 @@
  </tbody>
 </table>
 {% if user.is_staff %}
-<a href="{% url 'core.views.org_edit' object.pk %}"> {% include "svgbutton/edit.html" %} </a>
+<a href="{% url 'org_edit' object.pk %}"> {% include "svgbutton/edit.html" %} </a>
 {% endif %}
 {% endblock %}
