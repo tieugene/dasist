@@ -1,0 +1,23 @@
+{% extends "reports/base.html" %}
+{% block title %} Итого {% endblock %}
+{% block menu_title %} Итого {% endblock %}
+{% block body_main %}
+<table border="0">
+ <thead>
+  <th> Объект </th>
+  {% for year in years %}
+   <th> {{ year }} </th>
+  {% endfor %}
+ </thead>
+ <tbody>
+ {% for object in object_list %}
+  <tr>
+   <td> {{ object.name }} </td>
+  {% for y in years %}
+   <td> <a href="{% url 'summary_detail' object.pk y %}"> {{ y }} </a> </td>
+  {% endfor %}
+  </tr>
+ {% endfor %}
+ </tbody>
+</table>
+{% endblock %}

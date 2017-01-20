@@ -1,0 +1,17 @@
+{% extends "reports/base.html" %}
+{% block title %} Итого {% endblock %}
+{% block menu_title %} <a href="{% url 'summary_list' %}"> Итого </a> {% endblock %}
+{% block body_main %}
+<h2> Расходы на объект "{{ place.name }}" в {{ year }} году. </h2>
+<table border="1">
+ <thead>
+  <tr> <th> Направление </th> <th> руб. </th> </tr>
+ </thead>
+ <tbody>
+  {% for dir in dirs %}
+  <tr> <td> {{ dir.depart }} </td> <td align="right"> {{ dir.sum__sum }} </td> </tr>
+  {% endfor %}
+  <tr> <th> ИТОГО: </th> <th> {{ summary.sum__sum }} </th> </tr>
+ </tbody>
+</table>
+{% endblock %}
