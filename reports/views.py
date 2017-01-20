@@ -1,26 +1,27 @@
 # -*- coding: utf-8 -*-
 '''
-ledger.views
+reports.views
 '''
 
 # 1. system
 import sys
 
-# 2. my
-from bills.models import Approver, Payer
+from bills.models import Approver, Payer, Place
 from bills.views_extras import ROLE_ACCOUNTER, ROLE_ASSIGNEE, ROLE_BOSS
 
 from core.models import FileSeq, Org
 
-# 3. django
+# 2. django
 from django.contrib.auth.decorators import login_required
-from django.db.models import Q
-from django.shortcuts import redirect
+from django.db.models import Q, Sum
+from django.shortcuts import redirect, render_to_response
+from django.template import RequestContext
 from django.views.generic import ListView
 
-import forms
+# 3. my
+from scan.models import Scan
 
-# 3. 3rd party
+from . import forms
 
 reload(sys)
 sys.setdefaultencoding('utf-8')
@@ -30,7 +31,7 @@ class LedgerList(ListView):
     '''
     TODO: Гендир, Бухгалтер, Исполнитель
     '''
-    template_name = 'ledger/list.html'
+    template_name = 'reports/ledger_list.html'
     paginate_by = 25
     filter = {
         'payer':    None,
@@ -88,3 +89,35 @@ def ledger_set_filter(request):
         request.session['ledger_payer'] = filter['payer'].pk if filter['payer'] else None
         request.session['ledger_shipper'] = filter['shipper'].pk if filter['shipper'] else None
     return redirect('ledger_list')
+
+
+class SummaryList(ListView):
+    template_name = 'reports/summary_list.html'
+
+    def get_queryset(self):
+        # print 'SummaryList: get_queryset in'
+        # q = Scan.objects.order_by('place').values('place').distinct()
+        q = Place.objects.all()
+        # print 'SummaryList: get_queryset out'
+        return q
+
+    def get_context_data(self, **kwargs):
+        context = super(SummaryList, self).get_context_data(**kwargs)
+        context['years'] = [2014, 2015, 2016, 2017]
+        return context
+
+
+@login_required
+def summary_detail(request, p, y):
+    # return redirect('summary_list')
+    place = Place.objects.get(pk=int(p))
+    year = int(y)
+    dirs = Scan.objects.values('place', 'depart').filter(place=place.name, date__year=year).order_by('depart').annotate(Sum('sum'))
+    # print 'Dirs:', len(dirs), dirs.query
+    summary = Scan.objects.values('place').filter(place=place.name, date__year=year).order_by('place').annotate(Sum('sum'))
+    return render_to_response('reports/summary_detail.html', context_instance=RequestContext(request, {
+        'place': place,
+        'year': year,
+        'dirs': dirs,
+        'summary': summary[0],
+    }))

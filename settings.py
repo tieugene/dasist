@@ -103,7 +103,7 @@ INSTALLED_APPS = (
     'core',
     'bills',
     'scan',
-    'ledger',
+    'reports',
 )
 
 ALLOWED_HOSTS = ['localhost']
