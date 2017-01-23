@@ -44,12 +44,12 @@ class ScanList(ListView):
     paginate_by = 25
     filter = {
         'place':    None,
-        'subject':    None,
-        'depart':    None,
+        'subject':  None,
+        'depart':   None,
         'payer':    None,
-        'shipper':    None,
-        'billno':    None,
-        'billdate':    None,
+        'shipper':  None,
+        'billno':   None,
+        'billdate': None,
     }
     subjs = []
     subj = None

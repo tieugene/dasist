@@ -13,6 +13,7 @@ urlpatterns = (
     url(r'^ledger/lpp/(?P<lpp>\d+)/$',              views.ledger_set_lpp, name='ledger_set_lpp'),
     url(r'^ledger/filter/$',                        views.ledger_set_filter, name='ledger_set_filter'),
     url(r'^summary/$',                              login_required(views.SummaryList.as_view()), name='summary_list'),
+    url(r'^summary/filter/$',                       views.summary_set_filter, name='summary_set_filter'),
     # url(r'^summary/(?P<y>\d+)/(?P<place>\w+)/$',    views.summary_detail, name='summary_detail'),
-    url(r'^summary/(?P<p>\d+)/(?P<y>\d+)/$',        views.summary_detail, name='summary_detail'),
+    # url(r'^summary/(?P<p>\d+)/(?P<y>\d+)/$',        views.summary_detail, name='summary_detail'),
 )

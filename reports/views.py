@@ -93,31 +93,58 @@ def ledger_set_filter(request):
 
 class SummaryList(ListView):
     template_name = 'reports/summary_list.html'
+    filter = {
+        'place':    None,
+        'subject':  None,
+        'year':     None,
+    }
+    subjs = []
+    subj = None
 
     def get_queryset(self):
-        # print 'SummaryList: get_queryset in'
-        # q = Scan.objects.order_by('place').values('place').distinct()
-        q = Place.objects.all()
-        # print 'SummaryList: get_queryset out'
+        # print 'SummaryList.get_queryset in'
+        self.filter['place'] = self.request.session.get('summary_place', None)
+        self.filter['subject'] = self.request.session.get('summary_subject', None)
+        self.filter['year'] = self.request.session.get('summary_year', None)
+        # locals
+        # print 'SummaryList.get_queryset init locals'
+        p = self.filter['place']
+        s = self.filter['subject']
+        y = self.filter['year']
+        # print 'SummaryList.get_queryset query create'
+        # let's query
+        #q = Scan.objects.values('place', 'subject', 'depart').filter(place=self.filter['place'], subject=self.filter['subject'], date__year=self.filter['year']).order_by('depart').annotate(Sum('sum'))
+        # q = Place.objects.all()
+        q = Scan.objects
+        if (p and y):
+            print 'Filter:', p, y
+            q = q.values('depart').filter(place=p, date__year=y).order_by('depart').annotate(Sum('sum'))
+            print 'Q:', q.query
+        else:
+            q = q.none()
+        # print 'SummaryList.get_queryset out'
         return q
 
     def get_context_data(self, **kwargs):
+        # print 'SummaryList.get_contextdata in'
         context = super(SummaryList, self).get_context_data(**kwargs)
-        context['years'] = [2014, 2015, 2016, 2017]
+        context['form'] = forms.FilterSummaryListForm(initial={
+            'place':    self.filter['place'],
+            'subject':  self.filter['subject'],
+            'year':     self.filter['year'],
+        })
+        # print 'SummaryList.get_contextdata out'
         return context
 
 
 @login_required
-def summary_detail(request, p, y):
-    # return redirect('summary_list')
-    place = Place.objects.get(pk=int(p))
-    year = int(y)
-    dirs = Scan.objects.values('place', 'depart').filter(place=place.name, date__year=year).order_by('depart').annotate(Sum('sum'))
-    # print 'Dirs:', len(dirs), dirs.query
-    summary = Scan.objects.values('place').filter(place=place.name, date__year=year).order_by('place').annotate(Sum('sum'))
-    return render_to_response('reports/summary_detail.html', context_instance=RequestContext(request, {
-        'place': place,
-        'year': year,
-        'dirs': dirs,
-        'summary': summary[0],
-    }))
+def summary_set_filter(request):
+    # print 'summary_set_filter in'
+    form = forms.FilterSummaryListForm(request.POST)
+    if form.is_valid():
+        filter = form.cleaned_data
+        request.session['summary_place'] = filter['place'] if filter['place'] else None
+        request.session['summary_subject'] = filter['subject'] if filter['subject'] else None
+        request.session['summary_year'] = filter['year'] if filter['year'] else None
+    # print 'summary_set_filter out'
+    return redirect('summary_list')

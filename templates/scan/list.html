@@ -83,7 +83,7 @@ function json_to_select(url, select_selector) {
   <td nowrap> {{ object.shipper|default:"---" }} </td>
   <td nowrap> {{ object.no }} </td>
   <td nowrap> {{ object.date|date:"d.m.y" }} </td>
-  <td nowrap> {{ object.sum|default:"---" }} </td>
+  <td nowrap align="right"> {{ object.sum|default:"---" }} </td>
  </tr>
 {% endfor %}
 </table>

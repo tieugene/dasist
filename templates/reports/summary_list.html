@@ -2,22 +2,41 @@
 {% block title %} Итого {% endblock %}
 {% block menu_title %} Итого {% endblock %}
 {% block body_main %}
-<table border="0">
+{{ form.media }}
+<table border="1">
  <thead>
   <th> Объект </th>
-  {% for year in years %}
-   <th> {{ year }} </th>
-  {% endfor %}
+  <th> Подобъект </th>
+  <th> Год </th>
  </thead>
  <tbody>
- {% for object in object_list %}
+  <form action="{% url 'summary_set_filter' %}" method="POST">
+ {% csrf_token %}
+   <tr>
+    <td> {{ form.place }} </td>
+    <td> {{ form.subject }} </td>
+    <td> {{ form.year }} </td>
+    <td> <button type="submit" title="Фильтровать" class="plain"> {% include "svgbutton/filter.html" %} </button> </td>
+   </tr>
+  </form>
+ </tbody>
+</table>
+
+<table>
+ <thead>
   <tr>
-   <td> {{ object.name }} </td>
-  {% for y in years %}
-   <td> <a href="{% url 'summary_detail' object.pk y %}"> {{ y }} </a> </td>
+   <th> Направление </th>
+   <th> Сумма </th>
+  </tr>
+ </thead>
+ <tbody>
+  {% for object in object_list %}
+   <tr>
+    <td> {% if object.depart %} {{ object.depart }} {% else %} --- {% endif %} </td>
+    <td align="right"> {{ object.sum__sum }} </td>
+   </tr>
   {% endfor %}
   </tr>
- {% endfor %}
  </tbody>
 </table>
 {% endblock %}
