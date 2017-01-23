@@ -49,6 +49,7 @@ ROLE_GUEST = 8      # Гость (*)
 # Special assigneies
 USER_OMTSCHIEF = 23
 USER_LAWER = 5
+USER_BOSS = 30
 USER_CHIEFACC = 44
 
 
@@ -193,12 +194,12 @@ def handle_shipper(form):
     return shipper
 
 
-def fill_route(bill, mgr, boss):
+def fill_route(bill, mgr):    #  ,boss
     std_route1 = [    # role_id, approve_id
         (ROLE_OMTSCHIEF, models.Approver.objects.get(pk=USER_OMTSCHIEF)),   # Gorbunoff.N.V.
         (ROLE_CHIEF, mgr),                                                  # Руководитель
         (ROLE_LAWER, models.Approver.objects.get(pk=USER_LAWER)),           # Юрист
-        (ROLE_BOSS, boss),                                                  # Гендир
+        (ROLE_BOSS, models.Approver.objects.get(pk=USER_BOSS)),             # Гендир
         (ROLE_ACCOUNTER, None),                                             # Бухгалтер
     ]
     for i, r in enumerate(std_route1):  # https://docs.djangoproject.com/en/1.10/ref/models/relations/#django.db.models.fields.related.RelatedManager.set

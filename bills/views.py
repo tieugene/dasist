@@ -31,7 +31,8 @@ import utils
 
 from views_extras import \
     ROLE_ACCOUNTER, ROLE_ASSIGNEE, ROLE_CHIEF, ROLE_LAWER, \
-    STATE_DONE, STATE_DRAFT, STATE_ONPAY, STATE_ONWAY, STATE_REJECTED
+    STATE_DONE, STATE_DRAFT, STATE_ONPAY, STATE_ONWAY, STATE_REJECTED, \
+    USER_BOSS
 from views_extras import fill_route, handle_shipper, mailto, rotate_img, set_filter_state, update_fileseq
 
 logger = logging.getLogger(__name__)
@@ -252,8 +253,8 @@ def bill_add(request):
             )
             # 4. add route
             mgr = form.cleaned_data['mgr']
-            boss = form.cleaned_data['boss']
-            fill_route(bill, mgr, boss)
+            # boss = form.cleaned_data['boss']
+            fill_route(bill, mgr) #  , boss
             return redirect('bill_view', bill.pk)
     else:
         form = forms.BillAddForm()
@@ -304,8 +305,10 @@ def bill_edit(request, id):
                 mgr.save()
             # 2. update boss (if required)
             boss = bill.get_boss()
-            if (boss.approve != form.cleaned_data['boss']):
-                boss.approve = form.cleaned_data['boss']
+            # if (boss.approve != form.cleaned_data['boss']):
+            #     boss.approve = form.cleaned_data['boss']
+            if (boss.approve.pk != USER_BOSS):
+                boss.approve = models.Approver.objects.get(pk=USER_BOSS)
                 boss.save()
             # 3. update image
             file = request.FILES.get('file', None)
@@ -316,27 +319,27 @@ def bill_edit(request, id):
             return redirect('bills.views.bill_view', bill.pk)
     else:    # GET
         form = forms.BillEditForm(initial={
-            'id':        bill.fileseq.pk,
+            'id':       bill.fileseq.pk,
             'place':    bill.place,
-            'subject':    bill.subject,
-            'depart':    bill.depart,
+            'subject':  bill.subject,
+            'depart':   bill.depart,
             'payer':    bill.payer,
-            'suppinn':    bill.shipper.inn,
-            'suppname':    bill.shipper.name,
-            'suppfull':    bill.shipper.fullname,
-            'billno':    bill.billno,
-            'billdate':    bill.billdate,
-            'billsum':    bill.billsum,
-            'payedsum':    bill.payedsum,
-            'topaysum':    bill.topaysum,
-            'mgr':        bill.get_mgr().approve,    # костыль для initial
-            'boss':        bill.get_boss().approve,    # костыль для initial
+            'suppinn':  bill.shipper.inn,
+            'suppname': bill.shipper.name,
+            'suppfull': bill.shipper.fullname,
+            'billno':   bill.billno,
+            'billdate': bill.billdate,
+            'billsum':  bill.billsum,
+            'payedsum': bill.payedsum,
+            'topaysum': bill.topaysum,
+            'mgr':      bill.get_mgr().approve,    # костыль для initial
+            # 'boss':     bill.get_boss().approve,    # костыль для initial
             # 'approver':    6,
         })
     return render_to_response('bills/form.html', context_instance=RequestContext(request, {
-        'form':        form,
-        'object':    bill,
-        'places':    models.Place.objects.all(),
+        'form':     form,
+        'object':   bill,
+        'places':   models.Place.objects.all(),
     }))
 
 
@@ -355,7 +358,7 @@ def bill_reedit(request, id):
        (bill.assign == approver) and
        (bill.get_state_id() == STATE_DRAFT) and
        (bill.locked))):
-        return redirect('bills.views.bill_view', bill.pk)
+        return redirect('bill_view', bill.pk)
     max_topaysum = bill.billsum - bill.payedsum
     if request.method == 'POST':
         form = forms.BillReEditForm(request.POST, max_topaysum=bill.billsum - bill.payedsum)
@@ -370,22 +373,24 @@ def bill_reedit(request, id):
                 mgr.save()
             # 2. and boss (if required)
             boss = bill.get_boss()
-            if (boss.approve != form.cleaned_data['boss']):
-                boss.approve = form.cleaned_data['boss']
+            # if (boss.approve != form.cleaned_data['boss']):
+            #    boss.approve = form.cleaned_data['boss']
+            if (boss.approve.pk != USER_BOSS):
+                boss.approve = models.Approver.objects.get(pk=USER_BOSS)
                 boss.save()
-            return redirect('bills.views.bill_view', bill.pk)
+            return redirect('bill_view', bill.pk)
     else:    # GET
         # hack
         if (bill.route_set.count() == 0):
             # print "Fill route"
             mgr = models.Approver.objects.get(pk=DEFAULT_MGR)
-            boss = models.Approver.objects.get(pk=DEFAULT_BOSS)
-            fill_route(bill, mgr, boss)
+            # boss = models.Approver.objects.get(pk=DEFAULT_BOSS)
+            fill_route(bill, mgr) #  , boss
         # /hack
         form = forms.BillReEditForm(initial={
-            'topaysum':    bill.topaysum if bill.topaysum else max_topaysum,
-            'mgr':        bill.get_mgr().approve,
-            'boss':        bill.get_boss().approve,
+            'topaysum': bill.topaysum if bill.topaysum else max_topaysum,
+            'mgr':      bill.get_mgr().approve,
+            # 'boss':     bill.get_boss().approve,
         })
     return render_to_response('bills/form_reedit.html', context_instance=RequestContext(request, {
         'form': form,
