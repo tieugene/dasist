@@ -117,9 +117,9 @@ class SummaryList(ListView):
         # q = Place.objects.all()
         q = Scan.objects
         if (p and y):
-            print 'Filter:', p, y
-            q = q.values('depart').filter(place=p, date__year=y).order_by('depart').annotate(Sum('sum'))
-            print 'Q:', q.query
+            # print 'Filter:', p, y
+            q = q.values('subject', 'depart').filter(place=p, date__year=y).order_by('subject', 'depart').annotate(Sum('sum'))
+            # print 'Q:', q.query
         else:
             q = q.none()
         # print 'SummaryList.get_queryset out'

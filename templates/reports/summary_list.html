@@ -8,6 +8,7 @@
   <th> Объект </th>
   <th> Подобъект </th>
   <th> Год </th>
+  <th> &nbsp; </th>
  </thead>
  <tbody>
   <form action="{% url 'summary_set_filter' %}" method="POST">
@@ -25,6 +26,7 @@
 <table>
  <thead>
   <tr>
+   <th> Подобъект </th>
    <th> Направление </th>
    <th> Сумма </th>
   </tr>
@@ -32,6 +34,7 @@
  <tbody>
   {% for object in object_list %}
    <tr>
+    <td> {% if object.subject %} {{ object.subject }} {% else %} --- {% endif %} </td>
     <td> {% if object.depart %} {{ object.depart }} {% else %} --- {% endif %} </td>
     <td align="right"> {{ object.sum__sum }} </td>
    </tr>
