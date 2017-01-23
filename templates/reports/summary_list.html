@@ -1,6 +1,16 @@
 {% extends "reports/base.html" %}
 {% block title %} Итого {% endblock %}
 {% block menu_title %} Итого {% endblock %}
+{% block js %}
+<script type="text/javascript">
+$(document).ready(function() {
+	$('#id_place').change(function(){
+		json_to_select('{% url "scan_get_subjects" %}?place=' + $(this).val(), '#id_subject');
+	});
+});
+</script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/get_subjects.js"></script>
+{% endblock %}
 {% block body_main %}
 {{ form.media }}
 <table border="1">
@@ -12,11 +22,11 @@
  </thead>
  <tbody>
   <form action="{% url 'summary_set_filter' %}" method="POST">
- {% csrf_token %}
+   {% csrf_token %}
    <tr>
-    <td> {{ form.place }} </td>
-    <td> {{ form.subject }} </td>
-    <td> {{ form.year }} </td>
+    <td> {{ form.place }} <br/> {{ form.place.errors }} </td>
+    <td> {{ form.subject }} <br/> {{ form.subject.errors }} </td>
+    <td> {{ form.year }} <br/> {{ form.year.errors }} </td>
     <td> <button type="submit" title="Фильтровать" class="plain"> {% include "svgbutton/filter.html" %} </button> </td>
    </tr>
   </form>
