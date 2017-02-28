@@ -35,7 +35,7 @@ clean_old)	# delete all records from all tables (old way)
 	(echo "BEGIN;" && (echo "SHOW TABLES;" | $MGR dbshell | grep -v Tables | while read i; do echo "DELETE FROM $i;"; done) && echo "COMMIT;") | $MGR dbshell
 	;;
 clean)		# delete all records from all tables in right order
-	(echo "BEGIN;" && (for i in `tac tables.lst`; do echo "DELETE FROM $i;"; done) && echo "COMMIT;") | $MGR dbshell
+	(echo "BEGIN; SET FOREIGN_KEY_CHECKS=0;" && (for i in `tac tables.lst`; do echo "DELETE FROM $i;"; done) && echo "COMMIT;") | $MGR dbshell
 	;;
 restore)	# restore db from gziped sql
 	(echo "BEGIN; SET FOREIGN_KEY_CHECKS=0;" && gunzip -c $2 && echo "SET FOREIGN_KEY_CHECKS=1; COMMIT;") | $MGR dbshell

@@ -25,7 +25,12 @@ STATE_ICON = (
 # Refs
 class State(models.Model):
     '''
-    Predefined Bill states
+    Predefined Bill states:
+    1 - Черновик
+    2 - В пути (на подписи у Подписантов)
+    3 - Завернут (Счет: любым Подписантом; Договор: Юристом)
+    4 - Оплачивается (Договор: 1. "Все дали добро, только таможня тормозит", 2. "таможня (юрист) дает добро")
+    5 - Исполнен (Договор: 1. таможня дала добро; 2. Договор на базе)
     '''
     id = models.PositiveSmallIntegerField(primary_key=True, verbose_name=u'#')
     name = models.CharField(max_length=16, db_index=True, verbose_name=u'Наименование')
@@ -141,44 +146,35 @@ class Payer(models.Model):
 # Working
 class Bill(models.Model):
     fileseq = models.OneToOneField(FileSeq, primary_key=True, verbose_name=u'Файлы')
-    place = models.ForeignKey(Place, null=False, blank=False, db_index=True, verbose_name=u'Объект')
-    subject = models.ForeignKey(Subject, null=True, blank=True, db_index=True, verbose_name=u'ПодОбъект')
-    depart = models.ForeignKey(Department, null=True, blank=True, db_index=True, verbose_name=u'Направление')
-    payer = models.ForeignKey(Payer, null=False, blank=False, db_index=True, verbose_name=u'Плательщик')
-    shipper = models.ForeignKey(Org, null=False, blank=False, db_index=True, verbose_name=u'Поставщик')
+    place = models.ForeignKey(Place, related_name='place_bills', null=False, blank=False, db_index=True, verbose_name=u'Объект')
+    subject = models.ForeignKey(Subject, related_name='subject_bills', null=True, blank=True, db_index=True, verbose_name=u'ПодОбъект')
+    depart = models.ForeignKey(Department, related_name='department_bills', null=True, blank=True, db_index=True, verbose_name=u'Направление')
+    payer = models.ForeignKey(Payer, related_name='payer_bills', null=False, blank=False, db_index=True, verbose_name=u'Плательщик')
+    shipper = models.ForeignKey(Org, related_name='shipper_bills', null=False, blank=False, db_index=True, verbose_name=u'Поставщик')
     # supplier    = models.CharField(max_length=64, null=True, blank=True, db_index=False, verbose_name=u'Продавец')    # max=38
     billno = models.CharField(max_length=32, db_index=True, verbose_name=u'Номер счета')    # max=11
     billdate = models.DateField(db_index=True, verbose_name=u'Дата счета')
     billsum = models.DecimalField(max_digits=11, decimal_places=2, db_index=True, verbose_name=u'Сумма счета')
     payedsum = models.DecimalField(max_digits=11, decimal_places=2, db_index=True, verbose_name=u'Оплачено')
     topaysum = models.DecimalField(max_digits=11, decimal_places=2, db_index=True, verbose_name=u'Сумма к оплате')
-    assign = models.ForeignKey(Approver, related_name='assigned', db_index=True, verbose_name=u'Исполнитель')
+    assign = models.ForeignKey(Approver, related_name='assigned_bills', db_index=True, verbose_name=u'Исполнитель')
     rpoint = models.ForeignKey('Route', null=True, blank=True, related_name='rbill', db_index=True, verbose_name=u'Точка маршрута')
-    # done        = models.NullBooleanField(null=True, blank=True, verbose_name=u'Закрыт')
-    state = models.ForeignKey(State, db_index=True, verbose_name=u'Состояние')
+    state = models.ForeignKey(State, related_name='state_bills', db_index=True, verbose_name=u'Состояние')
     locked = models.BooleanField(null=False, blank=False, default=False, db_index=True, verbose_name=u'В работе')
-    # route        = SortedManyToManyField(Approver, null=True, blank=True, related_name='route', verbose_name=u'Маршрут')
-    # history    = models.ManyToManyField(Approver, null=True, blank=True, related_name='history', through='BillEvent', verbose_name=u'История')
 
     def __unicode__(self):
         return str(self.pk)
-
-    # def    __get_state(self):
-    #    return (self.rpoint==None, self.done)
 
     def set_state_id(self, id):
         self.state = State.objects.get(pk=id)
 
     def get_state_id(self):
-        # return state_id[self.__get_state()]
         return self.state.pk
 
     def get_state_name(self):
-        # return state_name[self.__get_state()]
         return self.state.name
 
     def get_state_color(self):
-        # return state_color[self.__get_state()]
         if (self.state.pk == 5) and (self.locked):
             return 'Aquamarine'
         else:
@@ -186,15 +182,12 @@ class Bill(models.Model):
 
     def get_mgr(self):
         return self.route_set.get(order=ORD_MGR)
-        # return self.route_set.get(role=ROLE_CHIEF)
 
     def get_boss(self):
         return self.route_set.get(order=ORD_BOSS)
-        # return self.route_set.get(role=ROLE_BOSS)
 
     class Meta:
         unique_together = (('shipper', 'billno', 'billdate'),)
-        # ordering        = ('-fileseq_id',)
         verbose_name = u'Счет'
         verbose_name_plural = u'Счета'
 
@@ -202,17 +195,14 @@ class Bill(models.Model):
 class Route(models.Model):
     bill = models.ForeignKey(Bill, db_index=True, verbose_name=u'Счет')
     # 1-based route point (assignee excluded)
-    order = models.PositiveSmallIntegerField(null=False, blank=False, db_index=True, verbose_name=u'#')
+    order = models.PositiveSmallIntegerField(db_index=True, verbose_name=u'#')
     role = models.ForeignKey(Role, db_index=True, verbose_name=u'Роль')
     approve = models.ForeignKey(Approver, null=True, blank=True, db_index=True, verbose_name=u'Подписант')
-    # state    = models.ForeignKey(State, verbose_name=u'Состояние')
-    # action    = models.CharField(max_length=16, verbose_name=u'Действие')
 
     def __unicode__(self):
         return '%d.%d: %s' % (self.bill.pk, self.order, self.approve.get_fio() if self.approve else self.role.name)
 
     def get_str(self):
-        # return self.approve.get_fio() if self.approve else self.role.name
         return self.approve.user.last_name if self.approve else self.role.name
 
     class Meta:
@@ -223,7 +213,7 @@ class Route(models.Model):
 
 
 class Event(models.Model):
-    bill = models.ForeignKey(Bill, related_name='events', db_index=True, verbose_name=u'Счет')
+    bill = models.ForeignKey(Bill, db_index=True, verbose_name=u'Счет')
     approve = models.ForeignKey(Approver, db_index=True, verbose_name=u'Подписант')
     resume = models.BooleanField(db_index=True, verbose_name=u'Резолюция')
     ctime = models.DateTimeField(auto_now_add=True, db_index=True, verbose_name=u'ДатаВремя')

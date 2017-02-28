@@ -4,7 +4,6 @@ import os
 PROJECT_DIR = os.path.dirname(__file__)
 
 DEBUG = True
-TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
     ('TI_Eugene', 'ti.eugene@gsmail.pro'),
@@ -59,14 +58,33 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.template.context_processors.request',
     'django.contrib.messages.context_processors.messages'
 )
-
-# TEMPLATES = [
-#    {
-#        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-#        'APP_DIRS': True,
-#    },
-# ]
-
+TEMPLATE_DEBUG = DEBUG
+'''
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [os.path.join(PROJECT_DIR, 'templates'), ],
+        # 'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.contrib.auth.context_processors.auth',
+                'django.template.context_processors.debug',
+                'django.template.context_processors.i18n',
+                'django.template.context_processors.media',
+                'django.template.context_processors.static',
+                'django.template.context_processors.request',
+                'django.contrib.messages.context_processors.messages'
+            ],
+            'loaders': [
+                'django.template.loaders.filesystem.Loader',
+                'django.template.loaders.app_directories.Loader',
+                'django.template.loaders.eggs.Loader',
+            ]
+        },
+        'DEBUG': True,
+    },
+]
+'''
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -104,6 +122,7 @@ INSTALLED_APPS = (
     'bills',
     'scan',
     'reports',
+    'contract',
 )
 
 ALLOWED_HOSTS = ['localhost']
@@ -133,6 +152,7 @@ LOGGING = {
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 # SESSION_COOKIE_AGE = 86400
 MAILTO = False
+TESTMAIL = "user@example.com"
 
 try:
     from local_settings import *

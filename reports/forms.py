@@ -7,12 +7,14 @@ ledger.forms
 from bills.models import Payer
 
 from core.models import Org
-from scan.models import Scan
 
 # 2. django
 from django import forms
 
+from scan.models import Scan
+
 EMPTY_VALUE = [('', '---'), ]
+
 
 class FilterLedgerListForm(forms.Form):
     payer = forms.ModelChoiceField(

@@ -30,6 +30,7 @@ from scan.models import Event, Scan
 import utils
 
 from views_extras import \
+    DEFAULT_MGR, \
     ROLE_ACCOUNTER, ROLE_ASSIGNEE, ROLE_CHIEF, ROLE_LAWER, \
     STATE_DONE, STATE_DRAFT, STATE_ONPAY, STATE_ONWAY, STATE_REJECTED, \
     USER_BOSS
@@ -39,9 +40,6 @@ logger = logging.getLogger(__name__)
 
 PAGE_SIZE = 25
 FSNAME = 'fstate'    # 0..3
-
-DEFAULT_MGR = 8
-DEFAULT_BOSS = 3
 
 reload(sys)
 sys.setdefaultencoding('utf-8')
@@ -183,7 +181,6 @@ def bill_filter_state(request):
             int(fsform.cleaned_data['onpay']) * 4 | \
             int(fsform.cleaned_data['onway']) * 8 | \
             int(fsform.cleaned_data['draft']) * 16
-        # print 'Filter:', fsfilter
         request.session[FSNAME] = fsfilter
         request.session['place'] = fsform.cleaned_data['place'].pk if fsform.cleaned_data['place'] else 0
         request.session['subject'] = fsform.cleaned_data['subject'].pk if fsform.cleaned_data['subject'] else 0
@@ -254,7 +251,7 @@ def bill_add(request):
             # 4. add route
             mgr = form.cleaned_data['mgr']
             # boss = form.cleaned_data['boss']
-            fill_route(bill, mgr) #  , boss
+            fill_route(bill, mgr)   # , boss
             return redirect('bill_view', bill.pk)
     else:
         form = forms.BillAddForm()
@@ -382,10 +379,9 @@ def bill_reedit(request, id):
     else:    # GET
         # hack
         if (bill.route_set.count() == 0):
-            # print "Fill route"
             mgr = models.Approver.objects.get(pk=DEFAULT_MGR)
             # boss = models.Approver.objects.get(pk=DEFAULT_BOSS)
-            fill_route(bill, mgr) #  , boss
+            fill_route(bill, mgr)   # , boss
         # /hack
         form = forms.BillReEditForm(initial={
             'topaysum': bill.topaysum if bill.topaysum else max_topaysum,
@@ -402,6 +398,7 @@ def bill_reedit(request, id):
 @transaction.atomic
 def bill_view(request, id, upload_form=None):
     '''
+    TODO: use __can_resume()
     View | Accept/Reject bill
     ACL: (assignee & Draft & Route ok) | (approver & OnWay)
     - POST (Draft)

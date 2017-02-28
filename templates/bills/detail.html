@@ -103,7 +103,7 @@
  <th> Комментарий </th>
 </thead>
 <tbody>
-  {% for i in object.events.all %}
+  {% for i in object.event_set.all %}
   <tr>
    <td valign="top"> {% if i.resume %} {% include "svgbutton/agreed.html" %} {% else %} {% include "svgbutton/canceled.html" %} {% endif %} </td>
    <td valign="top"> {{ i.ctime|date:"d.m.y H:i" }} </td>

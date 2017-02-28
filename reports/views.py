@@ -6,7 +6,7 @@ reports.views
 # 1. system
 import sys
 
-from bills.models import Approver, Payer, Place
+from bills.models import Approver, Payer
 from bills.views_extras import ROLE_ACCOUNTER, ROLE_ASSIGNEE, ROLE_BOSS
 
 from core.models import FileSeq, Org
@@ -14,8 +14,7 @@ from core.models import FileSeq, Org
 # 2. django
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q, Sum
-from django.shortcuts import redirect, render_to_response
-from django.template import RequestContext
+from django.shortcuts import redirect
 from django.views.generic import ListView
 
 # 3. my
@@ -29,6 +28,7 @@ sys.setdefaultencoding('utf-8')
 
 class LedgerList(ListView):
     '''
+    "Табличка"
     TODO: Гендир, Бухгалтер, Исполнитель
     '''
     template_name = 'reports/ledger_list.html'
@@ -62,7 +62,6 @@ class LedgerList(ListView):
             q = q.order_by('-pk')    # [:100]
         else:
             q = q.none()
-        # print q.query
         return q
 
     def get_context_data(self, **kwargs):
@@ -92,59 +91,57 @@ def ledger_set_filter(request):
 
 
 class SummaryList(ListView):
+    '''
+    "Итого"
+    '''
     template_name = 'reports/summary_list.html'
     filter = {
         'place':    None,
         'subject':  None,
         'year':     None,
     }
-    subjs = []
-    subj = None
+    sum = 0
 
     def get_queryset(self):
-        # print 'SummaryList.get_queryset in'
         self.filter['place'] = self.request.session.get('summary_place', None)
         self.filter['subject'] = self.request.session.get('summary_subject', None)
         self.filter['year'] = self.request.session.get('summary_year', None)
         # locals
-        # print 'SummaryList.get_queryset init locals'
         p = self.filter['place']
         s = self.filter['subject']
         y = self.filter['year']
-        # print 'SummaryList.get_queryset query create'
         # let's query
-        #q = Scan.objects.values('place', 'subject', 'depart').filter(place=self.filter['place'], subject=self.filter['subject'], date__year=self.filter['year']).order_by('depart').annotate(Sum('sum'))
+        # q = Scan.objects.values('place', 'subject', 'depart').filter(place=self.filter['place'], subject=self.filter['subject'], date__year=self.filter['year']).order_by('depart').annotate(Sum('sum'))
         # q = Place.objects.all()
         q = Scan.objects
+        self.sum = 0
         if (p and y):
-            # print 'Filter:', p, y
-            q = q.values('subject', 'depart').filter(place=p, date__year=y).order_by('subject', 'depart').annotate(Sum('sum'))
-            # print 'Q:', q.query
+            if (s):
+                q = q.values('depart').filter(place=p, subject=s, date__year=y).order_by('depart').annotate(Sum('sum'))
+            else:
+                q = q.values('depart').filter(place=p, subject=None, date__year=y).order_by('depart').annotate(Sum('sum'))
+            self.sum = q.aggregate(Sum('sum__sum')).get('sum__sum__sum', 0)
         else:
             q = q.none()
-        # print 'SummaryList.get_queryset out'
         return q
 
     def get_context_data(self, **kwargs):
-        # print 'SummaryList.get_contextdata in'
         context = super(SummaryList, self).get_context_data(**kwargs)
         context['form'] = forms.FilterSummaryListForm(initial={
             'place':    self.filter['place'],
             'subject':  self.filter['subject'],
             'year':     self.filter['year'],
         })
-        # print 'SummaryList.get_contextdata out'
+        context['sum'] = self.sum
         return context
 
 
 @login_required
 def summary_set_filter(request):
-    # print 'summary_set_filter in'
     form = forms.FilterSummaryListForm(request.POST)
     if form.is_valid():
         filter = form.cleaned_data
         request.session['summary_place'] = filter['place'] if filter['place'] else None
         request.session['summary_subject'] = filter['subject'] if filter['subject'] else None
         request.session['summary_year'] = filter['year'] if filter['year'] else None
-    # print 'summary_set_filter out'
     return redirect('summary_list')

@@ -41,3 +41,21 @@ GRANT ALL PRIVILEGES ON dasist.* TO 'dasist'@'localhost' WITH GRANT OPTION;
 * settings.INSTALLED_APPS - enable 'bills'
 * ./dothis clean
 * ./dothis restore <dump.sql.gz>
+
+= Contract: interface =
+* Исполнитель: Restart | Delete | text+Вперед
+* Подписанты: 
+
+====
+= Contracts =
+* exclude contract from settings and urls
+* ./dothis clean
+* ./dothis resore ...sql.gz
+* ./manage.py migrate
+* UPDATE scan_scan SET depart=NULL where depart="";
+* ./manage.py makemigrations contracts
+* ./manage.py squashmigrate contract 0001 contracts > contract.sql
+* change SQL:
+    ALTER TABLE `contract_contract` ADD CONSTRAINT ... FOREIGN KEY (`...`) REFERENCES `bills_approver` (`id` > `user_id`);
+* ./manage.py dbshell < contract.sql
+* ./manage.py migrate --fake-initial contract 0001

@@ -32,25 +32,27 @@ reload(sys)
 sys.setdefaultencoding('utf-8')
 
 STATE_DRAFT = 1     # Черновик
-STATE_ONWAY = 2     # В пути
+STATE_ONWAY = 2     # В пути (на подписи)
 STATE_REJECTED = 3  # Завернут
-STATE_ONPAY = 4     # В оплате
-STATE_DONE = 5      # Исполнен
+STATE_ONPAY = 4     # В оплате (согласовано со всеми) (???)
+STATE_DONE = 5      # Исполнен (Одобрено юристом > готово в архив)
 
 ROLE_ASSIGNEE = 1   # Исполнитель (ОМТС) (*)
 ROLE_OMTSCHIEF = 2  # Начальник ОМТС (1)
 ROLE_CHIEF = 3      # Руководитель (*)
-ROLE_LAWER = 4      # Юрист (1)
+ROLE_LAWER = 4      # Юрист (1) TODO: ROLE_LAWYER
 ROLE_BOSS = 5       # Гендиректор (2)
 ROLE_ACCOUNTER = 6  # Бухгалтер (3)
 ROLE_CHIEFACC = 7   # Главбух (1) - B4 4
 ROLE_GUEST = 8      # Гость (*)
 
 # Special assigneies
-USER_OMTSCHIEF = 23
-USER_LAWER = 5
-USER_BOSS = 30
-USER_CHIEFACC = 44
+USER_OMTSCHIEF = 23     # Gorb
+USER_LAWER = 5          # Zena  TODO: USER_LAWYER
+USER_BOSS = 30          # tamale
+USER_CHIEFACC = 44      # a.berg
+
+DEFAULT_MGR = 8     # ?
 
 
 def set_filter_state(q, s):
@@ -119,7 +121,7 @@ def __pdf2png3(src_path, basename):
 def __convert_img(file, rawpdf=False):
     '''
     Convert image
-    @param img:django.core.files.uploadedfile.InMemoryUploadedFile
+    @param file:django.core.files.uploadedfile.InMemoryUploadedFile
     @return list of output filepaths
     '''
     retvalue = list()
@@ -194,7 +196,7 @@ def handle_shipper(form):
     return shipper
 
 
-def fill_route(bill, mgr):    #  ,boss
+def fill_route(bill, mgr):    # , boss
     std_route1 = [    # role_id, approve_id
         (ROLE_OMTSCHIEF, models.Approver.objects.get(pk=USER_OMTSCHIEF)),   # Gorbunoff.N.V.
         (ROLE_CHIEF, mgr),                                                  # Руководитель
