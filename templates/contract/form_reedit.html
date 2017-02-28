@@ -1,0 +1,48 @@
+{% extends "bills/base.html" %}
+{% block js %}
+<script type="text/javascript">
+	$(document).ready(function() {
+		$('ol.image-pack').magnificPopup({
+			delegate: 'a.image-link',
+			type:'image',
+			gallery: { enabled: true },
+			image: { verticalFit: false }
+		});
+	});
+</script>
+{% endblock %}
+{% block body_main %}
+ <form action="" method="POST">
+  {% csrf_token %}
+  <table border="1">
+   <caption> Редактировать счет </caption>
+   <tbody>
+	<tr> <th> # </th> <td> {{ object.pk }} </td> </tr>
+	<tr> <th> Объект </th> <td> {{ object.place }} </td> </tr>
+	<tr> <th> ПодОбъект </th> <td> {{ object.subject|default:"---" }} </td> </tr>
+	<tr> <th> Направление </th> <td> {{ object.depart|default:"---" }} </td> </tr>
+	<tr> <th> Плательщик </th> <td> {{ object.payer|default:"---" }} </td> </tr>
+	<tr> <th> Поставщик </th> <td nowrap>
+	{{ object.shipper.name }} <br/> ({{ object.shipper.fullname }}) <br/> ИНН: {{ object.shipper.inn }}
+	</td> </tr>
+	<tr> <th> Счет </th> <td> № {{ object.billno }} от {{ object.billdate|date:"d/m/y" }} </td> </tr>
+	<tr> <th> Сумма счета </th> <td> {{ object.billsum }} </td> </tr>
+	<tr> <th> Оплачено </th> <td> {{ object.payedsum }} </td> </tr>
+	<tr>
+	 <td> Оригинал: </td>
+	 <td> <ol style="margin: 0" class="image-pack">
+	  {% for img in object.fileseq.fileseqitem_set.all %}
+	   <li>
+	    <a href="{% url 'file_get' img.pk %}" class="image-link"> {% include "svgbutton/preview.html" %} </a>
+	    <a href="{% url 'file_get' img.pk %}"> {% include "svgbutton/download.html" %} </a>
+	   </li>
+	  {% endfor %}
+	 </ol> </td>
+	</tr>
+	{{ form.as_table }}
+   <tbody>
+  </table>
+  <button type="submit" title="Записать" class="plain"> {% include "svgbutton/save.html" %} </button>
+  <a href="{% url 'bill_view' object.pk %}"> <button type="button" title="Отказаться" class="plain"> {% include "svgbutton/cancel.html" %} </button> </a>
+ </form>
+{% endblock %}

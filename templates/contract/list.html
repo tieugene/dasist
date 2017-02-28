@@ -1,0 +1,123 @@
+{% extends "contract/base.html" %}
+{% block meta %} <meta http-equiv="refresh" content="300"> {% endblock %}
+{% block js %}
+<script type="text/javascript">
+$(document).ready(function() {
+	$('#id_place').change(function(){
+		json_to_select('{% url "contract_get_subjects" %}?place=' + $(this).val(), '#id_subject');
+	});
+});
+function json_to_select(url, select_selector) {
+/*
+ Fill a select input field with data from a getJSON call
+ Inspired by: http://stackoverflow.com/questions/1388302/create-option-on-the-fly-with-jquery
+*/
+    $.getJSON(url, function(data) {
+    var opt=$(select_selector);
+    var old_val=opt.val();
+        opt.html('');
+        $.each(data, function () {
+            opt.append($('<option/>').val(this.id).text(this.value));
+        });
+        opt.val(old_val);
+        opt.change();
+    })
+}
+</script>
+{% endblock %}
+{% block css %}
+ tr.contract td {
+  cursor:pointer;
+  padding-top: 0;
+  padding-bottom: 0;
+  white-space: nowrap;
+ }
+{% endblock %}
+{% block body_main %}
+<form action="{% url 'contract_filter_state' %}" method="POST">
+<table border="0"> <tr>
+{% if canadd %}
+<td>
+<a href="{% url 'contract_add' %}"> {% include "svgbutton/new.html" %} </a>
+</td>
+{% endif %}
+<td nowrap>
+{% include "paginator.html" %}
+</td>
+<td nowrap>
+ <label for="lpp">Строк:</label>
+ <!--select onchange="document.location=this.options[this.selectedIndex].value"-->
+ <select onchange="document.location=this.options[this.selectedIndex].value">
+  <option value="{% url 'contract_set_lpp' 10 %}" {% ifequal lpp 10 %}selected{% endifequal %}>10</option>
+  <option value="{% url 'contract_set_lpp' 15 %}" {% ifequal lpp 15 %}selected{% endifequal %}>15</option>
+  <option value="{% url 'contract_set_lpp' 20 %}" {% ifequal lpp 20 %}selected{% endifequal %}>20</option>
+  <option value="{% url 'contract_set_lpp' 25 %}" {% ifequal lpp 25 %}selected{% endifequal %}>25</option>
+  <option value="{% url 'contract_set_lpp' 50 %}" {% ifequal lpp 50 %}selected{% endifequal %}>50</option>
+ </select>
+</td>
+<td nowrap> Открыть:
+ {% ifequal mode 1 %}
+  <a href="{% url 'contract_set_mode' 2 %}"> <button type="button" class="rounded" title="Входящие"> Входящие </button> </a>
+ {% else %}
+  <a href="{% url 'contract_set_mode' 1 %}"> <button type="button" class="rounded" title="Все"> Все </button> </a>
+ {% endifequal %}
+</td>
+{% if fsform %}
+<td nowrap>
+{% csrf_token %}
+ {{ fsform.draft }} {{ fsform.draft.label }} |
+ {{ fsform.onway }} {{ fsform.onway.label }} |
+ {{ fsform.onpay }} {{ fsform.onpay.label }} |
+ {{ fsform.done }} {{ fsform.done.label }} |
+ {{ fsform.dead }} {{ fsform.dead.label }}
+ <button type="submit" class="plain_mid"> {% include "svgbutton/filter.html" %} </button>
+</td>
+{% endif %}
+</tr> </table>
+<table>
+ <thead>
+ <tr>
+  <th/>
+  <th> # </th>
+  <th> Объект </th>
+  <th> Подобъект </th>
+  <th> Направление </th>
+  <th> Поставщик </th>
+  <th> Плательщик </th>
+  <th title="Сумма"> К&nbsp;опл. </th>
+  <th title="Исполнитель"> Исполн. </th>
+ </tr>
+{% if fsform %}
+ <tr>
+  <th/>
+  <th/>
+  <th> {{ fsform.place }} </th>
+  <th> {{ fsform.subject }} </th>
+  <th> {{ fsform.depart }} </th>
+  <th> {{ fsform.shipper }} </th>
+  <th> {{ fsform.payer }} </th>
+  <th/>
+  <th/>
+  <th/>
+  <th/>
+ </tr>
+{% endif %}
+ </thead>
+ <tbody>
+{% for object in object_list %}
+ <tr class="contract" bgcolor="{{object.get_state_color}}"
+onclick="window.document.location='{% url 'contract_view' object.pk %}'">
+  <td> <img src="{{ STATIC_URL }}img/svg/{{ object.state.get_icon }}" width="16px" height="16px" title="{{ object.get_state_name }}"/> </td>
+  <td> {{ object.pk }} </td>
+  <td> {{ object.place }} </td>
+  <td> {{ object.subject|default:"---" }} </td>
+  <td> {% if object.depart %} {{ object.depart }} {% else %} --- {% endif %} </td>
+  <td> {{ object.shipper.name|default:"---" }} </td>
+  <td> {{ object.payer|default:"---" }} </td>
+  <td align="right"> {{ object.docsum|stringformat:"d" }} </td>
+  <td> {{ object.assign.user.last_name }} </td>
+ </tr>
+{% endfor %}
+</table>
+</form>
+{% endblock %}

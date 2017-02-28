@@ -1,0 +1,152 @@
+{% extends "contract/base.html" %}
+{% block js %}
+<script type="text/javascript">
+	function printimg(img, name) {
+		var mywindow = window.open('', name);
+		mywindow.document.write('<html><head><title>' + name + '</title>');
+		mywindow.document.write('</head><body>');
+		data = "<img src='" + img + "'/>"
+		mywindow.document.write(data);  // data = all image
+		mywindow.document.write('</body></html>');
+		mywindow.print();
+		mywindow.close();
+	}
+</script>
+{% endblock %}
+{% block css %}
+	fieldset {
+		background-color: gainsboro;
+		border-color: gainsboro;
+		border-radius: 5px;
+		padding: 5px;
+		vertical-align: top;
+	}
+	legend {
+		background-color: white;
+		border-radius: 5px;
+		padding: 0px 10px;
+	}
+	fieldset table {
+		background-color: white;
+	}
+{% endblock %}
+{% block body_main %}
+<fieldset> <legend> Договор </legend>
+<table border="1">
+<tbody>
+ <tr> <th> # </th> <td> {{ object.pk }} </td> </tr>
+ <tr> <th> Объект </th> <td> {{ object.place }} </td> </tr>
+ <tr> <th> ПодОбъект </th> <td> {{ object.subject|default:"---" }} </td> </tr>
+ <tr> <th> Направление </th> <td> {{ object.depart|default:"---" }} </td> </tr>
+ <tr> <th> Плательщик </th> <td> {{ object.payer|default:"---" }} </td> </tr>
+ <tr> <th> Поставщик </th> <td nowrap> {{ object.shipper.name }} <br/> ({{ object.shipper.fullname }}) <br/> ИНН: {{ object.shipper.inn }} </td> </tr>
+ <tr> <th> Договор </th> <td> № {{ object.docno }} от {{ object.docdate|date:"d.m.y" }} </td> </tr>
+ <tr> <th> Сумма </th> <td> {{ object.docsum }} </td> </tr>
+ <tr> <th> Ответственный </th> <td> {{ object.assign.get_fio }} </td> </tr>
+ <tr> <th> Состояние </th> <td> <img src="{{ STATIC_URL }}img/svg/{{ object.state.get_icon }}" width="16px" height="16px"/> ({{ object.get_state_name }}) </td> </tr>
+ <tr> <th> Маршрут </th> <td>
+  <ul style="margin: 0">
+  {% for i in object.route_set.all %}
+   <li> <p style="margin: 0{% if i.done %}; text-decoration: line-through{% endif %}"> {{ i.get_str }} </p> </li>
+  {% endfor %}
+  </ul>
+ </td> </tr>
+ <tr>
+  <td> Оригинал: </td>
+  <td> <table border="0">
+   {% for img in object.fileseq.list_items.all %}
+    <tr> <td>
+     {{ img.order }}
+     <a href="{% url 'file_get' img.pk %}" class="nou"> {% include "svgbutton/download.html" %} </a>
+     <img src="{{ STATIC_URL }}img/svg/print.svg" class="svgimg" title="Распечатать" onClick="printimg('{% url 'file_get' img.pk %}', '{{ img.pk }}');"/>
+     {% if button.edit %}
+	<a href="{% url 'contract_img_del' img.pk %}" class="nou"> {% include "svgbutton/delete.html" %} </a>
+     </td><td>
+	{% if not img.is_first %} <a href="{% url 'contract_img_up' img.file.pk %}"> {% include "svgbutton/move-up.html" %} </a> <br/> {% endif %}
+	{% if not img.is_last  %} <a href="{% url 'contract_img_dn' img.file.pk %}"> {% include "svgbutton/move-down.html" %} </a> {% endif %}
+     {% endif %}
+    </td> </tr>
+   {% endfor %}
+  </table> </td>
+ </tr>
+ </tbody>
+</table>
+</fieldset>
+
+<fieldset> <legend> История </legend>
+ <table border="1">
+  <thead>
+   <th> Когда </th>
+   <th> Кто </th>
+   <th> Комментарий </th>
+  </thead>
+  <tbody>
+  {% for i in object.event_set.all %}
+   <tr>
+    <td valign="top"> {{ i.ctime|date:"d.m.y H:i" }} </td>
+    <td valign="top"> {{ i.approve.user.last_name }} </td>
+    <td valign="top"> {{ i.comment }} </td>
+   </tr>
+  {% endfor %}
+  </tbody>
+ </table>
+</fieldset>
+
+<p style="margin: 0">
+{% if button.arch %} <a href="{# url 'contract_toscan' object.pk #}" class="nou"> {% include "svgbutton/archive.html" %} </a> {% endif %}
+{% if button.edit %}
+ {% if object.state.pk == 1 %} <!-- Draft -->
+ <a href="{% url 'contract_edit' object.pk %}" class="nou"> {% include "svgbutton/edit.html" %} </a>
+ {% endif %}
+{% endif %}
+{% if button.del %}	<a href="{% url 'contract_delete' object.pk %}" class="nou"> {% include "svgbutton/delete.html" %} </a> {% endif %}
+{% if button.restart %}	<a href="{% url 'contract_restart' object.pk %}" class="nou"> {% include "svgbutton/restart.html" %} </a> {% endif %}
+{% if user.is_superuser %} <a href="{% url 'contract_mail' object.pk %}" class="nou"> {% include "svgbutton/mailto.html" %} </a> {% endif %}
+</p>
+{% if upload_form %}
+<form enctype="multipart/form-data" action="" method="POST">
+ {% csrf_token %}
+ <table>
+  <tr>
+   <td>
+    <table border="0">
+     {{ upload_form.as_table }}
+	</table>
+   </td>
+   <td>
+	<button type="submit" class="plain"> {% include "svgbutton/upload.html" %} </button>
+   </td>
+   <input type="hidden" name="action" value="upload">
+  </tr>
+ </table>
+</form>
+{% endif %}
+{% if form %}
+<form action="" method="POST">
+ {% csrf_token %}
+ <table border="0">
+  <tr>
+   <td> {{ form.as_p }} </td>
+   <td rowspan="2">
+   {% if button.reject %}
+    <button type="submit" name="resume" value="reject" class="plain_big" style="background-color: red;">
+     {% include "svgbutton/disagree.html" %}
+    </button>
+   {% endif %}
+   {% if button.accept %}
+    <button type="submit" name="resume" value="accept" class="plain_big" style="background-color: chartreuse;">
+    {% if button.accept == 1 %}
+     {% include "svgbutton/fly.html" %}
+    {% elif button.accept == 2 %}
+     {% include "svgbutton/agree.html" %}
+    {% endif %}
+    </button>
+   {% endif %}
+   </td>
+  </tr>
+ </table>
+ <input type="hidden" name="action" value="resume">
+</form>
+{% endif %}
+{% if err %} <p> <font color="red"> Error: {{ err }} <font> </p> {% endif %}
+{% endblock %}
