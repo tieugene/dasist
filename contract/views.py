@@ -437,7 +437,7 @@ def contract_view(request, id, upload_form=None):
                                 contract.route_set.filter(done=True).update(done=False)
                                 contract.set_state_id(STATE_REJECTED)
                     contract.save()
-                    mailto(request, contract)
+                    # mailto(request, contract)
                     ok = True
         return (ok, resume_form, err)
 
