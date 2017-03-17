@@ -79,7 +79,7 @@ class BillList(ListView):
         # 2. query
         q = models.Bill.objects.all().order_by('-pk')
         if (self.mode == 1):    # Everything
-            if (role_id == ROLE_ASSIGNEE) and (not user.is_superuser):    # Исполнитель
+            if ((role_id == ROLE_ASSIGNEE) and (not user.is_superuser) and (not user.is_staff)):    # Исполнитель
                 q = q.filter(assign=self.approver)
             # elif (user.pk == 30):        # special
             #    pass
