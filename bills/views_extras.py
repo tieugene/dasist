@@ -43,7 +43,7 @@ ROLE_CHIEF = 3      # Руководитель (*)
 ROLE_LAWER = 4      # Юрист (1) TODO: ROLE_LAWYER
 ROLE_BOSS = 5       # Гендиректор (2)
 ROLE_ACCOUNTER = 6  # Бухгалтер (3)
-ROLE_CHIEFACC = 7   # Главбух (1) - B4 4
+ROLE_SDOCHIEF = 7   # Начальник СДО (1)
 ROLE_GUEST = 8      # Гость (*)
 
 # Special assigneies
@@ -238,7 +238,7 @@ def mailto(request, bill):
     if settings.MAILTO is False:
         return
     state = bill.get_state_id()
-    if (state == 2):    # OnWay
+    if (state == STATE_ONWAY):
         subj = 'Новый счет на подпись'
         if (bill.rpoint.approve):
             emails = [bill.rpoint.approve.user.email]
@@ -247,10 +247,10 @@ def mailto(request, bill):
             for i in bill.rpoint.role.approver_set.all():
                 emails.append(i.user.email)
         __emailto(request, emails, bill.pk, subj)
-    elif (state == 3):    # Reject
+    elif (state == STATE_REJECTED):
         __emailto(request, [bill.assign.user.email], bill.pk, 'Счет завернут')
         # if (state == 3) and (bill.rpoint.)
-    elif (state == 5):
+    elif (state == STATE_DONE):
         if not bill.locked:
             __emailto(request, [bill.assign.user.email], bill.pk, 'Счет оплачен')
         else:

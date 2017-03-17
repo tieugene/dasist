@@ -21,7 +21,7 @@ from bills.views_extras import \
     ROLE_ACCOUNTER, ROLE_ASSIGNEE, ROLE_BOSS, ROLE_CHIEF, ROLE_LAWER, ROLE_OMTSCHIEF, \
     STATE_DONE, STATE_DRAFT, STATE_ONPAY, STATE_ONWAY, STATE_REJECTED, \
     USER_LAWER
-from bills.views_extras import handle_shipper, mailto, set_filter_state
+from bills.views_extras import handle_shipper, set_filter_state
 
 from core.models import FileSeq, FileSeqItem
 
@@ -39,7 +39,7 @@ import forms
 
 import models
 
-from views_extras import fill_route, update_fileseq
+from views_extras import fill_route, update_fileseq, mailto
 
 PAGE_SIZE = 25
 FSNAME = 'contract_fstate'    # 0..4
@@ -417,6 +417,7 @@ def contract_view(request, id, upload_form=None):
                     # 2. update contract
                     if (contract_state_id == STATE_DRAFT):  # Исполнитель
                         contract.set_state_id(STATE_ONWAY)
+                        mailto(request, contract)
                     elif (contract_state_id == STATE_ONWAY):
                         if (__can_approve(contract, approver)):
                             route = contract.route_set.filter(approve=approver).get()
@@ -437,7 +438,6 @@ def contract_view(request, id, upload_form=None):
                                 contract.route_set.filter(done=True).update(done=False)
                                 contract.set_state_id(STATE_REJECTED)
                     contract.save()
-                    # mailto(request, contract)
                     ok = True
         return (ok, resume_form, err)
 

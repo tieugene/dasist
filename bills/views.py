@@ -670,9 +670,9 @@ def bill_toscan(request, id):
             date=bill.billdate,
             sum=bill.billsum,
         )
-        for event in (bill.events.all()):
-            Event.objects.create(
-                scan=scan,
+        # for event in (bill.events.all()):
+        for event in (bill.event_set.all()):
+            scan.event_set.create(
                 approve='%s %s (%s)' % (event.approve.user.last_name, event.approve.user.first_name, event.approve.jobtit),
                 resume=event.resume,
                 ctime=event.ctime,
