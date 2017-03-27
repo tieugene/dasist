@@ -30,7 +30,7 @@ class ApproverModelChoiceField(forms.ModelChoiceField):
 
 
 class ResumeForm(forms.Form):
-    note = forms.CharField(max_length=255, label='Замечание', required=False, widget=forms.TextInput(attrs={'size': 80}))
+    note = forms.CharField(label='Замечание', required=False, widget=forms.Textarea())
 
 
 class FilterContractListForm(forms.Form):

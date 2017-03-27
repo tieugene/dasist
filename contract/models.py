@@ -81,7 +81,7 @@ class Event(models.Model):
     contract = models.ForeignKey(Contract, db_index=True, verbose_name=u'Договор')
     ctime = models.DateTimeField(auto_now_add=True, db_index=True, verbose_name=u'ДатаВремя')
     approve = models.ForeignKey(Approver, related_name='+', db_index=True, verbose_name=u'Подписант')
-    comment = models.CharField(max_length=255, null=True, blank=True, db_index=True, verbose_name=u'Камменты')  # max=107
+    comment = models.TextField(null=True, blank=True, verbose_name=u'Камменты')
 
     def __unicode__(self):
         return '%s: %s' % (self.approve, self.comment)

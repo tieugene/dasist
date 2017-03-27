@@ -85,7 +85,7 @@
    <tr>
     <td valign="top"> {{ i.ctime|date:"d.m.y H:i" }} </td>
     <td valign="top"> {{ i.approve.user.last_name }} </td>
-    <td valign="top"> {{ i.comment }} </td>
+    <td valign="top"> <p> <pre> {{ i.comment }} </pre> </p> </td>
    </tr>
   {% endfor %}
   </tbody>
