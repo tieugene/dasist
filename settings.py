@@ -38,7 +38,7 @@ MEDIA_URL = ''
 ADMIN_MEDIA_PREFIX = '/static/admin/'
 
 SECRET_KEY = 'justforme'
-'''
+
 TEMPLATE_DIRS = (
     os.path.join(PROJECT_DIR, 'templates'),
 )
@@ -78,7 +78,7 @@ TEMPLATES = [
         },
     },
 ]
-
+'''
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
