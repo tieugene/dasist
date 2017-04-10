@@ -16,12 +16,6 @@ CREATE DATABASE `dasist` CHARACTER SET utf8 COLLATE utf8_general_ci;
 CREATE USER 'dasist'@'localhost' IDENTIFIED BY 'dasist';
 GRANT ALL PRIVILEGES ON dasist.* TO 'dasist'@'localhost' WITH GRANT OPTION;
 
-= Modules =
-* core - common things
-* bills - Счета
-* scan - Архив
-* ledger - Счета+Архив
-
 = Ledger =
 == TODO ==
 * filter by payer
@@ -42,20 +36,30 @@ GRANT ALL PRIVILEGES ON dasist.* TO 'dasist'@'localhost' WITH GRANT OPTION;
 * ./dothis clean
 * ./dothis restore <dump.sql.gz>
 
-= Contract: interface =
-* Исполнитель: Restart | Delete | text+Вперед
-* Подписанты: 
-
-====
+== Upgrading ==
 = Contracts =
 * exclude contract from settings and urls
+* del contract/migrations/*.*
+* rmdir contract
+* ./manage.py dbshell: drop table contract_*
 * ./dothis clean
-* ./dothis resore ...sql.gz
+* ./dothis restore ...sql.gz
+* ./manage.py migrate --fake sites 0002
 * ./manage.py migrate
 * UPDATE scan_scan SET depart=NULL where depart="";
+* restore contract in settings and urls
+* restore contract folder
 * ./manage.py makemigrations contracts
-* ./manage.py squashmigrate contract 0001 contracts > contract.sql
+* ./manage.py squashmigrations contract 0001 contracts > contract.sql
+* ./manage.py sqlmigrate contract 0001 > contract.sql
 * change SQL:
     ALTER TABLE `contract_contract` ADD CONSTRAINT ... FOREIGN KEY (`...`) REFERENCES `bills_approver` (`id` > `user_id`);
 * ./manage.py dbshell < contract.sql
-* ./manage.py migrate --fake-initial contract 0001
+# ./manage.py migrate --fake-initial contract 0001
+
+Changing passwords:
+./manage.py shell
+from django.contrib.auth.models import User
+u = User.objects.get(username='user02')
+u.set_password('pass02')
+u.save()

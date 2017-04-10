@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
 '''
 bills.views
+
+is_staff:
+* see all of bills
+* can arch
 '''
 
 # 1. system
@@ -25,12 +29,12 @@ import forms
 
 import models
 
-from scan.models import Event, Scan
+from scan.models import Scan
 
 import utils
 
 from views_extras import \
-    DEFAULT_MGR, \
+    DEFAULT_CHIEF, \
     ROLE_ACCOUNTER, ROLE_ASSIGNEE, ROLE_CHIEF, ROLE_LAWER, \
     STATE_DONE, STATE_DRAFT, STATE_ONPAY, STATE_ONWAY, STATE_REJECTED, \
     USER_BOSS
@@ -81,8 +85,6 @@ class BillList(ListView):
         if (self.mode == 1):    # Everything
             if ((role_id == ROLE_ASSIGNEE) and (not user.is_superuser) and (not user.is_staff)):    # Исполнитель
                 q = q.filter(assign=self.approver)
-            # elif (user.pk == 30):        # special
-            #    pass
             elif (role_id == ROLE_CHIEF):    # Руководитель
                 self.fsform = None
                 b_list = models.Event.objects.filter(approve=self.approver).values_list('bill_id', flat=True)
@@ -379,7 +381,7 @@ def bill_reedit(request, id):
     else:    # GET
         # hack
         if (bill.route_set.count() == 0):
-            mgr = models.Approver.objects.get(pk=DEFAULT_MGR)
+            mgr = models.Approver.objects.get(pk=DEFAULT_CHIEF)
             # boss = models.Approver.objects.get(pk=DEFAULT_BOSS)
             fill_route(bill, mgr)   # , boss
         # /hack

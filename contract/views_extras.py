@@ -8,15 +8,17 @@ import sys
 
 # 2. my
 from bills.models import Approver, Role
-from bills.views_extras import \
-    ROLE_ACCOUNTER, ROLE_BOSS, ROLE_CHIEF, ROLE_OMTSCHIEF, \
-    STATE_DRAFT, STATE_ONWAY, STATE_REJECTED, STATE_ONPAY, STATE_DONE, \
-    USER_BOSS, USER_OMTSCHIEF
-from core.models import File
 from bills.utils import send_mail
+from bills.views_extras import \
+    ROLE_ACCOUNTER, ROLE_BOSS, ROLE_CHIEF, ROLE_SDOCHIEF, \
+    STATE_ONWAY, STATE_REJECTED, \
+    USER_BOSS, USER_SDOCHIEF
+from core.models import File
 
 # 3. django
 # from django.contrib.auth.models import User
+from django.conf import settings
+from django.core.urlresolvers import reverse
 
 # import models
 
@@ -36,10 +38,10 @@ def update_fileseq(f, fileseq):
 
 def fill_route(contract, mgr, booker):
     std_route1 = [    # role_id, approve_id
-        (ROLE_OMTSCHIEF, Approver.objects.get(pk=USER_OMTSCHIEF)),  # Gorbunoff.N.V.
-        (ROLE_CHIEF, mgr),                                          # Руководитель
-        (ROLE_BOSS, Approver.objects.get(pk=USER_BOSS)),            # Гендир
-        (ROLE_ACCOUNTER, booker),                                     # Бухгалтер
+        (ROLE_SDOCHIEF, Approver.objects.get(pk=USER_SDOCHIEF)),
+        (ROLE_CHIEF, mgr),
+        (ROLE_BOSS, Approver.objects.get(pk=USER_BOSS)),
+        (ROLE_ACCOUNTER, booker),
     ]
     for r in std_route1:
         contract.route_set.create(
@@ -68,26 +70,19 @@ def mailto(request, contract):
     Sends emails to people:
     - onway - to rpoint role or aprove
     - Accept/Reject - to assignee
-    @param bill:Bill
+    @param contract:Contract
     '''
     return
     if settings.MAILTO is False:
         return
     state = contract.get_state_id()
     if (state == STATE_ONWAY):
-        subj = 'Новый Договор на подпись'
-        if (bill.rpoint.approve):
-            emails = [bill.rpoint.approve.user.email]
-        else:
-            emails = list()
-            for i in bill.rpoint.role.approver_set.all():
-                emails.append(i.user.email)
+        subj = 'Договор на подпись'
+        emails = list()
+        for i in contract.route_set.all():
+            emails.append(i.user.email)
         __emailto(request, emails, contract.pk, subj)
-    elif (state == 3):    # Reject
-        __emailto(request, [bill.assign.user.email], bill.pk, 'Счет завернут')
-        # if (state == 3) and (bill.rpoint.)
-    elif (state == 5):
-        if not bill.locked:
-            __emailto(request, [bill.assign.user.email], bill.pk, 'Счет оплачен')
-        else:
-            __emailto(request, [bill.assign.user.email], bill.pk, 'Счет частично оплачен')
+    elif (state == STATE_REJECTED):
+        __emailto(request, [contract.assign.user.email], contract.pk, 'Договор завернут')
+    # elif (state == STATE_ONPAY):
+    #    __emailto(request, [.assign.user.email], contract.pk, 'Договор требует одобрения')

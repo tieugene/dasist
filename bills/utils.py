@@ -16,18 +16,18 @@ def send_mail(to, subj, body):
     msg['From'] = settings.EMAIL_FROM
     msg['Subject'] = subj
     # email.encoders.encode_quopri(msg)
-    if (1):
-        server = smtplib.SMTP_SSL()
-        server.connect(settings.EMAIL_HOST)    # , settings.EMAIL_PORT
-        # server.ehlo()
-        # if (settings.EMAIL_USE_TLS):
-        #    print "3."
-        #    server.starttls()
-        server.login(settings.EMAIL_HOST_USER, settings.EMAIL_HOST_PASSWORD)
-        server.sendmail(settings.EMAIL_FROM, to, msg.as_string())
-        server.quit()
-    # except:
-    #    pass
+    if (settings.DEBUG is True):
+        body = ("mailto:%s\n" % to) + body
+        to = settings.TESTMAIL
+    server = smtplib.SMTP_SSL()
+    server.connect(settings.EMAIL_HOST)    # , settings.EMAIL_PORT
+    # server.ehlo()
+    # if (settings.EMAIL_USE_TLS):
+    #    print "3."
+    #    server.starttls()
+    server.login(settings.EMAIL_HOST_USER, settings.EMAIL_HOST_PASSWORD)
+    server.sendmail(settings.EMAIL_FROM, to, msg.as_string())
+    server.quit()
 
 
 # def    __pdf2png1(self, src_path, thumb_template, pages):

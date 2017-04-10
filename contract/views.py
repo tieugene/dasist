@@ -2,11 +2,11 @@
 '''
 contract.views
 Test:
-* assign: user42
-* route3: user02
-* route4: user03
-* route1: user13
-* route2: user44
+* assign: user42/user45
+* route:  user02
+* route:  user03
+* route:  user05
+* route:  user44
 * lawyer: user14
 '''
 
@@ -18,7 +18,7 @@ import sys
 from bills.models import Approver, Place, State, Subject
 from bills.utils import send_mail
 from bills.views_extras import \
-    ROLE_ACCOUNTER, ROLE_ASSIGNEE, ROLE_BOSS, ROLE_CHIEF, ROLE_LAWER, ROLE_OMTSCHIEF, \
+    ROLE_ACCOUNTER, ROLE_ASSIGNEE, ROLE_BOSS, ROLE_CHIEF, ROLE_LAWER, ROLE_SDOCHIEF, \
     STATE_DONE, STATE_DRAFT, STATE_ONPAY, STATE_ONWAY, STATE_REJECTED, \
     USER_LAWER
 from bills.views_extras import handle_shipper, set_filter_state
@@ -39,12 +39,10 @@ import forms
 
 import models
 
-from views_extras import fill_route, update_fileseq, mailto
+from views_extras import fill_route, mailto, update_fileseq
 
 PAGE_SIZE = 25
 FSNAME = 'contract_fstate'    # 0..4
-
-DEFAULT_MGR = 8
 
 reload(sys)
 sys.setdefaultencoding('utf-8')
@@ -59,7 +57,7 @@ class ContractList(ListView):
     -- *: все
     - Inboud:
     -- ROLE_ASSIGNEE: только свои & (Draft | Rejected)
-    -- ROLE_OMTSCHIEF, ROLE_CHIEF, ROLE_BOSS, ROLE_ACCOUNTER - в подписантах & ONWAY & done = False
+    -- ROLE_SDOCHIEF, ROLE_CHIEF, ROLE_BOSS, ROLE_ACCOUNTER - в подписантах & ONWAY & done = False
     -- Юрист: ONPAY
 
     '''
@@ -77,7 +75,7 @@ class ContractList(ListView):
         self.approver = Approver.objects.get(user=user)
         # self.approver = user.approver
         role_id = self.approver.role.pk
-        if (role_id in set([ROLE_OMTSCHIEF, ROLE_BOSS, ROLE_CHIEF, ROLE_ACCOUNTER])):
+        if (role_id in set([ROLE_SDOCHIEF, ROLE_BOSS, ROLE_CHIEF, ROLE_ACCOUNTER])):
             self.mode = int(self.request.session.get('contract_mode', 1))
         else:
             self.mode = 1
@@ -89,7 +87,7 @@ class ContractList(ListView):
                 pass
             elif (role_id == ROLE_ASSIGNEE):  # Исполнитель
                 q = q.filter(assign=self.approver)
-            # elif (role_id in set([ROLE_OMTSCHIEF, ROLE_BOSS, ROLE_CHIEF, ROLE_ACCOUNTER, ROLE_LAWER])):
+            # elif (role_id in set([ROLE_SDOCHIEF, ROLE_BOSS, ROLE_CHIEF, ROLE_ACCOUNTER, ROLE_LAWER])):
             #    self.fsform = None
             # else:
             #    q = q.none()
@@ -441,18 +439,6 @@ def contract_view(request, id, upload_form=None):
                     ok = True
         return (ok, resume_form, err)
 
-    def __can_accept():
-        pass
-
-    def __accept():
-        pass
-
-    def __can_reject():
-        pass
-
-    def __reject():
-        pass
-
     contract = get_object_or_404(models.Contract, pk=int(id))
     user = request.user
     approver = models.Approver.objects.get(user=user)
@@ -494,7 +480,7 @@ def contract_view(request, id, upload_form=None):
             buttons['reject'] = 0
         else:
             if (((approver.role.pk == ROLE_LAWER) and (contract_state_id == STATE_ONPAY)) or
-                ((approver.role.pk != ROLE_LAWER) and (contract_state_id == STATE_ONWAY))):
+               ((approver.role.pk != ROLE_LAWER) and (contract_state_id == STATE_ONWAY))):
                 buttons['accept'] = 2   # Без замечаний
             buttons['reject'] = 1   # Замечание
     return render_to_response('contract/detail.html', context_instance=RequestContext(request, {

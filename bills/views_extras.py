@@ -47,12 +47,11 @@ ROLE_SDOCHIEF = 7   # Начальник СДО (1)
 ROLE_GUEST = 8      # Гость (*)
 
 # Special assigneies
-USER_OMTSCHIEF = 23     # Gorb
-USER_LAWER = 5          # Zena  TODO: USER_LAWYER
-USER_BOSS = 30          # tamale
-USER_CHIEFACC = 44      # a.berg
-
-DEFAULT_MGR = 8     # ?
+USER_OMTSCHIEF = 23
+USER_LAWER = 5      # Zena  TODO: USER_LAWYER
+USER_BOSS = 30
+USER_SDOCHIEF = 43
+DEFAULT_CHIEF = 32
 
 
 def set_filter_state(q, s):
