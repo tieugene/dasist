@@ -23,10 +23,10 @@ dump)		# dump whole sql db in right order (new way)
 	(for i in `cat tables.lst`; do mysqldump --user=$DBUSER --password=$DBPASS -c --compact -e --skip-opt -t $DBNAME $i; done) | gzip > $DBNAME.`date +%y%m%d%H%M%S`.sql.gz
 	;;
 drop_old)	# drop all SQL tables (old way)
-	(echo "BEGIN;" && (echo "SHOW TABLES;" | $MGR dbshell | grep -v Tables | while read i; do echo "DROP TABLE $i;"; done) && echo "COMMIT;") | $MGR dbshell
+	(echo "BEGIN; SET FOREIGN_KEY_CHECKS=0;" && (echo "SHOW TABLES;" | $MGR dbshell | grep -v Tables | while read i; do echo "DROP TABLE $i;"; done) && echo "COMMIT;") | $MGR dbshell
 	;;
 drop)		# drop all SQL tables in right order
-	(echo "BEGIN;" && (for i in `tac tables.lst`; do echo "DROP TABLE $i;"; done) && echo "COMMIT;") | $MGR dbshell
+	(echo "BEGIN; SET FOREIGN_KEY_CHECKS=0;" && (for i in `tac tables.lst`; do echo "DROP TABLE $i;"; done) && echo "COMMIT;") | $MGR dbshell
 	;;
 sync)		# [re]create DB structure
 	echo "no" | $MGR migrate

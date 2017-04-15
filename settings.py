@@ -113,10 +113,10 @@ INSTALLED_APPS = (
     'django_extensions',
     'dal',
     'dal_select2',
+    'reports',
     'core',
     'bills',
     'scan',
-    'reports',
     'contract',
 )
 
