@@ -63,3 +63,14 @@ from django.contrib.auth.models import User
 u = User.objects.get(username='user02')
 u.set_password('pass02')
 u.save()
+
+== Upgrading 2.0 ==
+* ./manage.py drop_old
+* remove all of "bills contract core scan" folders
+* disable all apps in settings and urls
+* ./manage.py migrate
+* move folders back
+* enable apps in settings
+* ./manage.py migrate
+* enable apps in urls
+* ./dothis restore ...sql.gz
