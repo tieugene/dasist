@@ -107,7 +107,7 @@
   <tr>
    <td valign="top"> {% if i.resume %} {% include "svgbutton/agreed.html" %} {% else %} {% include "svgbutton/canceled.html" %} {% endif %} </td>
    <td valign="top"> {{ i.ctime|date:"d.m.y H:i" }} </td>
-   <td valign="top"> {{ i.approve.user.last_name }} </td>
+   <td valign="top"> {{ i.approve.get_fio }} </td>
    <td valign="top"> {{ i.comment }} </td>
   </tr>
   {% endfor %}

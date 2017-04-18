@@ -84,7 +84,7 @@
   {% for i in object.event_set.all %}
    <tr>
     <td valign="top"> {{ i.ctime|date:"d.m.y H:i" }} </td>
-    <td valign="top"> {{ i.approve.user.last_name }} </td>
+    <td valign="top"> {{ i.approve.get_fio }} </td>
     <td valign="top"> <p> <pre> {{ i.comment }} </pre> </p> </td>
    </tr>
   {% endfor %}

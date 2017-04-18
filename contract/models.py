@@ -68,7 +68,7 @@ class Route(models.Model):
         return '%d: %s: %d' % (self.contract.pk, self.approve.get_fio() if self.approve else self.role.name, int(self.done))
 
     def get_str(self):
-        return self.approve.user.last_name if self.approve else self.role.name
+        return self.approve.get_fio() if self.approve else self.role.name
 
     class Meta:
         unique_together = (('contract', 'role'))
