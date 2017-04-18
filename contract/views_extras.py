@@ -11,8 +11,8 @@ from bills.models import Approver, Role
 from bills.utils import send_mail
 from bills.views_extras import \
     ROLE_ACCOUNTER, ROLE_BOSS, ROLE_CHIEF, ROLE_SDOCHIEF, \
-    STATE_ONWAY, STATE_REJECTED, \
-    USER_BOSS, USER_SDOCHIEF
+    STATE_ONPAY, STATE_ONWAY, STATE_REJECTED, \
+    USER_BOSS, USER_LAWER, USER_SDOCHIEF
 from core.models import File
 
 # 3. django
@@ -67,22 +67,21 @@ def __emailto(request, emails, contract_id, subj):
 
 def mailto(request, contract):
     '''
-    Sends emails to people:
+    Sends emails to applicants:
     - onway - to rpoint role or aprove
     - Accept/Reject - to assignee
     @param contract:Contract
     '''
-    return
-    if settings.MAILTO is False:
-        return
     state = contract.get_state_id()
+    lawyer = Approver.objects.get(pk=USER_LAWER)
     if (state == STATE_ONWAY):
-        subj = 'Договор на подпись'
+        subj = 'Договор на замечания'
         emails = list()
         for i in contract.route_set.all():
-            emails.append(i.user.email)
+            emails.append(i.approve.user.email)
+        emails.append(lawyer.user.email)
         __emailto(request, emails, contract.pk, subj)
     elif (state == STATE_REJECTED):
         __emailto(request, [contract.assign.user.email], contract.pk, 'Договор завернут')
-    # elif (state == STATE_ONPAY):
-    #    __emailto(request, [.assign.user.email], contract.pk, 'Договор требует одобрения')
+    elif (state == STATE_ONPAY):
+        __emailto(request, [lawyer.user.email], contract.pk, 'Договор требует одобрения')

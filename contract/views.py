@@ -423,10 +423,12 @@ def contract_view(request, id, upload_form=None):
                             route.save()
                             if (contract.route_set.filter(done=False).count() == 0):
                                 contract.set_state_id(STATE_ONPAY)
+                                mailto(request, contract)
                             # pass    # set done = True; if everybody done state=STATE_ONPAY
                         elif ((approver.pk == USER_LAWER) and (not accepted)):
                             contract.set_state_id(STATE_REJECTED)
                             contract.route_set.filter(done=True).update(done=False)
+                            mailto(request, contract)
                     elif ((contract_state_id == STATE_ONPAY) and (approver.pk == USER_LAWER)):
                             if (accepted):
                                 contract.set_state_id(STATE_DONE)
@@ -435,6 +437,7 @@ def contract_view(request, id, upload_form=None):
                                 # TODO: reset contract.route_set.all()
                                 contract.route_set.filter(done=True).update(done=False)
                                 contract.set_state_id(STATE_REJECTED)
+                                mailto(request, contract)
                     contract.save()
                     ok = True
         return (ok, resume_form, err)
