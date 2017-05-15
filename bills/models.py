@@ -81,11 +81,25 @@ class Approver(models.Model):
         verbose_name_plural = u'Подписанты'
 
     def get_fio(self):
-        io = self.user.first_name.split()
-        return '%s %s. %s.' % (self.user.last_name, io[0][0], io[1][0])
+        '''
+        Varinats:
+        * last_name > last_name
+        * last_name first_name > last_name first_name[0].'.'
+        * last_name first_name+middle_name
+        '''
+        fname = self.user.first_name
+        if (fname):
+            io = fname.split(' ', 2)
+            if (len(io) > 1):
+                fio = '%s %s. %s.' % (self.user.last_name, io[0][0], io[1][0])
+            else:
+                fio = '%s %s.' % (self.user.last_name, io[0][0])
+        else:
+            fio = self.user.last_name
+        return fio
 
     def __unicode__(self):
-        return '%s %s (%s, %s)' % (self.user.last_name, self.user.first_name, self.jobtit, self.role.name)
+        return '%s %s (%s, %s)' % (self.user.last_name, self.user.first_name if self.user.first_name else '', self.jobtit, self.role.name)
 
 
 class Place(models.Model):

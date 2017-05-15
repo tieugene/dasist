@@ -25,9 +25,9 @@ class Contract(models.Model):
     shipper = models.ForeignKey(Org, related_name='shipper_contracts', db_index=True, verbose_name=u'Поставщик')
     assign = models.ForeignKey(Approver, related_name='assigned_contracts', db_index=True, verbose_name=u'Исполнитель')
     state = models.ForeignKey(State, related_name='state_contracts', db_index=True, verbose_name=u'Состояние')
-    docno = models.CharField(max_length=32, db_index=True, verbose_name=u'Номер документа')    # max=11
-    docdate = models.DateField(db_index=True, verbose_name=u'Дата документа')
-    docsum = models.DecimalField(max_digits=11, decimal_places=2, db_index=True, verbose_name=u'Сумма документа')
+    docno = models.CharField(max_length=32, db_index=True, verbose_name=u'Номер договора')    # max=11
+    docdate = models.DateField(db_index=True, verbose_name=u'Дата договора')
+    docsum = models.DecimalField(max_digits=11, decimal_places=2, null=True, db_index=True, verbose_name=u'Сумма договора')
 
     def __unicode__(self):
         return str(self.pk)

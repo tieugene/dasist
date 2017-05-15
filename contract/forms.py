@@ -76,7 +76,7 @@ class ContractForm(forms.Form):
     suppfull = forms.CharField(max_length=64, label=u'Контрагент (полностью)', required=True)
     docno = forms.CharField(max_length=64, label=u'Номер договора')
     docdate = forms.DateField(label=u'Дата договора')
-    docsum = forms.DecimalField(max_digits=11, decimal_places=2, min_value=decimal.Decimal('0.01'), localize=True, label=u'Сумма договора')
+    docsum = forms.DecimalField(max_digits=11, decimal_places=2, localize=True, label=u'Сумма', required=False)
     mgr = ApproverModelChoiceField(queryset=Approver.objects.filter(role__pk=ROLE_CHIEF), empty_label=None, label=u'Руководитель', widget=forms.RadioSelect)
     booker = ApproverModelChoiceField(queryset=Approver.objects.filter(role__pk=ROLE_ACCOUNTER), empty_label=None, label=u'Бухгалтер', widget=forms.RadioSelect)
 
@@ -92,9 +92,6 @@ class ContractForm(forms.Form):
         if (suppname and suppfull):
             chk_org_names(suppname, suppfull)
         # 3. chk summs
-        docsum = cleaned_data.get('docsum')
-        if (docsum is None):
-            raise forms.ValidationError('Заполните сумму договора.')
         # X. that's all, folks
         return cleaned_data
 

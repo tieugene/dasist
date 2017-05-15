@@ -561,19 +561,19 @@ def bill_view(request, id, upload_form=None):
     }
     # Accepting (Вперед, Согласовано, В оплате, Исполнено)
     buttons['accept'] = 0
-    if (bill_state_id == STATE_DRAFT):            # Draft
+    if (bill_state_id == STATE_DRAFT):
         if (bill.assign == approver):
             buttons['accept'] = 1        # Вперед
-    elif (bill_state_id == STATE_ONWAY):        # OnWay
-        if (approver.role.pk != 6):        # not Accounter
+    elif (bill_state_id == STATE_ONWAY):
+        if (approver.role.pk != ROLE_ACCOUNTER):
             if (((bill.rpoint.approve is None) and (bill.rpoint.role == approver.role)) or
                ((bill.rpoint.approve is not None) and (bill.rpoint.approve == approver))):
                 buttons['accept'] = 2    # Согласовано
         else:                    # Accounter
             if (bill.rpoint.role == approver.role):
                 buttons['accept'] = 3        # В оплате
-    elif (bill_state_id == STATE_ONPAY):        # OnPay
-        if (approver.role.pk == ROLE_ACCOUNTER):        # Accounter
+    elif (bill_state_id == STATE_ONPAY):
+        if (approver.role.pk == ROLE_ACCOUNTER):
             buttons['accept'] = 4        # Оплачен
     # Rejecting
     buttons['reject'] = 0
@@ -675,7 +675,7 @@ def bill_toscan(request, id):
         # for event in (bill.events.all()):
         for event in (bill.event_set.all()):
             scan.event_set.create(
-                approve='%s %s (%s)' % (event.approve.user.last_name, event.approve.user.first_name, event.approve.jobtit),
+                approve='%s %s (%s)' % (event.approve.user.last_name, event.approve.user.first_name if event.approve.user.first_name else '', event.approve.jobtit),
                 resume=event.resume,
                 ctime=event.ctime,
                 comment=event.comment

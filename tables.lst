@@ -25,3 +25,6 @@ bills_payer
 bills_bill
 bills_route
 bills_event
+contract_contract
+contract_route
+contract_event

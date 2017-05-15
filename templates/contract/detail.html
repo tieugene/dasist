@@ -41,7 +41,7 @@
  <tr> <th> Плательщик </th> <td> {{ object.payer|default:"---" }} </td> </tr>
  <tr> <th> Поставщик </th> <td nowrap> {{ object.shipper.name }} <br/> ({{ object.shipper.fullname }}) <br/> ИНН: {{ object.shipper.inn }} </td> </tr>
  <tr> <th> Договор </th> <td> № {{ object.docno }} от {{ object.docdate|date:"d.m.y" }} </td> </tr>
- <tr> <th> Сумма </th> <td> {{ object.docsum }} </td> </tr>
+ <tr> <th> Сумма </th> <td> {{ object.docsum|default_if_none:"---" }} </td> </tr>
  <tr> <th> Ответственный </th> <td> {{ object.assign.get_fio }} </td> </tr>
  <tr> <th> Состояние </th> <td> <img src="{{ STATIC_URL }}img/svg/{{ object.state.get_icon }}" width="16px" height="16px"/> ({{ object.get_state_name }}) </td> </tr>
  <tr> <th> Маршрут </th> <td>

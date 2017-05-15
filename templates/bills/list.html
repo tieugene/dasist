@@ -128,7 +128,7 @@ onclick="window.document.location='{% url 'bill_view' object.pk %}'">
   <td> {{ object.shipper.name|default:"---" }} </td>
   <td> {{ object.payer|default:"---" }} </td>
   <td align="right"> {% if object.topaysum %} {{ object.topaysum|stringformat:"d" }} {% endif %} </td>
-  <td> {{ object.assign.user.last_name }} </td>
+  <td> {{ object.assign.get_fio }} </td>
   <td> {% if object.rpoint %} {{ object.rpoint.get_str }} {% else %} --- {% endif %} </td>
   <td> {% if object.locked %} &radic; {% else %} - {% endif %} </td>
  </tr>

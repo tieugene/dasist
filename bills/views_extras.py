@@ -48,7 +48,7 @@ ROLE_GUEST = 8      # Гость (*)
 
 # Special assigneies
 USER_OMTSCHIEF = 23
-USER_LAWER = 5      # Zena  TODO: USER_LAWYER
+USER_LAWER = 5      # => 55; TODO: USER_LAWYER
 USER_BOSS = 30
 USER_SDOCHIEF = 43
 DEFAULT_CHIEF = 32
