@@ -93,7 +93,7 @@
 </fieldset>
 
 <p style="margin: 0">
-{% if button.arch %} <a href="{# url 'contract_toscan' object.pk #}" class="nou"> {% include "svgbutton/archive.html" %} </a> {% endif %}
+{% if button.arch %} <a href="{% url 'contract_toarch' object.pk %}" class="nou"> {% include "svgbutton/archive.html" %} </a> {% endif %}
 {% if button.edit %}
  {% if object.state.pk == 1 %} <!-- Draft -->
  <a href="{% url 'contract_edit' object.pk %}" class="nou"> {% include "svgbutton/edit.html" %} </a>

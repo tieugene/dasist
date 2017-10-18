@@ -45,7 +45,7 @@ from views_extras import fill_route, mailto, update_fileseq
 PAGE_SIZE = 25
 FSNAME = 'contract_fstate'    # 0..4
 
-who_can_arch = set([24, 33])    # FIXME
+who_can_arch = set([24, 33])    # FIXME (user32, user45)
 
 reload(sys)
 sys.setdefaultencoding('utf-8')

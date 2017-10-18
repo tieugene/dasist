@@ -5,8 +5,7 @@ contract.models
 
 # 1. local
 from bills.models import Approver, Department, Payer, Place, Role, State, Subject
-from bills.views_extras import \
-    ROLE_ACCOUNTER, ROLE_CHIEF
+from bills.views_extras import ROLE_ACCOUNTER, ROLE_CHIEF
 
 from core.models import FileSeq, Org
 
