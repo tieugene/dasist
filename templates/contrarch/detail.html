@@ -1,0 +1,92 @@
+{% extends "contrarch/base.html" %}
+{% block js %}
+<script type="text/javascript">
+	$(document).ready(function() {
+		$('.image-pack').magnificPopup({
+			delegate: 'a.image-link',
+			type:'image',
+			gallery: { enabled: true },
+			image: { verticalFit: false }
+		});
+	});
+</script>
+<script type="text/javascript">
+	function printimg(img, name) {
+		var mywindow = window.open('', name);
+		mywindow.document.write('<html><head><title>' + name + '</title>');
+		mywindow.document.write('</head><body>');
+		data = "<img src='" + img + "'/>"
+		mywindow.document.write(data);  // data = all image
+		mywindow.document.write('</body></html>');
+		mywindow.print();
+		mywindow.close();
+	}
+</script>
+{% endblock %}
+{% block body_main %}
+
+{% if next %}
+ <a href="{% url 'contrarch_view' next.pk %}" style="text-decoration: none;"> {% include "svgbutton/page-prev.html" %} </a>
+{% endif %}
+{% if prev %}
+ <a href="{% url 'contrarch_view' prev.pk %}" style="text-decoration: none;"> {% include "svgbutton/page-next.html" %} </a>
+{% endif %}
+
+<table border="0">
+<tr>
+<td valign="top">
+<table border="1">
+<caption>  Скан: </caption>
+<tbody>
+ <tr> <th> # </th> <td> {{ object.fileseq.pk }} </td> </tr>
+ <tr> <th> Объект </th> <td> {{ object.place }} </td> </tr>
+ <tr> <th> Подобъект </th> <td> {{ object.subject|default:"---" }} </td> </tr>
+ <tr> <th> Направление </th> <td> {{ object.depart|default:"---" }} </td> </tr>
+ <tr> <th> Плательщик </th> <td> {{ object.payer|default:"---" }} </td> </tr>
+ <tr> <th> Поставщик </th> <td nowrap>
+  {% if object.shipper %}
+    {{ object.shipper.name }} <br/>
+    ({{ object.shipper.fullname }}) <br/>
+    ИНН: {{ object.shipper.inn }}
+  {% else %}
+   ---
+  {% endif %}
+  </td> </tr>
+ <tr> <th> Продавец </th> <td> {{ object.supplier|default:"---" }} </td> </tr>
+ <tr> <th> Договор </th> <td> № {{ object.docno }} от {{ object.docdate|date:"d.m.y" }} на {{ object.docsum|default:"---" }} руб. </td> </tr>
+ <tr>
+  <td> Оригинал: </td>
+  <td margin="0" padding="0" class="image-pack">
+   {% for img in object.fileseq.fileseqitem_set.all %}
+     <a href="{% url 'file_get' img.pk %}" style="text-decoration: none;"> {% include "svgbutton/download.html" %} </a>
+     <img src="{{ STATIC_URL }}img/svg/print.svg" class="svgimg" title="Распечатать" onClick="printimg('{% url 'file_get' img.pk %}', '{{ img.pk }}');"/>
+    <br/>
+   {% endfor %}
+  </td>
+ </tr>
+ </tbody>
+</table>
+</td>
+<td valign="top">
+<table border="1">
+<caption> История: </caption>
+<thead>
+ <th> Когда </th>
+ <th> Кто </th>
+ <th> Замечание </th>
+</thead>
+<tbody>
+  {% for i in object.event_set.all %}
+  <tr>
+   <td valign="top" nowrap> {{ i.ctime|date:"d.m.y H:i" }} </td>
+   <td valign="top"> {{ i.approve }} </td>
+   <td valign="top"> {{ i.comment }} </td>
+  </tr>
+  {% endfor %}
+</tbody>
+</table>
+</td>
+</tr>
+</table>
+
+{% endblock %}

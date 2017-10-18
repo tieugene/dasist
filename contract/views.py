@@ -24,6 +24,7 @@ from bills.views_extras import \
 from bills.views_extras import handle_shipper, set_filter_state
 
 from core.models import FileSeq, FileSeqItem
+from contrarch.models import Contrarch
 
 # 3. django
 from django.conf import settings
@@ -43,6 +44,8 @@ from views_extras import fill_route, mailto, update_fileseq
 
 PAGE_SIZE = 25
 FSNAME = 'contract_fstate'    # 0..4
+
+who_can_arch = set([24, 33])    # FIXME
 
 reload(sys)
 sys.setdefaultencoding('utf-8')
@@ -471,7 +474,7 @@ def contract_view(request, id, upload_form=None):
         # assignee & (Rejected*|Done?)
         'restart': (user.is_superuser or ((contract.assign == approver) and (contract_state_id == STATE_REJECTED))),
         # assignee & Done
-        'arch': (user.is_superuser or (((contract.assign == approver) or user.is_staff) and (contract_state_id == STATE_DONE))),
+        'arch': (user.is_superuser or ((user.pk in who_can_arch) and (contract_state_id == STATE_DONE))),
         'accept': 0,
         'reject': 0
     }
@@ -596,3 +599,36 @@ def contract_img_dn(request, id):
         if not fsi.is_last():
             fsi.swap(fsi.order + 1)
     return redirect('contract_view', fsi.fileseq.pk)
+
+@login_required
+@transaction.atomic
+def contract_toarch(request, id):
+    '''
+    Move contract to archive.
+    ACL: root | ((is_staff) && Done)
+    '''
+    contract = get_object_or_404(models.Contract, pk=int(id))
+    if (request.user.is_superuser) or (
+       (request.user.pk in who_can_arch) and
+       ((contract.get_state_id() == STATE_DONE))):
+        contrarch = Contrarch.objects.create(
+            fileseq=contract.fileseq,
+            place=contract.place.name,
+            subject=contract.subject.name if contract.subject else None,
+            depart=contract.depart.name if contract.depart else None,
+            payer=contract.payer.name,
+            shipper=contract.shipper,
+            docno=contract.docno,
+            docdate=contract.docdate,
+            docsum=contract.docsum,
+        )
+        for event in (contract.event_set.all()):
+            contrarch.event_set.create(
+                approve='%s %s (%s)' % (event.approve.user.last_name, event.approve.user.first_name if event.approve.user.first_name else '', event.approve.jobtit),
+                ctime=event.ctime,
+                comment=event.comment
+            )
+        contract.delete()
+        return redirect('contract_list')
+    else:
+        return redirect('contract.views.contract_view', contract.pk)

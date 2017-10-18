@@ -38,7 +38,7 @@ MEDIA_URL = ''
 ADMIN_MEDIA_PREFIX = '/static/admin/'
 
 SECRET_KEY = 'justforme'
-
+'''
 TEMPLATE_DIRS = (
     os.path.join(PROJECT_DIR, 'templates'),
 )
@@ -63,7 +63,7 @@ TEMPLATE_DEBUG = DEBUG
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': ['templates'],
+        'DIRS': ['templates',],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -78,7 +78,7 @@ TEMPLATES = [
         },
     },
 ]
-'''
+
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -118,6 +118,7 @@ INSTALLED_APPS = (
     'bills',
     'scan',
     'contract',
+    'contrarch',
 )
 
 ALLOWED_HOSTS = ['localhost']

@@ -18,11 +18,11 @@ urlpatterns = (
     url(r'^(?P<id>\d+)/$',          views.contract_view, name='contract_view'),         # GET; ACL: assign|approv
     url(r'^(?P<id>\d+)/u/$',        views.contract_edit, name='contract_edit'),         # GET/POST; ACL: assign+draft;
     url(r'^(?P<id>\d+)/d/$',        views.contract_delete, name='contract_delete'),     # GET; ACL: assign;
-    # url(r'^(?P<id>\d+)/s/$',        views.contract_toscan),
     url(r'^(?P<id>\d+)/r/$',        views.contract_restart, name='contract_restart'),
     url(r'^(?P<id>\d+)/id/$',       views.contract_img_del, name='contract_img_del'),
     url(r'^(?P<id>\d+)/iup/$',      views.contract_img_up, name='contract_img_up'),
     url(r'^(?P<id>\d+)/idn/$',      views.contract_img_dn, name='contract_img_dn'),
     url(r'^(?P<id>\d+)/mail/$',     views.contract_mail, name='contract_mail'),
+    url(r'^(?P<id>\d+)/a/$',        views.contract_toarch, name='contract_toarch'),
     # url(r'^(?P<id>\d+)/g/$',       'contract_get'),  # GET; ACL: assign;
 )

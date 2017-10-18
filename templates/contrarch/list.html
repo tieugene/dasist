@@ -1,0 +1,75 @@
+{% extends "contrarch/base.html" %}
+{% block js %}
+<script type="text/javascript">
+$(document).ready(function() {
+	$('#id_place').change(function(){
+		json_to_select('{% url "contrarch_get_subjects" %}?place=' + $(this).val(), '#id_subject');
+	});
+});
+</script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/get_subjects.js"></script>
+{% endblock %}
+{% block body_main %}
+{{ form.media }}
+<table border="0">
+<tr>
+<td>
+{% include "paginator.html" %}
+</td>
+<td>
+ <label for="lpp">Строк:</label>
+ <!--select onchange="document.location=this.options[this.selectedIndex].value"-->
+ <select onchange="document.location=this.options[this.selectedIndex].value">
+  <option value="{% url 'contrarch_set_lpp' 10 %}" {% ifequal lpp 10 %}selected{% endifequal %}>10</option>
+  <option value="{% url 'contrarch_set_lpp' 15 %}" {% ifequal lpp 15 %}selected{% endifequal %}>15</option>
+  <option value="{% url 'contrarch_set_lpp' 20 %}" {% ifequal lpp 20 %}selected{% endifequal %}>20</option>
+  <option value="{% url 'contrarch_set_lpp' 25 %}" {% ifequal lpp 25 %}selected{% endifequal %}>25</option>
+  <option value="{% url 'contrarch_set_lpp' 50 %}" {% ifequal lpp 50 %}selected{% endifequal %}>50</option>
+ </select>
+</td>
+</tr>
+</table>
+<table>
+ <thead>
+ <tr>
+  <th> # </th>
+  <th> Объект </th>
+  <th> Подобъект </th>
+  <th> Направление </th>
+  <th> Плательщик </th>
+  <th> Поставщик </th>
+  <th> Номер </th>
+  <th> Дата </th>
+  <th> Сумма </th>
+ </tr>
+<form action="{% url 'contrarch_set_filter' %}" method="POST">
+ {% csrf_token %}
+ <tr>
+  <th/>
+  <th> {{ form.place }} <br/> {{ form.place.errors }} </th>
+  <th> {{ form.subject }} <br/> {{ form.subject.errors }} </th>
+  <th> {{ form.depart }} <br/> {{ form.depart.errors }} </th>
+  <th> {{ form.payer }} <br/> {{ form.payer.errors }} </th>
+  <th> {{ form.shipper }} <br/> {{ form.shipper.errors }} </th>
+  <th> {{ form.docno }} <br/> {{ form.docno.errors }} </th>
+  <th> {{ form.docdate }} <br/> {{ form.docdate.errors }} </th>
+  <th> <button type="submit" title="Фильтровать" class="plain"> {% include "svgbutton/filter.html" %} </button> </th>
+ </tr>
+</form>
+ </thead>
+ <tbody>
+{% for object in object_list %}
+ <tr>
+  <td> <a href="{% url 'contrarch_view' object.pk %}"> {{ object.pk }} </a> </td>
+  <td nowrap> {{ object.place }} </td>
+  <td nowrap> {{ object.subject|default:"---" }} </td>
+  <td nowrap> {% if object.depart %} {{ object.depart }} {% else %} --- {% endif %} </td>
+  <td nowrap> {{ object.payer|default:"---" }} </td>
+  <td nowrap> {{ object.shipper|default:"---" }} </td>
+  <td nowrap> {{ object.docno }} </td>
+  <td nowrap> {{ object.docdate|date:"d.m.y" }} </td>
+  <td nowrap align="right"> {{ object.docsum|default:"---" }} </td>
+ </tr>
+{% endfor %}
+</table>
+{% endblock %}
