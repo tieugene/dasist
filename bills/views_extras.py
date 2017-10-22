@@ -205,10 +205,10 @@ def fill_route(bill, mgr):    # , boss
     ]
     for i, r in enumerate(std_route1):  # https://docs.djangoproject.com/en/1.10/ref/models/relations/#django.db.models.fields.related.RelatedManager.set
         bill.route_set.create(
-                # bill=bill,
-                order=i + 1,
-                role=models.Role.objects.get(pk=r[0]),
-                approve=r[1],
+            # bill=bill,
+            order=i + 1,
+            role=models.Role.objects.get(pk=r[0]),
+            approve=r[1],
         )
 
 

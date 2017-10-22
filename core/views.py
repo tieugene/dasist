@@ -13,8 +13,7 @@ from dal import autocomplete
 # from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
-from django.shortcuts import redirect, render_to_response
-from django.template import RequestContext
+from django.shortcuts import redirect, render
 from django.views.generic import DetailView, ListView
 # from django.db import transaction
 
@@ -55,7 +54,7 @@ class FileSeqDetail(DetailView):
 
 @login_required
 def file_preview(request, id):
-    return render_to_response('core/file_img.html', context_instance=RequestContext(request, {'file': models.File.objects.get(pk=int(id))}))
+    return render(request, 'core/file_img.html', {'file': models.File.objects.get(pk=int(id))})
 
 
 @login_required
@@ -120,7 +119,7 @@ def fileseqitem_move_up(request, id):
     fs = fsi.fileseq
     order = fsi.order
     if order > 1:
-        fsi.swap(fsi.order-1)
+        fsi.swap(fsi.order - 1)
     return redirect('core.views.fileseq_view', fs.pk)
 
 
@@ -133,7 +132,7 @@ def fileseqitem_move_down(request, id):
     fs = fsi.fileseq
     order = fsi.order
     if fs.files.count() > order:
-        fsi.swap(fsi.order+1)
+        fsi.swap(fsi.order + 1)
     return redirect('core.views.fileseq_view', fs.pk)
 
 
@@ -157,10 +156,14 @@ def org_edit(request, id):
             return redirect('org_view', org.pk)
     else:
         form = forms.OrgEditForm(instance=org)
-    return render_to_response('core/org_form.html', context_instance=RequestContext(request, {
+#    return render_to_response('core/org_form.html', context_instance=RequestContext(request, {
+#        'form': form,
+#        'object': org,
+#    }))
+    return render(request, 'core/org_form.html', {
         'form': form,
         'object': org,
-    }))
+    })
 
 
 def org_get_by_inn(request):

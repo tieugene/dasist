@@ -3,12 +3,9 @@
 contract.forms
 '''
 
-import decimal
-
 # import models
 from bills.models import Approver, Department, Payer, Place, Subject
-from bills.views_extras import \
-    ROLE_ACCOUNTER, ROLE_CHIEF
+from bills.views_extras import ROLE_ACCOUNTER, ROLE_CHIEF
 
 
 from core.forms import InnField, chk_new_org, chk_org_names

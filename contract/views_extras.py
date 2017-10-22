@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 '''
-contracts.views_extras
+contract.views_extras
 '''
 
 # 1. system
@@ -17,7 +17,6 @@ from core.models import File
 
 # 3. django
 # from django.contrib.auth.models import User
-from django.conf import settings
 from django.core.urlresolvers import reverse
 
 # import models

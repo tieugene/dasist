@@ -23,8 +23,9 @@ from bills.views_extras import \
     USER_LAWER
 from bills.views_extras import handle_shipper, set_filter_state
 
-from core.models import FileSeq, FileSeqItem
 from contrarch.models import Contrarch
+
+from core.models import FileSeq, FileSeqItem
 
 # 3. django
 from django.conf import settings
@@ -32,8 +33,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.db import transaction
 from django.http import HttpResponse
-from django.shortcuts import get_object_or_404, redirect, render_to_response
-from django.template import RequestContext
+from django.shortcuts import get_object_or_404, redirect, render
 from django.views.generic import ListView
 
 import forms
@@ -252,10 +252,10 @@ def contract_add(request):
             return redirect('contract_view', contract.pk)
     else:
         form = forms.ContractAddForm()
-    return render_to_response('contract/form.html', context_instance=RequestContext(request, {
+    return render(request, 'contract/form.html', {
         'form': form,
         'places': Place.objects.all(),
-    }))
+    })
 
 
 @login_required
@@ -300,25 +300,25 @@ def contract_edit(request, id):
             return redirect('contract_view', contract.pk)
     else:    # GET
         form = forms.ContractEditForm(initial={
-            'id':       contract.fileseq.pk,
-            'place':    contract.place,
-            'subject':  contract.subject,
-            'depart':   contract.depart,
-            'payer':    contract.payer,
-            'suppinn':  contract.shipper.inn,
+            'id': contract.fileseq.pk,
+            'place': contract.place,
+            'subject': contract.subject,
+            'depart': contract.depart,
+            'payer': contract.payer,
+            'suppinn': contract.shipper.inn,
             'suppname': contract.shipper.name,
             'suppfull': contract.shipper.fullname,
-            'docno':    contract.docno,
-            'docdate':  contract.docdate,
-            'docsum':   contract.docsum,
-            'mgr':      contract.get_mgr().approve,    # костыль для initial
-            'booker':   contract.get_booker().approve,    # костыль для initial
+            'docno': contract.docno,
+            'docdate': contract.docdate,
+            'docsum': contract.docsum,
+            'mgr': contract.get_mgr().approve,    # костыль для initial
+            'booker': contract.get_booker().approve,    # костыль для initial
         })
-    return render_to_response('contract/form.html', context_instance=RequestContext(request, {
-        'form':     form,
-        'object':   contract,
-        'places':   Place.objects.all(),
-    }))
+    return render(request, 'contract/form.html', {
+        'form': form,
+        'object': contract,
+        'places': Place.objects.all(),
+    })
 
 
 @login_required
@@ -489,13 +489,13 @@ def contract_view(request, id, upload_form=None):
                ((approver.role.pk != ROLE_LAWER) and (contract_state_id == STATE_ONWAY))):
                 buttons['accept'] = 2   # Без замечаний
             buttons['reject'] = 1   # Замечание
-    return render_to_response('contract/detail.html', context_instance=RequestContext(request, {
+    return render(request, 'contract/detail.html', {
         'object': contract,
         'upload_form': upload_form,
         'form': resume_form if (buttons['accept'] or buttons['reject']) else None,
         'err': err,
         'button': buttons,
-    }))
+    })
 
 
 @login_required
@@ -599,6 +599,7 @@ def contract_img_dn(request, id):
         if not fsi.is_last():
             fsi.swap(fsi.order + 1)
     return redirect('contract_view', fsi.fileseq.pk)
+
 
 @login_required
 @transaction.atomic

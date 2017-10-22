@@ -15,8 +15,7 @@ from core.models import Org
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
 from django.http import HttpResponse
-from django.shortcuts import redirect, render_to_response
-from django.template import RequestContext
+from django.shortcuts import redirect, render
 from django.views.generic import DetailView, ListView
 
 import forms
@@ -183,10 +182,10 @@ def scan_edit(request, id):
             'date':     scan.date,
             'sum':      scan.sum,
         })
-    return render_to_response('scan/form.html', context_instance=RequestContext(request, {
+    return render(request, 'scan/form.html', {
         'form':        form,
         'object':    scan,
-    }))
+    })
 
 
 @login_required
@@ -252,10 +251,10 @@ def scan_replace_depart(request):
     else:
         form = forms.ReplaceDepartForm()
         msg = None
-    return render_to_response('scan/form_replace_depart.html', context_instance=RequestContext(request, {
+    return render(request, 'scan/form_replace_depart.html', {
         'form': form,
         'msg': msg,
-    }))
+    })
 
 
 @login_required
@@ -280,7 +279,7 @@ def scan_replace_place(request):
     else:
         form = forms.ReplacePlaceForm()
         msg = None
-    return render_to_response('scan/form_replace_place.html', context_instance=RequestContext(request, {
+    return render(request, 'scan/form_replace_place.html', {
         'form': form,
         'msg': msg,
-    }))
+    })

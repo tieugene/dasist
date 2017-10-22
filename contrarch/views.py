@@ -9,14 +9,11 @@ import json
 import sys
 
 # 2. my
-from core.models import Org
 
 # 3. django
 from django.contrib.auth.decorators import login_required
-from django.db import transaction
 from django.http import HttpResponse
-from django.shortcuts import redirect, render_to_response
-from django.template import RequestContext
+from django.shortcuts import redirect
 from django.views.generic import DetailView, ListView
 
 import forms
@@ -129,7 +126,6 @@ def contrarch_set_filter(request):
     form = forms.FilterContrarchListForm(request.POST)
     if form.is_valid():
         filter = form.cleaned_data
-        # print "Set filter:", filter['docdate']
         request.session['contrarch_place'] = filter['place']
         request.session['contrarch_subject'] = filter['subject']
         request.session['contrarch_depart'] = filter['depart']
@@ -137,5 +133,4 @@ def contrarch_set_filter(request):
         request.session['contrarch_shipper'] = filter['shipper'].pk if filter['shipper'] else None
         request.session['contrarch_docno'] = filter['docno']
         request.session['contrarch_docdate'] = filter['docdate']
-        # request.session['contrarch_docdate'] =    datetime.datetime.strptime(filter['docdate'], '%d.%m.%Y').date() if filter['docdate'] else None
     return redirect('contrarch_list')

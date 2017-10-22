@@ -1,3 +1,7 @@
+Test (python-pep8):
+pep8 --ignore=E501,E241 .
+flake8 --ignore=E501,E241 .
+
 Requires:
 * python-django
 * mariadb-server

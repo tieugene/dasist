@@ -30,7 +30,7 @@ def my_upload_to(instance, filename):
     return u'temp/%s' % uuid.uuid4().hex.upper()
 
 
-def file_md5(file, block_size=1024*14):
+def file_md5(file, block_size=1024 * 14):
     '''
     file_md5(file, use_system = False) -> md5sum of "file" as hexdigest string.
     "file" may be a file name or file object, opened for read.
@@ -143,7 +143,7 @@ class FileSeq(models.Model):
     def add_file(self, f):
         '''
         '''
-        FileSeqItem(file=f, fileseq=self, order=self.files.count()+1).save()
+        FileSeqItem(file=f, fileseq=self, order=self.files.count() + 1).save()
 
     @transaction.atomic
     def del_file(self, id):

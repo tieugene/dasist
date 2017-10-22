@@ -23,7 +23,7 @@ class Contrarch(models.Model):
     docno = models.CharField(max_length=32, db_index=True, verbose_name=u'Номер')
     docdate = models.DateField(db_index=True, verbose_name=u'Дата')
     docsum = models.DecimalField(max_digits=11, decimal_places=2, null=True, blank=True, db_index=True, verbose_name=u'Сумма')
-    #events = models.TextField(null=True, blank=True, verbose_name=u'История')
+    # events = models.TextField(null=True, blank=True, verbose_name=u'История')
 
     def __unicode__(self):
         return str(self.pk)

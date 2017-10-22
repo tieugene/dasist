@@ -21,8 +21,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.db import transaction
 from django.http import HttpResponse
-from django.shortcuts import get_object_or_404, redirect, render_to_response
-from django.template import RequestContext
+from django.shortcuts import get_object_or_404, redirect, render
 from django.views.generic import ListView
 
 import forms
@@ -257,10 +256,10 @@ def bill_add(request):
             return redirect('bill_view', bill.pk)
     else:
         form = forms.BillAddForm()
-    return render_to_response('bills/form.html', context_instance=RequestContext(request, {
+    return render(request, 'bills/form.html', {
         'form': form,
         'places': models.Place.objects.all(),
-    }))
+    })
 
 
 @login_required
@@ -335,11 +334,11 @@ def bill_edit(request, id):
             # 'boss':     bill.get_boss().approve,    # костыль для initial
             # 'approver':    6,
         })
-    return render_to_response('bills/form.html', context_instance=RequestContext(request, {
+    return render(request, 'bills/form.html', {
         'form':     form,
         'object':   bill,
         'places':   models.Place.objects.all(),
-    }))
+    })
 
 
 @login_required
@@ -390,10 +389,10 @@ def bill_reedit(request, id):
             'mgr':      bill.get_mgr().approve,
             # 'boss':     bill.get_boss().approve,
         })
-    return render_to_response('bills/form_reedit.html', context_instance=RequestContext(request, {
+    return render(request, 'bills/form_reedit.html', {
         'form': form,
         'object': bill,
-    }))
+    })
 
 
 @login_required
@@ -452,17 +451,18 @@ def bill_view(request, id, upload_form=None):
         '''
         bill_state_id = bill.get_state_id()
         return (
-          (request.POST['resume'] in set(['accept', 'reject'])) and
-          (
-            ((bill_state_id == STATE_DRAFT) and (approver == bill.assign)) or
+            (request.POST['resume'] in set(['accept', 'reject'])) and
             (
-              (bill_state_id == STATE_ONWAY) and (
-                ((bill.rpoint.approve is not None) and (approver == bill.rpoint.approve)) or
-                ((bill.rpoint.approve is None) and (approver.role == bill.rpoint.role))
-              )
-            ) or
-            ((bill_state_id == STATE_ONPAY) and (approver.role == bill.rpoint.role))
-          )
+                ((bill_state_id == STATE_DRAFT) and (approver == bill.assign)) or
+                (
+                    (bill_state_id == STATE_ONWAY) and
+                    (
+                        ((bill.rpoint.approve is not None) and (approver == bill.rpoint.approve)) or
+                        ((bill.rpoint.approve is None) and (approver.role == bill.rpoint.role))
+                    )
+                ) or
+                ((bill_state_id == STATE_ONPAY) and (approver.role == bill.rpoint.role))
+            )
         )
 
     def __resume(request, bill):
@@ -584,13 +584,13 @@ def bill_view(request, id, upload_form=None):
     else:
         if (bill_state_id in set([STATE_ONWAY, STATE_ONPAY])) and (bill.rpoint.role == approver.role):
             buttons['reject'] = 1
-    return render_to_response('bills/detail.html', context_instance=RequestContext(request, {
+    return render(request, 'bills/detail.html', {
         'object': bill,
         'form': resume_form if (buttons['accept'] or buttons['reject']) else None,
         'upload_form': upload_form,
         'err': err,
         'button': buttons,
-    }))
+    })
 
 
 @login_required

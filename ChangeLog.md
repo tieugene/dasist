@@ -1,3 +1,8 @@
+0.1.10 (20171022):
+* pep8'ed
+* flaked8'ed
+* Django 1.10 ready
+
 0.1.9 (20171018):
 * contrarch app added
 * to 1.10: TEMPLATES setting improved
