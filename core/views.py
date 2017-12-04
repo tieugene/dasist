@@ -186,5 +186,8 @@ class OrgAutocomplete(autocomplete.Select2QuerySetView):
             return models.Org.objects.none()
         qs = models.Org.objects.all()
         if self.q:
-            qs = qs.filter(name__istartswith=self.q)
+            if self.q.isdigit():
+                qs = qs.filter(inn__istartswith=self.q)
+            else:
+                qs = qs.filter(name__istartswith=self.q)
         return qs
