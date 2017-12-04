@@ -34,7 +34,9 @@ function json_to_select(url, select_selector) {
  }
 {% endblock %}
 {% block body_main %}
+{{ form.media }}
 <form action="{% url 'bill_filter_state' %}" method="POST">
+{% csrf_token %}
 <table border="0"> <tr>
 {% if canadd %}
 <td>
@@ -64,7 +66,6 @@ function json_to_select(url, select_selector) {
 </td>
 {% if fsform %}
 <td nowrap>
-{% csrf_token %}
  {{ fsform.draft }} {{ fsform.draft.label }} |
  {{ fsform.onway }} {{ fsform.onway.label }} |
  {{ fsform.onpay }} {{ fsform.onpay.label }} |

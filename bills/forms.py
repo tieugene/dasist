@@ -11,6 +11,8 @@ from bills.models import Approver, Bill, Department, Payer, Place, Subject
 from core.forms import InnField, chk_new_org, chk_org_names
 from core.models import Org
 
+from dal import autocomplete
+
 from django import forms
 from django.db.models.fields.files import FieldFile
 
@@ -42,8 +44,8 @@ class FilterBillListForm(forms.Form):
     # subject = forms.ModelChoiceField(queryset=Subject.objects.none().order_by('name'), label=u'Подобъект', required=False)
     # subject = forms.ChoiceField(choices=EMPTY_VALUE, label=u'Подобъект', required=False)
     depart = forms.ModelChoiceField(queryset=Department.objects.all().order_by('name'), label=u'Направление', required=False)
-    shipper = forms.ModelChoiceField(queryset=Org.objects.all().order_by('name'), label=u'Поставщик', required=False)
-    payer = forms.ModelChoiceField(queryset=Payer.objects.all().order_by('name'), label=u'Поставщик', required=False)
+    shipper = forms.ModelChoiceField(queryset=Org.objects.all(), label=u'Поставщик', required=False, widget=autocomplete.ModelSelect2(url='org-autocomplete'))
+    payer = forms.ModelChoiceField(queryset=Payer.objects.all().order_by('name'), label=u'Плательщик', required=False)
 
     def __init__(self, *args, **kwargs):
         forms.Form.__init__(self, *args, **kwargs)
