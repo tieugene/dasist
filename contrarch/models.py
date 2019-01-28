@@ -17,6 +17,7 @@ class Contrarch(models.Model):
     fileseq = models.OneToOneField(FileSeq, primary_key=True, verbose_name=u'Файлы')
     place = models.CharField(max_length=24, db_index=True, verbose_name=u'Объект')
     subject = models.CharField(max_length=32, null=True, blank=True, db_index=True, verbose_name=u'Подобъект')    # max = 28
+    customer = models.CharField(max_length=8, null=True, blank=True, db_index=True, verbose_name=u'Заказчик')
     depart = models.CharField(max_length=16, null=True, blank=True, db_index=True, verbose_name=u'Направление')    # max=14    # max=
     payer = models.CharField(max_length=16, db_index=True, verbose_name=u'Плательщик')
     shipper = models.ForeignKey(Org, db_index=True, verbose_name=u'Поставщик')

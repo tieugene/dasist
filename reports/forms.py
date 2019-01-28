@@ -30,7 +30,7 @@ class FilterLedgerListForm(forms.Form):
 class FilterSummaryListForm(forms.Form):
     place = forms.ChoiceField(choices=EMPTY_VALUE + list(Scan.objects.order_by('place').distinct().values_list('place', 'place')), label=u'Объект', required=False)
     subject = forms.ChoiceField(choices=EMPTY_VALUE + list(Scan.objects.order_by('subject').distinct().values_list('subject', 'subject')), label=u'Подобъект', required=False)
-    year = forms.ChoiceField(choices=EMPTY_VALUE + [('2013', '2013'), ('2014', '2014'), ('2015', '2015'), ('2016', '2016'), ('2017', '2017')], label=u'Год', required=False)
+    year = forms.ChoiceField(choices=EMPTY_VALUE + [('2013', '2013'), ('2014', '2014'), ('2015', '2015'), ('2016', '2016'), ('2017', '2017'), ('2018', '2018')], label=u'Год', required=False)
 
     def __init__(self, *args, **kwargs):
         forms.Form.__init__(self, *args, **kwargs)

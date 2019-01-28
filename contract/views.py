@@ -45,7 +45,7 @@ from views_extras import fill_route, mailto, update_fileseq
 PAGE_SIZE = 25
 FSNAME = 'contract_fstate'    # 0..4
 
-who_can_arch = set([24, 33])    # FIXME (user32, user45)
+who_can_arch = set([7, 24, 33])    # FIXME (user32, user45)
 
 reload(sys)
 sys.setdefaultencoding('utf-8')
@@ -120,6 +120,11 @@ class ContractList(ListView):
             if (subject):
                 q = q.filter(subject__pk=subject)
                 form_initial['subject'] = subject
+            # - customer
+            customer = int(self.request.session.get('contract_customer', 0))
+            if (customer):
+                q = q.filter(customer__pk=customer)
+                form_initial['customer'] = customer
             # - depart
             depart = int(self.request.session.get('contract_depart', 0))
             if (depart):
@@ -185,6 +190,7 @@ def contract_filter_state(request):
         request.session[FSNAME] = fsfilter
         request.session['contract_place'] = fsform.cleaned_data['place'].pk if fsform.cleaned_data['place'] else 0
         request.session['contract_subject'] = fsform.cleaned_data['subject'].pk if fsform.cleaned_data['subject'] else 0
+        request.session['contract_customer'] = fsform.cleaned_data['customer'].pk if fsform.cleaned_data['customer'] else 0
         request.session['contract_depart'] = fsform.cleaned_data['depart'].pk if fsform.cleaned_data['depart'] else 0
         request.session['contract_shipper'] = fsform.cleaned_data['shipper'].pk if fsform.cleaned_data['shipper'] else 0
         request.session['contract_payer'] = fsform.cleaned_data['payer'].pk if fsform.cleaned_data['payer'] else 0
@@ -236,6 +242,7 @@ def contract_add(request):
                 fileseq=fileseq,
                 place=form.cleaned_data['place'],
                 subject=form.cleaned_data['subject'],
+                customer=form.cleaned_data['customer'],
                 depart=form.cleaned_data['depart'],
                 payer=form.cleaned_data['payer'],
                 shipper=shipper,
@@ -281,6 +288,7 @@ def contract_edit(request, id):
             # 1. update bill
             contract.place = form.cleaned_data['place']
             contract.subject = form.cleaned_data['subject']
+            contract.customer = form.cleaned_data['customer']
             contract.depart = form.cleaned_data['depart']
             contract.payer = form.cleaned_data['payer']
             contract.shipper = shipper
@@ -303,6 +311,7 @@ def contract_edit(request, id):
             'id': contract.fileseq.pk,
             'place': contract.place,
             'subject': contract.subject,
+            'customer': contract.customer,
             'depart': contract.depart,
             'payer': contract.payer,
             'suppinn': contract.shipper.inn,
@@ -616,6 +625,7 @@ def contract_toarch(request, id):
             fileseq=contract.fileseq,
             place=contract.place.name,
             subject=contract.subject.name if contract.subject else None,
+            customer=contract.customer.name if contract.customer else None,
             depart=contract.depart.name if contract.depart else None,
             payer=contract.payer.name,
             shipper=contract.shipper,

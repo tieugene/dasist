@@ -14,7 +14,7 @@ from core.models import Org
 from django import forms
 from django.db.models.fields.files import FieldFile
 
-from models import Contract
+from models import Contract, Customer
 
 mime_available = set((
     'application/pdf',
@@ -38,9 +38,10 @@ class FilterContractListForm(forms.Form):
     dead = forms.BooleanField(label='Завернуты', required=False)
     place = forms.ModelChoiceField(queryset=Place.objects.all().order_by('name'), label=u'Объект', required=False)
     subject = forms.ModelChoiceField(queryset=Subject.objects.none().order_by('name'), label=u'Подобъект', required=False)
+    customer = forms.ModelChoiceField(queryset=Customer.objects.all().order_by('name'), label=u'Заказчик', required=False)
     depart = forms.ModelChoiceField(queryset=Department.objects.all().order_by('name'), label=u'Направление', required=False)
-    shipper = forms.ModelChoiceField(queryset=Org.objects.all().order_by('name'), label=u'Поставщик', required=False)
-    payer = forms.ModelChoiceField(queryset=Payer.objects.all().order_by('name'), label=u'Поставщик', required=False)
+    shipper = forms.ModelChoiceField(queryset=Org.objects.all().order_by('name'), label=u'Наша фирма', required=False)
+    payer = forms.ModelChoiceField(queryset=Payer.objects.all().order_by('name'), label=u'Контрагент', required=False)
 
     def __init__(self, *args, **kwargs):
         forms.Form.__init__(self, *args, **kwargs)
@@ -66,6 +67,7 @@ class ContractForm(forms.Form):
     file = forms.FileField(label=u'Скан')
     place = forms.ModelChoiceField(queryset=Place.objects.all().order_by('name'), empty_label=None, label=u'Объект')
     subject = forms.ModelChoiceField(queryset=Subject.objects.all().order_by('name'), label=u'Подобъект', required=False)
+    customer = forms.ModelChoiceField(queryset=Customer.objects.all().order_by('name'), label=u'Заказчик', required=False)
     depart = forms.ModelChoiceField(queryset=Department.objects.all().order_by('name'), label=u'Направление', required=False)
     payer = forms.ModelChoiceField(queryset=Payer.objects.all().order_by('name'), empty_label='---', label=u'Наша фирма')
     suppinn = InnField(min_length=10, max_length=12, label=u'ИНН Контрагента', required=True)

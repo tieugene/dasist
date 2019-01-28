@@ -81,9 +81,10 @@ function json_to_select(url, select_selector) {
   <th> # </th>
   <th> Объект </th>
   <th> Подобъект </th>
+  <th> Заказчик </th>
   <th> Направление </th>
-  <th> Поставщик </th>
-  <th> Плательщик </th>
+  <th> Контрагент </th>
+  <th> Наша фирма </th>
   <th title="Сумма"> Сумма </th>
   <th title="Исполнитель"> Исполн. </th>
  </tr>
@@ -93,6 +94,7 @@ function json_to_select(url, select_selector) {
   <th/>
   <th> {{ fsform.place }} </th>
   <th> {{ fsform.subject }} </th>
+  <th> {{ fsform.customer }} </th>
   <th> {{ fsform.depart }} </th>
   <th> {{ fsform.shipper }} </th>
   <th> {{ fsform.payer }} </th>
@@ -111,6 +113,7 @@ onclick="window.document.location='{% url 'contract_view' object.pk %}'">
   <td> {{ object.pk }} </td>
   <td> {{ object.place }} </td>
   <td> {{ object.subject|default:"---" }} </td>
+  <td> {{ object.customer|default:"---" }} </td>
   <td> {% if object.depart %} {{ object.depart }} {% else %} --- {% endif %} </td>
   <td> {{ object.shipper.name|default:"---" }} </td>
   <td> {{ object.payer|default:"---" }} </td>

@@ -41,9 +41,10 @@
  <tr> <th> # </th> <td> {{ object.fileseq.pk }} </td> </tr>
  <tr> <th> Объект </th> <td> {{ object.place }} </td> </tr>
  <tr> <th> Подобъект </th> <td> {{ object.subject|default:"---" }} </td> </tr>
+ <tr> <th> Заказчик </th> <td> {{ object.customer|default:"---" }} </td> </tr>
  <tr> <th> Направление </th> <td> {{ object.depart|default:"---" }} </td> </tr>
- <tr> <th> Плательщик </th> <td> {{ object.payer|default:"---" }} </td> </tr>
- <tr> <th> Поставщик </th> <td nowrap>
+ <tr> <th> Наша фирма </th> <td> {{ object.payer|default:"---" }} </td> </tr>
+ <tr> <th> Контрагент </th> <td nowrap>
   {% if object.shipper %}
     {{ object.shipper.name }} <br/>
     ({{ object.shipper.fullname }}) <br/>

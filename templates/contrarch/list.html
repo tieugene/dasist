@@ -35,9 +35,10 @@ $(document).ready(function() {
   <th> # </th>
   <th> Объект </th>
   <th> Подобъект </th>
+  <th> Заказчик </th>
   <th> Направление </th>
-  <th> Плательщик </th>
-  <th> Поставщик </th>
+  <th> Наша фирма </th>
+  <th> Контрагент </th>
   <th> Номер </th>
   <th> Дата </th>
   <th> Сумма </th>
@@ -48,6 +49,7 @@ $(document).ready(function() {
   <th/>
   <th> {{ form.place }} <br/> {{ form.place.errors }} </th>
   <th> {{ form.subject }} <br/> {{ form.subject.errors }} </th>
+  <th> {{ form.customer }} <br/> {{ form.customer.errors }} </th>
   <th> {{ form.depart }} <br/> {{ form.depart.errors }} </th>
   <th> {{ form.payer }} <br/> {{ form.payer.errors }} </th>
   <th> {{ form.shipper }} <br/> {{ form.shipper.errors }} </th>
@@ -63,6 +65,7 @@ $(document).ready(function() {
   <td> <a href="{% url 'contrarch_view' object.pk %}"> {{ object.pk }} </a> </td>
   <td nowrap> {{ object.place }} </td>
   <td nowrap> {{ object.subject|default:"---" }} </td>
+  <td nowrap> {{ object.customer|default:"---" }} </td>
   <td nowrap> {% if object.depart %} {{ object.depart }} {% else %} --- {% endif %} </td>
   <td nowrap> {{ object.payer|default:"---" }} </td>
   <td nowrap> {{ object.shipper|default:"---" }} </td>

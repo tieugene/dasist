@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+'''
+dasist.contrarch.admin
+'''
 
 from django.contrib import admin
 
@@ -14,7 +17,7 @@ class EventInLine(admin.TabularInline):
 # 2. odmins
 class ContrarchAdmin(admin.ModelAdmin):
     ordering = ('fileseq',)
-    list_display = ('fileseq', 'place', 'subject', 'depart', 'payer', 'shipper', 'docno', 'docdate', 'docsum')
+    list_display = ('fileseq', 'place', 'subject', 'customer', 'depart', 'payer', 'shipper', 'docno', 'docdate', 'docsum')
     inlines = (EventInLine,)
 
 

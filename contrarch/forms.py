@@ -24,6 +24,7 @@ EMPTY_VALUE = [('', '---'), ]
 class FilterContrarchListForm(forms.Form):
     place = forms.ChoiceField(choices=EMPTY_VALUE + list(Contrarch.objects.order_by('place').distinct().values_list('place', 'place')), label=u'Объект', required=False)
     subject = forms.ChoiceField(choices=EMPTY_VALUE + list(Contrarch.objects.order_by('subject').distinct().values_list('subject', 'subject')), label=u'Подобъект', required=False)
+    customer = forms.ChoiceField(choices=EMPTY_VALUE + list(Contrarch.objects.order_by('customer').distinct().exclude(customer=None).values_list('customer', 'customer')), label=u'Заказчик', required=False)
     depart = forms.ChoiceField(choices=EMPTY_VALUE + list(Contrarch.objects.order_by('depart').distinct().exclude(depart=None).values_list('depart', 'depart')), label=u'Направление', required=False)
     payer = forms.ChoiceField(choices=EMPTY_VALUE + list(Contrarch.objects.order_by('payer').distinct().exclude(payer=None).values_list('payer', 'payer')), label=u'Плательщик', required=False)
     shipper = forms.ModelChoiceField(queryset=Org.objects.all(), required=False, widget=autocomplete.ModelSelect2(url='org-autocomplete'))

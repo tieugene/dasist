@@ -42,6 +42,7 @@ class ContrarchList(ListView):
     filter = {
         'place':    None,
         'subject':  None,
+        'customer':   None,
         'depart':   None,
         'payer':    None,
         'shipper':  None,
@@ -56,6 +57,7 @@ class ContrarchList(ListView):
         self.paginate_by = self.request.session.get('lpp', 25)
         self.filter['place'] = self.request.session.get('contrarch_place', None)
         self.filter['subject'] = self.request.session.get('contrarch_subject', None)
+        self.filter['customer'] = self.request.session.get('contrarch_customer', None)
         self.filter['depart'] = self.request.session.get('contrarch_depart', None)
         self.filter['payer'] = self.request.session.get('contrarch_payer', None)
         self.filter['shipper'] = self.request.session.get('contrarch_shipper', None)
@@ -69,6 +71,8 @@ class ContrarchList(ListView):
             if self.filter['subject']:
                 self.subj = self.filter['subject']
                 q = q.filter(subject=self.filter['subject'])
+        if self.filter['customer']:
+            q = q.filter(customer=self.filter['customer'])
         if self.filter['depart']:
             q = q.filter(depart=self.filter['depart'])
         if self.filter['payer']:
@@ -92,6 +96,7 @@ class ContrarchList(ListView):
         context['form'] = forms.FilterContrarchListForm(initial={
             'place':    self.filter['place'],
             'subject':  self.filter['subject'],
+            'customer':   self.filter['customer'],
             'depart':   self.filter['depart'],
             'payer':    self.filter['payer'],
             'shipper':  self.filter['shipper'],
@@ -128,6 +133,7 @@ def contrarch_set_filter(request):
         filter = form.cleaned_data
         request.session['contrarch_place'] = filter['place']
         request.session['contrarch_subject'] = filter['subject']
+        request.session['contrarch_customer'] = filter['customer']
         request.session['contrarch_depart'] = filter['depart']
         request.session['contrarch_payer'] = filter['payer']
         request.session['contrarch_shipper'] = filter['shipper'].pk if filter['shipper'] else None

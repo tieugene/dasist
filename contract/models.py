@@ -13,15 +13,30 @@ from core.models import FileSeq, Org
 # from django.contrib.auth.models import User
 from django.db import models
 
+class Customer(models.Model):
+    '''
+    Заказчик
+    '''
+    name = models.CharField(max_length=8, unique=True, db_index=True, verbose_name=u'Заказчик')
+
+    def __unicode__(self):
+        return self.name
+
+    class Meta:
+        ordering = ('name',)
+        verbose_name = u'Заказчик'
+        verbose_name_plural = u'Заказчики'
+
 
 # Refs
 class Contract(models.Model):
     fileseq = models.OneToOneField(FileSeq, primary_key=True, verbose_name=u'Файлы')
     place = models.ForeignKey(Place, related_name='place_contracts', db_index=True, verbose_name=u'Объект')
     subject = models.ForeignKey(Subject, related_name='subject_contracts', null=True, blank=True, db_index=True, verbose_name=u'ПодОбъект')
+    customer = models.ForeignKey(Customer, related_name='customer_contracts', null=True, blank=True, db_index=True, verbose_name=u'Заказчик')
     depart = models.ForeignKey(Department, related_name='department_contracts', null=True, blank=True, db_index=True, verbose_name=u'Направление')
-    payer = models.ForeignKey(Payer, related_name='payer_contracts', db_index=True, verbose_name=u'Плательщик')
-    shipper = models.ForeignKey(Org, related_name='shipper_contracts', db_index=True, verbose_name=u'Поставщик')
+    payer = models.ForeignKey(Payer, related_name='payer_contracts', db_index=True, verbose_name=u'Наша фирма')
+    shipper = models.ForeignKey(Org, related_name='shipper_contracts', db_index=True, verbose_name=u'Контрагент')
     assign = models.ForeignKey(Approver, related_name='assigned_contracts', db_index=True, verbose_name=u'Исполнитель')
     state = models.ForeignKey(State, related_name='state_contracts', db_index=True, verbose_name=u'Состояние')
     docno = models.CharField(max_length=32, db_index=True, verbose_name=u'Номер договора')    # max=11

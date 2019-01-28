@@ -1,3 +1,20 @@
+= Tasks =
+* mv 2 F28
+-- rsync
+* split:
+-- /etc/httpd
+-- localsettings
+-- mysql (cp?)
+-- media (cp -al)
+-- chk dels:
+--- admin:
+---- bill
+---- billarch
+---- contract
+---- contrarch
+---- payer
+* chg orders
+
 Requires:
 * python-django
 * mariadb-server
@@ -20,6 +37,8 @@ GRANT ALL PRIVILEGES ON dasist.* TO 'dasist'@'localhost' WITH GRANT OPTION;
 == TODO ==
 * filter by payer
 * views visibility
+* move to python3
+* unittests
 
 = Notes =
 * .frm - table description
