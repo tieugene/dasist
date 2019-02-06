@@ -1,3 +1,8 @@
+0.1.11 (20190131):
+* File: pre_delete => post_delete
+* FileSeq: pre_delete => post_delete; rm purge()
+* Bill, Scan, Contract, Conrarch: rm purge, post_delete
+
 0.1.10 (20171022):
 * pep8'ed
 * flaked8'ed

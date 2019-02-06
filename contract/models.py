@@ -12,6 +12,9 @@ from core.models import FileSeq, Org
 # 2. django
 # from django.contrib.auth.models import User
 from django.db import models
+from django.db.models.signals import post_delete
+from django.dispatch.dispatcher import receiver
+
 
 class Customer(models.Model):
     '''
@@ -70,6 +73,11 @@ class Contract(models.Model):
     class Meta:
         verbose_name = u'Договор'
         verbose_name_plural = u'Договора'
+
+
+@receiver(post_delete, sender=Contract)
+def _contract_delete(sender, instance, **kwargs):
+    instance.fileseq.delete()
 
 
 class Route(models.Model):

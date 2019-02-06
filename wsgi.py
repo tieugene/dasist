@@ -15,6 +15,6 @@ from django.core.wsgi import get_wsgi_application
 
 
 locale.setlocale(locale.LC_TIME, 'ru_RU.utf8')
-sys.path.append('/usr/share/dasist')
+sys.path.append(os.path.dirname(__file__))
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'settings')
 application = get_wsgi_application()

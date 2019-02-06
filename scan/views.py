@@ -196,7 +196,7 @@ def scan_delete(request, id):
     '''
     if (request.user.is_superuser):
         scan = models.Scan.objects.get(pk=int(id))
-        scan.fileseq.purge()    # ???
+        #scan.fileseq.purge()    # ???
         scan.delete()
     return redirect('scan_list')
 

@@ -35,7 +35,7 @@ MEDIA_URL = ''
 
 # STATIC_ROOT = os.path.join(PROJECT_DIR, 'static'),
 
-ADMIN_MEDIA_PREFIX = '/static/admin/'
+#ADMIN_MEDIA_PREFIX = '/static/admin/'
 
 SECRET_KEY = 'justforme'
 '''
@@ -113,12 +113,12 @@ INSTALLED_APPS = (
 #    'django_extensions',
     'dal',
     'dal_select2',
-    'reports',
     'core',
     'bills',
     'scan',
     'contract',
     'contrarch',
+    'reports',
 )
 
 ALLOWED_HOSTS = ['localhost']

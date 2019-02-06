@@ -12,7 +12,7 @@ import uuid
 from django.conf import settings
 # from django.core.files.base import ContentFile
 from django.db import models, transaction
-from django.db.models.signals import pre_delete
+from django.db.models.signals import post_delete
 from django.dispatch.dispatcher import receiver
 
 # 2. 3rd parties
@@ -77,10 +77,6 @@ class File(RenameFilesModel):
         # else:
         #    super(File, self).save()
 
-    # def delete(self):
-    #    os.unlink(self.get_path())
-    #    super(File, self).delete()
-
     def raw_save(self):
         '''
         For import only
@@ -110,7 +106,7 @@ class File(RenameFilesModel):
         verbose_name_plural = u'Файлы'
 
 
-@receiver(pre_delete, sender=File)
+@receiver(post_delete, sender=File)
 def _file_delete(sender, instance, **kwargs):
     p = instance.get_path()
     if (os.path.exists(p)):
@@ -133,12 +129,12 @@ class FileSeq(models.Model):
         '''
         self.files.all().delete()
 
-    def purge(self):
-        '''
-        Delete self and all files in
-        '''
-        self.clean_children()
-        super(FileSeq, self).delete()
+#    def purge(self):
+#        '''
+#        Delete self and all files in
+#        '''
+#        self.clean_children()
+#        super(FileSeq, self).delete()
 
     def add_file(self, f):
         '''
@@ -168,7 +164,7 @@ class FileSeq(models.Model):
         verbose_name_plural = u'Последовательности файлов'
 
 
-@receiver(pre_delete, sender=FileSeq)
+@receiver(post_delete, sender=FileSeq)
 def _fileseq_delete(sender, instance, **kwargs):
     instance.files.all().delete()
 

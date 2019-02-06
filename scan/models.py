@@ -11,6 +11,8 @@ from core.models import FileSeq, Org
 
 # 1. django
 from django.db import models
+from django.db.models.signals import post_delete
+from django.dispatch.dispatcher import receiver
 
 
 class Scan(models.Model):
@@ -44,6 +46,11 @@ class Scan(models.Model):
         ordering = ('fileseq',)
         verbose_name = u'Скан'
         verbose_name_plural = u'Сканы'
+
+
+@receiver(post_delete, sender=Scan)
+def _scan_delete(sender, instance, **kwargs):
+    instance.fileseq.delete()
 
 
 class Event(models.Model):

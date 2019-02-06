@@ -11,6 +11,8 @@ from core.models import FileSeq, Org
 
 # 1. django
 from django.db import models
+from django.db.models.signals import post_delete
+from django.dispatch.dispatcher import receiver
 
 
 class Contrarch(models.Model):
@@ -40,6 +42,11 @@ class Contrarch(models.Model):
         ordering = ('fileseq',)
         verbose_name = u'Договор'
         verbose_name_plural = u'Договора'
+
+
+@receiver(post_delete, sender=Contrarch)
+def _contrarch_delete(sender, instance, **kwargs):
+    instance.fileseq.delete()
 
 
 class Event(models.Model):

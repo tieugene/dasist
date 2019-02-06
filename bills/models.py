@@ -9,6 +9,9 @@ from core.models import FileSeq, Org
 # 2. django
 from django.contrib.auth.models import User
 from django.db import models
+from django.db.models.signals import post_delete
+from django.dispatch.dispatcher import receiver
+
 
 ORD_MGR = 2
 ORD_BOSS = 4
@@ -204,6 +207,11 @@ class Bill(models.Model):
         unique_together = (('shipper', 'billno', 'billdate'),)
         verbose_name = u'Счет'
         verbose_name_plural = u'Счета'
+
+
+@receiver(post_delete, sender=Bill)
+def _bill_delete(sender, instance, **kwargs):
+    instance.fileseq.delete()
 
 
 class Route(models.Model):

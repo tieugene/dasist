@@ -11,7 +11,7 @@
 	({{ page_obj.number }}/{{ paginator.num_pages }})
 	{% if page_obj.has_next %}
 		<a href="?page={{ page_obj.next_page_number }}" class="nou"> <button type="button" class="plain_mid"> > </button> </a>
-		<a href="?page={{ paginator.num_pages }}" class="nou"> <button type="button" class="plain_mid"> >| </button> </a>
+		<a href="?page={{ paginator.num_pages|cut:" " }}" class="nou"> <button type="button" class="plain_mid"> >| </button> </a>
 	{% else %}
 		<button type="button" class="plain_mid" disabled="disabled"> > </button>
 		<button type="button" class="plain_mid" disabled="disabled"> >| </button>
