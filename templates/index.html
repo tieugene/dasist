@@ -34,6 +34,7 @@ $("#tm_index").addClass("active");
     {% if user.is_superuser %}
     <a href="{% url 'file_list' %}" class="nou"> {% include "svgbutton/file.html" %} </a>
     <a href="{% url 'fileseq_list' %}" class="nou"> {% include "svgbutton/files.html" %} </a>
+    <a href="{% url 'chk' %}" class="nou"> {% include "svgbutton/chk.html" %} </a>
     {% endif %}
    </td>
   </tr>

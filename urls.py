@@ -11,6 +11,8 @@ from django.views.i18n import javascript_catalog
 
 admin.autodiscover()
 
+import views
+
 urlpatterns = [
     url(r'^admin/',             include(admin.site.urls)),
     url(r'^admin/jsi18n',       javascript_catalog),    # hack to use admin form widgets
@@ -24,5 +26,8 @@ urlpatterns = [
     url(r'^contract/',          include('contract.urls')),
     url(r'^contrarch/',         include('contrarch.urls')),
     url(r'^report/',            include('reports.urls')),
+    url(r'^chk/$',              views.chk, name='chk'),
+    url(r'^cln/(?P<f>\d+)/$',   views.cln, name='cln'),
 ]
+
 urlpatterns += staticfiles_urlpatterns()

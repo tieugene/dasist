@@ -83,8 +83,8 @@ class File(RenameFilesModel):
         '''
         super(File, self).save()
 
-    # def __unicode__(self):
-    #    return self.name
+    def __unicode__(self):
+        return self.name
 
     def get_filename(self):
         return '%08d' % self.pk
@@ -101,6 +101,15 @@ class File(RenameFilesModel):
         self.md5 = file_md5(path)
         super(File, self).save()
 
+    def delete(self, *args, **kwargs):
+        #print 'Start File.delete()'
+        p = self.get_path()
+        if (os.path.exists(p)):
+            os.unlink(p)
+        #print 'File Deleted'
+        super(File, self).delete(*args, **kwargs)
+
+
     class Meta:
         verbose_name = u'Файл'
         verbose_name_plural = u'Файлы'
@@ -108,9 +117,11 @@ class File(RenameFilesModel):
 
 @receiver(post_delete, sender=File)
 def _file_delete(sender, instance, **kwargs):
+    #print 'Start post_delete'
     p = instance.get_path()
     if (os.path.exists(p)):
         os.unlink(p)
+    #print 'End of post_delete'
 
 
 class FileSeq(models.Model):
@@ -129,12 +140,12 @@ class FileSeq(models.Model):
         '''
         self.files.all().delete()
 
-#    def purge(self):
-#        '''
-#        Delete self and all files in
-#        '''
-#        self.clean_children()
-#        super(FileSeq, self).delete()
+    def delete(self, *args, **kwargs):
+        '''
+        Delete self and all files in
+        '''
+        self.clean_children()
+        super(FileSeq, self).delete(*args, **kwargs)
 
     def add_file(self, f):
         '''
@@ -166,7 +177,7 @@ class FileSeq(models.Model):
 
 @receiver(post_delete, sender=FileSeq)
 def _fileseq_delete(sender, instance, **kwargs):
-    instance.files.all().delete()
+    sender.clean_children(instance)
 
 
 class FileSeqItem(models.Model):
@@ -177,8 +188,9 @@ class FileSeqItem(models.Model):
     # def    __unicode__(self):
     #    return '%s: %s' % (self.user, self.comment)
 
-    # def    delete(self):
-    #    pass
+    def delete(self, *args, **kwargs):
+        self.file.delete()
+        super(FileSeqItem, self).delete(*args, **kwargs)
 
     @transaction.atomic
     def swap(self, sibling):

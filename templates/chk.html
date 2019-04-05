@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block jsready %}
+$("#tm_index").addClass("active");
+{% endblock %}
+{% block body_main %}
+ {% if user.is_authenticated %}
+  <h1> Orphaned/Widows </h1>
+  <ol>
+   <!-- 1. X (пересечения Счетов/Сканов/Договоров/Архидоговоров -->
+   <li> <u> X: </u>
+    <ol>
+     <li> {% if bssc %} Oops {% else %} 0 {% endif %} </li>
+     <li> {% if bsct %} Oops {% else %} 0 {% endif %} </li>
+     <li> {% if bsca %} Oops {% else %} 0 {% endif %} </li>
+     <li> {% if scct %} Oops {% else %} 0 {% endif %} </li>
+     <li> {% if scca %} Oops {% else %} 0 {% endif %} </li>
+     <li> {% if ctca %} Oops {% else %} 0 {% endif %} </li>
+    </ol>
+   </li>
+   <li> Orphaned FileSeq (w/o Bill/Scan/Contract/Contrarch) - {{ fs_orph|length }}
+    {% if fs_orph %}
+     <a href="{% url 'cln' 2 %}" class="nou"> {% include "svgbutton/delete.html" %} </a>
+     : <br/> {% for i in fs_orph %} {{ i|cut:" " }}, {% endfor %}
+    {% endif %}
+   </li>
+   <li> Empty FileSeq (w/o FileSeqItem) - {{ fs_wo_fsi|length }}
+    {% if fs_wo_fsi %}
+     <a href="{% url 'cln' 3 %}" class="nou"> {% include "svgbutton/delete.html" %} </a>
+     : <br/> {% for i in fs_wo_fsi %} {{ i|cut:" " }}, {% endfor %}
+    {% endif %}
+   </li>
+   <li> Orphaned File (w/o FileSeqItem) - {{ ff_wo_fsi|length }}
+    {% if ff_wo_fsi %}
+     <a href="{% url 'cln' 4 %}" class="nou"> {% include "svgbutton/delete.html" %} </a>
+     : <br/> {% for i in ff_wo_fsi %} {{ i|cut:" " }}, {% endfor %}
+    {% endif %}
+   </li>
+   <li> Empty File (w/o file) - {{ ff_wo_fh|length }}
+    {% if ff_wo_fh %}
+     <a href="{% url 'cln' 5 %}" class="nou"> {% include "svgbutton/delete.html" %} </a>
+     : <br/> {% for i in ff_wo_fh %} {{ i|cut:" " }}, {% endfor %}
+    {% endif %}
+   </li>
+   <li> Orphaned files (w/o File) - {{ fh_wo_ff|length }}
+    {% if fh_wo_ff %}
+     <a href="{% url 'cln' 6 %}" class="nou"> {% include "svgbutton/delete.html" %} </a>
+     : <br/> {% for i in fh_wo_ff %} {{ i|cut:" " }}, {% endfor %}
+    {% endif %}
+   </li>
+  </ol>
+ {% endif %}
+{% endblock %}

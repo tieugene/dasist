@@ -75,7 +75,7 @@ def file_del(request, id):
     '''
     '''
     models.File.objects.get(pk=int(id)).delete()
-    return redirect('core.views.file_list')
+    return redirect('file_list')
 
 
 @login_required
@@ -107,7 +107,7 @@ def fileseqitem_del(request, id):
     fsi = models.FileSeqItem.objects.get(pk=int(id))
     fs = fsi.fileseq
     fs.del_file(int(id))
-    return redirect('core.views.fileseq_view', fs.pk)
+    return redirect('fileseq_view', fs.pk)
 
 
 @login_required
@@ -120,7 +120,7 @@ def fileseqitem_move_up(request, id):
     order = fsi.order
     if order > 1:
         fsi.swap(fsi.order - 1)
-    return redirect('core.views.fileseq_view', fs.pk)
+    return redirect('fileseq_view', fs.pk)
 
 
 @login_required
@@ -133,7 +133,7 @@ def fileseqitem_move_down(request, id):
     order = fsi.order
     if fs.files.count() > order:
         fsi.swap(fsi.order + 1)
-    return redirect('core.views.fileseq_view', fs.pk)
+    return redirect('fileseq_view', fs.pk)
 
 
 class OrgList(ListView):

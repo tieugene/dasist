@@ -35,7 +35,7 @@ MEDIA_URL = ''
 
 # STATIC_ROOT = os.path.join(PROJECT_DIR, 'static'),
 
-#ADMIN_MEDIA_PREFIX = '/static/admin/'
+# ADMIN_MEDIA_PREFIX = '/static/admin/'
 
 SECRET_KEY = 'justforme'
 '''
@@ -110,7 +110,6 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.admin',
-#    'django_extensions',
     'dal',
     'dal_select2',
     'core',

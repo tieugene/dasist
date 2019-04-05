@@ -683,7 +683,7 @@ def bill_toscan(request, id):
         bill.delete()
         return redirect('bill_list')
     else:
-        return redirect('bills.views.bill_view', bill.pk)
+        return redirect('bill_view', bill.pk)
 
 
 @login_required
@@ -699,7 +699,7 @@ def bill_img_del(request, id):
        (bill.assign.user.pk == request.user.pk) and
        (bill.get_state_id() == STATE_DRAFT)):
         fs.del_file(int(id))
-    return redirect('bills.views.bill_view', fs.pk)
+    return redirect('bill_view', fs.pk)
 
 
 @login_required
@@ -717,7 +717,7 @@ def bill_img_up(request, id):
        (bill.get_state_id() == STATE_DRAFT)):
         if not fsi.is_first():
             fsi.swap(fsi.order - 1)
-    return redirect('bills.views.bill_view', fsi.fileseq.pk)
+    return redirect('bill_view', fsi.fileseq.pk)
 
 
 @login_required
@@ -734,7 +734,7 @@ def bill_img_dn(request, id):
        (bill.get_state_id() == STATE_DRAFT)):
         if not fsi.is_last():
             fsi.swap(fsi.order + 1)
-    return redirect('bills.views.bill_view', fsi.fileseq.pk)
+    return redirect('bill_view', fsi.fileseq.pk)
 
 
 def __bill_img_r(request, id, dir):
@@ -747,7 +747,7 @@ def __bill_img_r(request, id, dir):
        (bill.assign.user.pk == request.user.pk) and
        (bill.get_state_id() == STATE_DRAFT)):
         rotate_img(fsi.file, dir)
-    return redirect('bills.views.bill_view', fsi.fileseq.pk)
+    return redirect('bill_view', fsi.fileseq.pk)
 
 
 @login_required

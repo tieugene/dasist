@@ -26,7 +26,7 @@ drop_old)	# drop all SQL tables (old way)
 	(echo "BEGIN; SET FOREIGN_KEY_CHECKS=0;" && (echo "SHOW TABLES;" | $MGR dbshell | grep -v Tables | while read i; do echo "DROP TABLE $i;"; done) && echo "COMMIT;") | $MGR dbshell
 	;;
 drop)		# drop all SQL tables in right order
-	(echo "BEGIN; SET FOREIGN_KEY_CHECKS=0;" && (for i in `tac tables.lst`; do echo "DROP TABLE $i;"; done) && echo "COMMIT;") | $MGR dbshell
+	(echo "BEGIN; SET FOREIGN_KEY_CHECKS=0;" && (for i in `tac tables.lst | grep -v ^#`; do echo "DROP TABLE $i;"; done) && echo "COMMIT;") | $MGR dbshell
 	;;
 sync)		# [re]create DB structure
 	echo "no" | $MGR migrate
@@ -39,6 +39,9 @@ clean)		# delete all records from all tables in right order
 	;;
 restore)	# restore db from gziped sql
 	(echo "BEGIN; SET FOREIGN_KEY_CHECKS=0;" && gunzip -c $2 && echo "SET FOREIGN_KEY_CHECKS=1; COMMIT;") | $MGR dbshell
+	;;
+chk)		# chk db
+	(echo "BEGIN;" && (echo "SHOW TABLES;" | $MGR dbshell | grep -v Tables | while read i; do echo "ALTER TABLE $i DISCARD TABLESPACE; ALTER TABLE $i IMPORT TABLESPACE;"; done) && echo "COMMIT;") | $MGR dbshell
 	;;
 help)
 	echo "Das ist help"
