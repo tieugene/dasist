@@ -18,7 +18,10 @@ from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.views.generic import DetailView, ListView
 
-import forms
+try:
+    import forms
+except:
+    print "Oops #1"
 
 import models
 

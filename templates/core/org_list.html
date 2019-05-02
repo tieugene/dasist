@@ -1,7 +1,7 @@
 {% extends "core/org_base.html" %}
 {% block css %}
  tr.list td {
-  cursor:pointer;
+  <!-- cursor:pointer;-->
   padding-top: 0;
   padding-bottom: 0;
   white-space: nowrap;
@@ -20,8 +20,8 @@
 </thead>
 <tbody>
 {% for object in object_list %}
- <tr class="list" onclick="window.document.location='{% url 'org_view' object.pk %}'">
-  <td align="right"> {{ object.pk }} </td>
+ <tr class="list">
+  <td align="right"> <a href="{% url 'org_view' object.pk %}"> {{ object.pk }} </a> </td>
   <td style="font-family: mono"> {{ object.inn }} </td>
   <td> {{ object.name }} </td>
   <td> {{ object.fullname }} </td>

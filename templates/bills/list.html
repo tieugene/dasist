@@ -27,7 +27,7 @@ function json_to_select(url, select_selector) {
 {% endblock %}
 {% block css %}
  tr.bill td {
-  cursor:pointer;
+  <!-- cursor:pointer; -->
   padding-top: 0;
   padding-bottom: 0;
   white-space: nowrap;
@@ -122,9 +122,9 @@ function json_to_select(url, select_selector) {
    {% endifequal %}
   {% endif %}
  {% endif %}
-onclick="window.document.location='{% url 'bill_view' object.pk %}'">
+ >
   <td> <img src="{{ STATIC_URL }}img/svg/{{ object.state.get_icon }}" width="16px" height="16px" title="{{ object.get_state_name }}"/> </td>
-  <td> {{ object.pk }} </td>
+  <td> <a href="{% url 'bill_view' object.pk %}"> {{ object.pk }} </a> </td>
   <td> {{ object.place }} </td>
   <td> {{ object.subject|default:"---" }} </td>
   <td> {% if object.depart %} {{ object.depart }} {% else %} --- {% endif %} </td>

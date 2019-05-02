@@ -20,7 +20,10 @@ from django.views.generic import ListView
 # 3. my
 from scan.models import Scan
 
-from . import forms
+try:
+    import forms
+except:
+    print "Oops #1"
 
 reload(sys)
 sys.setdefaultencoding('utf-8')

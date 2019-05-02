@@ -27,7 +27,7 @@ function json_to_select(url, select_selector) {
 {% endblock %}
 {% block css %}
  tr.contract td {
-  cursor:pointer;
+  <!-- cursor:pointer; -->
   padding-top: 0;
   padding-bottom: 0;
   white-space: nowrap;
@@ -107,10 +107,9 @@ function json_to_select(url, select_selector) {
  </thead>
  <tbody>
 {% for object in object_list %}
- <tr class="contract" bgcolor="{{object.get_state_color}}"
-onclick="window.document.location='{% url 'contract_view' object.pk %}'">
+ <tr class="contract" bgcolor="{{object.get_state_color}}">
   <td> <img src="{{ STATIC_URL }}img/svg/{{ object.state.get_icon }}" width="16px" height="16px" title="{{ object.get_state_name }}"/> </td>
-  <td> {{ object.pk }} </td>
+  <td> <a href="{% url 'contract_view' object.pk %}"> {{ object.pk }} </a> </td>
   <td> {{ object.place }} </td>
   <td> {{ object.subject|default:"---" }} </td>
   <td> {{ object.customer|default:"---" }} </td>

@@ -1,3 +1,7 @@
+0.1.12 (20190405):
+* chk added
+* костыли в scan|contrarch|reports/views.* (about import forms)
+
 0.1.11 (20190131):
 * File: pre_delete => post_delete
 * FileSeq: pre_delete => post_delete; rm purge()
