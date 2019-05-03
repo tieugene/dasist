@@ -13,6 +13,7 @@ from bills.views_extras import \
     ROLE_ACCOUNTER, ROLE_BOSS, ROLE_CHIEF, ROLE_SDOCHIEF, \
     STATE_ONPAY, STATE_ONWAY, STATE_REJECTED, \
     USER_BOSS, USER_LAWER, USER_SDOCHIEF
+
 from core.models import File
 
 # 3. django

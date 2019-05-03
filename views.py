@@ -4,15 +4,25 @@ urls
 dasist 0.?.?
 '''
 
-from django.conf import settings
+import os
 
+import bills
+
+import contract
+
+import contrarch
+
+import core
+
+from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 
-import os
-#import pprint
+import scan
 
-import bills, scan, contract, contrarch, core
+
+# import pprint
+
 
 def common_context(context):
     '''
@@ -23,29 +33,38 @@ def common_context(context):
         'path':         'apps.core'
     }
 
+
 def __get_bs():
     return frozenset(bills.models.Bill.objects.values_list('pk', flat=True).order_by('pk'))
+
 
 def __get_sc():
     return frozenset(scan.models.Scan.objects.values_list('pk', flat=True).order_by('pk'))
 
+
 def __get_ct():
     return frozenset(contract.models.Contract.objects.values_list('pk', flat=True).order_by('pk'))
+
 
 def __get_ca():
     return frozenset(contrarch.models.Contrarch.objects.values_list('pk', flat=True).order_by('pk'))
 
+
 def __get_fs():
     return frozenset(core.models.FileSeq.objects.values_list('pk', flat=True).order_by('pk'))
+
 
 def __get_fsi_f():
     return frozenset(core.models.FileSeqItem.objects.values_list('file', flat=True).order_by('file'))
 
+
 def __get_fsi_fs():
     return frozenset(core.models.FileSeqItem.objects.values_list('fileseq', flat=True).order_by('fileseq'))
 
+
 def __get_ff():
     return frozenset(core.models.File.objects.values_list('pk', flat=True).order_by('pk'))
+
 
 def __get_fh():
     fh = set()  # files hw
@@ -55,8 +74,9 @@ def __get_fh():
     fh = frozenset(fh)
     return fh
 
+
 @login_required
-#@transaction.atomic
+# @transaction.atomic
 def chk(request):
     '''
     Chk orphaned/widows:
@@ -98,6 +118,7 @@ def chk(request):
         'fh_wo_ff':  sorted(fh - ff),                   # 6.
     })
 
+
 def cln(request, f):
     '''
     f - function no
@@ -109,7 +130,7 @@ def cln(request, f):
     ct = __get_ct()
     ca = __get_ca()
     fs = __get_fs()
-    ff  = __get_ff()
+    ff = __get_ff()
     fsi_f = __get_fsi_f()
     fsi_fs = __get_fsi_fs()
     fh = __get_fh()
@@ -129,7 +150,7 @@ def cln(request, f):
         q = ff - fh
         core.models.File.objects.filter(pk__in=q).delete()
     elif (f == 6):  # 6. orphaned file (OK)
-        #f  = __get_f()
+        # f  = __get_f()
         for i in (fh - ff):
             full_fh = os.path.join(settings.MEDIA_ROOT, '%08d' % i)
             if (os.path.exists(full_fh)):

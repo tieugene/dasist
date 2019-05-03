@@ -2,15 +2,15 @@
 * split media
 * move to python3
 * unittests
-* sync DB<>files
 * Headless browser for test (htmlunit ?)
+* docker kubernets dasist2sdv
 
 = Requires =
 * python-django
 * mariadb-server
 * MySQL-python
 * ImageMagick (mogrify)
-* ?python-pillow
+* python-pillow
 * ghostscript
 * poppler-utils (pdfimages)
 * django-autocomplete-light
@@ -22,6 +22,3 @@
 CREATE DATABASE `dasist` CHARACTER SET utf8 COLLATE utf8_general_ci;
 CREATE USER 'dasist'@'localhost' IDENTIFIED BY 'dasist';
 GRANT ALL PRIVILEGES ON dasist.* TO 'dasist'@'localhost' WITH GRANT OPTION;
-
-
-!!!docker kubernets dasist2sdv

@@ -1,3 +1,7 @@
+0.2.0 (20190503):
+* new sign order (Supplier > Lawyer > Boss > Accounter)
+* Roles only (except 1st one)
+
 0.1.12 (20190405):
 * chk added
 * костыли в scan|contrarch|reports/views.* (about import forms)

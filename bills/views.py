@@ -606,9 +606,9 @@ def bill_delete(request, id):
        (bill.assign.user.pk == request.user.pk) and
        (bill.get_state_id() in set([STATE_DRAFT, STATE_REJECTED])) and
        (bill.locked is False)):
-        #fileseq = bill.fileseq
+        # fileseq = bill.fileseq
         bill.delete()
-        #fileseq.purge()
+        # fileseq.purge()
         return redirect('bill_list')
     else:
         return redirect('bill_view', bill.pk)

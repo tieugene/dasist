@@ -518,9 +518,9 @@ def contract_delete(request, id):
     if (request.user.is_superuser) or (
        (contract.assign.user.pk == request.user.pk) and
        (contract.get_state_id() in set([STATE_DRAFT, STATE_REJECTED]))):
-        #fileseq = contract.fileseq
+        # fileseq = contract.fileseq
         contract.delete()
-        #fileseq.purge()
+        # fileseq.purge()
         return redirect('contract_list')
     else:
         return redirect('contract_view', contract.pk)

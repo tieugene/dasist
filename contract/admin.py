@@ -20,6 +20,7 @@ class EventInLine(admin.TabularInline):
 class CustomerAdmin(admin.ModelAdmin):
     ordering = ('name',)
 
+
 class ContractAdmin(admin.ModelAdmin):
     ordering = ('fileseq',)
     list_display = ('fileseq', 'payer', 'shipper', 'assign', 'state',)

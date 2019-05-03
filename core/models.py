@@ -102,13 +102,12 @@ class File(RenameFilesModel):
         super(File, self).save()
 
     def delete(self, *args, **kwargs):
-        #print 'Start File.delete()'
+        # print 'Start File.delete()'
         p = self.get_path()
         if (os.path.exists(p)):
             os.unlink(p)
-        #print 'File Deleted'
+        # print 'File Deleted'
         super(File, self).delete(*args, **kwargs)
-
 
     class Meta:
         verbose_name = u'Файл'
@@ -117,11 +116,11 @@ class File(RenameFilesModel):
 
 @receiver(post_delete, sender=File)
 def _file_delete(sender, instance, **kwargs):
-    #print 'Start post_delete'
+    # print 'Start post_delete'
     p = instance.get_path()
     if (os.path.exists(p)):
         os.unlink(p)
-    #print 'End of post_delete'
+    # print 'End of post_delete'
 
 
 class FileSeq(models.Model):
