@@ -40,18 +40,18 @@ STATE_DONE = 5      # Исполнен (Одобрено юристом > гот
 ROLE_ASSIGNEE = 1   # Исполнитель (ОМТС) (*)
 ROLE_OMTSCHIEF = 2  # Начальник ОМТС (1)
 ROLE_CHIEF = 3      # Руководитель (*)
-ROLE_LAWER = 4      # Юрист (1) TODO: ROLE_LAWYER
+ROLE_LAWYER = 4      # Юрист (1)
 ROLE_BOSS = 5       # Гендиректор (2)
 ROLE_ACCOUNTER = 6  # Бухгалтер (3)
 ROLE_SDOCHIEF = 7   # Начальник СДО (1)
 ROLE_GUEST = 8      # Гость (*)
 
 # Special assigneies
-USER_OMTSCHIEF = 23
-USER_LAWER = 5      # => 55; TODO: USER_LAWYER
+# USER_OMTSCHIEF = 23
+USER_LAWER = 5
 USER_BOSS = 30
 USER_SDOCHIEF = 43
-DEFAULT_CHIEF = 32
+# DEFAULT_CHIEF = 32
 
 
 def set_filter_state(q, s):
@@ -195,13 +195,18 @@ def handle_shipper(form):
     return shipper
 
 
-def fill_route(bill, mgr):    # , boss
+def fill_route(bill):
+    # std_route1 = [    # role_id, approve_id
+    #     (ROLE_OMTSCHIEF, models.Approver.objects.get(pk=USER_OMTSCHIEF)),   # Gorbunoff.N.V.
+    #     (ROLE_CHIEF, mgr),                                                  # Руководитель
+    #     (ROLE_LAWYER, models.Approver.objects.get(pk=USER_LAWER)),           # Юрист
+    #     (ROLE_BOSS, models.Approver.objects.get(pk=USER_BOSS)),             # Гендир
+    #     (ROLE_ACCOUNTER, None),                                             # Бухгалтер
+    # ]
     std_route1 = [    # role_id, approve_id
-        (ROLE_OMTSCHIEF, models.Approver.objects.get(pk=USER_OMTSCHIEF)),   # Gorbunoff.N.V.
-        (ROLE_CHIEF, mgr),                                                  # Руководитель
-        (ROLE_LAWER, models.Approver.objects.get(pk=USER_LAWER)),           # Юрист
-        (ROLE_BOSS, models.Approver.objects.get(pk=USER_BOSS)),             # Гендир
-        (ROLE_ACCOUNTER, None),                                             # Бухгалтер
+        (ROLE_LAWYER, None),    # Юрист
+        (ROLE_BOSS, None),      # Гендир
+        (ROLE_ACCOUNTER, None), # Бухгалтер
     ]
     for i, r in enumerate(std_route1):  # https://docs.djangoproject.com/en/1.10/ref/models/relations/#django.db.models.fields.related.RelatedManager.set
         bill.route_set.create(

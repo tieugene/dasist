@@ -1,5 +1,5 @@
-0.2.0 (20190503):
-* new sign order (Supplier > Lawyer > Boss > Accounter)
+0.2.0 (20190506):
+* new sign order (Assignee > Lawyer > Boss > Accounter)
 * Roles only (except 1st one)
 
 0.1.12 (20190405):

@@ -33,8 +33,7 @@ from scan.models import Scan
 import utils
 
 from views_extras import \
-    DEFAULT_CHIEF, \
-    ROLE_ACCOUNTER, ROLE_ASSIGNEE, ROLE_CHIEF, ROLE_LAWER, \
+    ROLE_ACCOUNTER, ROLE_ASSIGNEE, ROLE_CHIEF, ROLE_LAWYER, ROLE_BOSS, \
     STATE_DONE, STATE_DRAFT, STATE_ONPAY, STATE_ONWAY, STATE_REJECTED, \
     USER_BOSS
 from views_extras import fill_route, handle_shipper, mailto, rotate_img, set_filter_state, update_fileseq
@@ -53,7 +52,7 @@ class BillList(ListView):
     ACL:
     - All:
     -- Исполнитель: только свои (где он - Исполнитель)
-    -- Руководитель: только где он - текущий Подписант или в Истории
+    x- Руководитель: только где он - текущий Подписант или в Истории
     -- *: все
     - Inboud:
     -- Испольнитель: только свои И без подписанта (== Черновик, Завернут, Исполнен)
@@ -84,12 +83,6 @@ class BillList(ListView):
         if (self.mode == 1):    # Everything
             if ((role_id == ROLE_ASSIGNEE) and (not user.is_superuser) and (not user.is_staff)):    # Исполнитель
                 q = q.filter(assign=self.approver)
-            elif (role_id == ROLE_CHIEF):    # Руководитель
-                self.fsform = None
-                b_list = models.Event.objects.filter(approve=self.approver).values_list('bill_id', flat=True)
-                q1 = q.filter(rpoint__approve=self.approver)
-                q2 = q.filter(pk__in=b_list)
-                q = q1 | q2
             # 3. filter using Filter
             # - state
             fsfilter = self.request.session.get(FSNAME, None)  # int 0..15: dropped|done|onway|draft
@@ -137,7 +130,7 @@ class BillList(ListView):
             self.fsform = None
             if (role_id == ROLE_ASSIGNEE):        # Исполнитель
                 q = q.filter(assign=self.approver, rpoint=None)
-            elif (role_id in set((ROLE_LAWER, ROLE_ACCOUNTER))):    # Юрист, Бухгалтер
+            elif (role_id in set((ROLE_LAWYER, ROLE_BOSS, ROLE_ACCOUNTER))):    # Юрист, Бухгалтер
                 q = q.filter(rpoint__role=self.approver.role)
             else:
                 q = q.filter(rpoint__approve=self.approver)
@@ -250,9 +243,8 @@ def bill_add(request):
                 state=models.State.objects.get(pk=STATE_DRAFT),
             )
             # 4. add route
-            mgr = form.cleaned_data['mgr']
             # boss = form.cleaned_data['boss']
-            fill_route(bill, mgr)   # , boss
+            fill_route(bill)
             return redirect('bill_view', bill.pk)
     else:
         form = forms.BillAddForm()
@@ -296,25 +288,25 @@ def bill_edit(request, id):
             bill.payedsum = form.cleaned_data['payedsum']
             bill.topaysum = form.cleaned_data['topaysum']
             bill.save()    # FIXME: update()
-            # 2. update mgr (if required)
-            mgr = bill.get_mgr()
-            if (mgr.approve != form.cleaned_data['mgr']):
-                mgr.approve = form.cleaned_data['mgr']
-                mgr.save()
-            # 2. update boss (if required)
-            boss = bill.get_boss()
-            # if (boss.approve != form.cleaned_data['boss']):
-            #     boss.approve = form.cleaned_data['boss']
-            if (boss.approve.pk != USER_BOSS):
-                boss.approve = models.Approver.objects.get(pk=USER_BOSS)
-                boss.save()
+#             2. update mgr (if required)
+#            mgr = bill.get_mgr()
+#            if (mgr.approve != form.cleaned_data['mgr']):
+#                mgr.approve = form.cleaned_data['mgr']
+#                mgr.save()
+#             2. update boss (if required)
+#            boss = bill.get_boss()
+#             if (boss.approve != form.cleaned_data['boss']):
+#                 boss.approve = form.cleaned_data['boss']
+#            if (boss.approve.pk != USER_BOSS):
+#                boss.approve = models.Approver.objects.get(pk=USER_BOSS)
+#                boss.save()
             # 3. update image
             file = request.FILES.get('file', None)
             if (file):
                 fileseq = bill.fileseq
                 fileseq.clean_children()
                 update_fileseq(file, fileseq, form.cleaned_data['rawpdf'])    # unicode error
-            return redirect('bills.views.bill_view', bill.pk)
+            return redirect('bill_view', bill.pk)
     else:    # GET
         form = forms.BillEditForm(initial={
             'id':       bill.fileseq.pk,
@@ -330,7 +322,7 @@ def bill_edit(request, id):
             'billsum':  bill.billsum,
             'payedsum': bill.payedsum,
             'topaysum': bill.topaysum,
-            'mgr':      bill.get_mgr().approve,    # костыль для initial
+            # 'mgr':      bill.get_mgr().approve,    # костыль для initial
             # 'boss':     bill.get_boss().approve,    # костыль для initial
             # 'approver':    6,
         })
@@ -363,30 +355,35 @@ def bill_reedit(request, id):
         if form.is_valid():
             # 1. update bill
             bill.topaysum = form.cleaned_data['topaysum']
+            if (bill.route_set.count() != 3):
+                fill_route(bill)
             bill.save()
-            # 2. update mgr (if required)
-            mgr = bill.get_mgr()
-            if (mgr.approve != form.cleaned_data['mgr']):
-                mgr.approve = form.cleaned_data['mgr']
-                mgr.save()
-            # 2. and boss (if required)
-            boss = bill.get_boss()
-            # if (boss.approve != form.cleaned_data['boss']):
-            #    boss.approve = form.cleaned_data['boss']
-            if (boss.approve.pk != USER_BOSS):
-                boss.approve = models.Approver.objects.get(pk=USER_BOSS)
-                boss.save()
+#             2. update mgr (if required)
+#            mgr = bill.get_mgr()
+#            if (mgr.approve != form.cleaned_data['mgr']):
+#                mgr.approve = form.cleaned_data['mgr']
+#                mgr.save()
+#             2. and boss (if required)
+#            boss = bill.get_boss()
+#             if (boss.approve != form.cleaned_data['boss']):
+#                boss.approve = form.cleaned_data['boss']
+#            if (boss.approve.pk != USER_BOSS):
+#                boss.approve = models.Approver.objects.get(pk=USER_BOSS)
+#                boss.save()
             return redirect('bill_view', bill.pk)
     else:    # GET
-        # hack
-        if (bill.route_set.count() == 0):
-            mgr = models.Approver.objects.get(pk=DEFAULT_CHIEF)
+        # hack (fill mgr and boss for wrong bills)
+        # if (bill.route_set.count() == 0): # empty route_set
+            # mgr = models.Approver.objects.get(pk=DEFAULT_CHIEF)
             # boss = models.Approver.objects.get(pk=DEFAULT_BOSS)
-            fill_route(bill, mgr)   # , boss
+        # print "Old scheme:", bill.route_set.count()
+        if (bill.route_set.count() != 3):
+            bill.route_set.all().delete()
+            fill_route(bill)
         # /hack
         form = forms.BillReEditForm(initial={
             'topaysum': bill.topaysum if bill.topaysum else max_topaysum,
-            'mgr':      bill.get_mgr().approve,
+            # 'mgr':      bill.get_mgr().approve,
             # 'boss':     bill.get_boss().approve,
         })
     return render(request, 'bills/form_reedit.html', {
@@ -627,6 +624,11 @@ def bill_restart(request, id):
        (bill.assign.user.pk == request.user.pk) and
        ((bill.get_state_id() == STATE_REJECTED) or ((bill.get_state_id() == STATE_DONE) and (bill.locked is True)))):
         bill.set_state_id(STATE_DRAFT)
+        # hack about ols style
+        if (bill.route_set.count() != 3):
+            bill.route_set.all().delete()
+            fill_route(bill)
+        # /hack
         bill.save()
     return redirect('bill_view', bill.pk)
 

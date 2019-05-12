@@ -18,9 +18,8 @@ import sys
 from bills.models import Approver, Place, State, Subject
 from bills.utils import send_mail
 from bills.views_extras import \
-    ROLE_ACCOUNTER, ROLE_ASSIGNEE, ROLE_BOSS, ROLE_CHIEF, ROLE_LAWER, ROLE_SDOCHIEF, \
-    STATE_DONE, STATE_DRAFT, STATE_ONPAY, STATE_ONWAY, STATE_REJECTED, \
-    USER_LAWER
+    ROLE_ACCOUNTER, ROLE_ASSIGNEE, ROLE_BOSS, ROLE_CHIEF, ROLE_LAWYER, ROLE_SDOCHIEF, \
+    STATE_DONE, STATE_DRAFT, STATE_ONPAY, STATE_ONWAY, STATE_REJECTED
 from bills.views_extras import handle_shipper, set_filter_state
 
 from contrarch.models import Contrarch
@@ -90,7 +89,7 @@ class ContractList(ListView):
                 pass
             elif (role_id == ROLE_ASSIGNEE):  # Исполнитель
                 q = q.filter(assign=self.approver)
-            # elif (role_id in set([ROLE_SDOCHIEF, ROLE_BOSS, ROLE_CHIEF, ROLE_ACCOUNTER, ROLE_LAWER])):
+            # elif (role_id in set([ROLE_SDOCHIEF, ROLE_BOSS, ROLE_CHIEF, ROLE_ACCOUNTER, ROLE_LAWYER])):
             #    self.fsform = None
             # else:
             #    q = q.none()
@@ -387,13 +386,13 @@ def contract_view(request, id, upload_form=None):
             if (contract.assign == approver):
                 retvalue = True
         elif (contract_state_id == STATE_ONWAY):    # OnWay
-            if (approver.role.pk == ROLE_LAWER):    # Accounter
+            if (approver.role.pk == ROLE_LAWYER):    # Accounter
                 retvalue = True
             else:
                 if __can_approve(contract, approver):
                     retvalue = True
         elif (contract_state_id == STATE_ONPAY):    # OnPay == for lawyer
-            if (approver.role.pk == ROLE_LAWER):    # Accounter
+            if (approver.role.pk == ROLE_LAWYER):    # Accounter
                 retvalue = True
         return retvalue
 
@@ -494,8 +493,8 @@ def contract_view(request, id, upload_form=None):
             buttons['accept'] = 1   # Вперед
             buttons['reject'] = 0
         else:
-            if (((approver.role.pk == ROLE_LAWER) and (contract_state_id == STATE_ONPAY)) or
-               ((approver.role.pk != ROLE_LAWER) and (contract_state_id == STATE_ONWAY))):
+            if (((approver.role.pk == ROLE_LAWYER) and (contract_state_id == STATE_ONPAY)) or
+               ((approver.role.pk != ROLE_LAWYER) and (contract_state_id == STATE_ONWAY))):
                 buttons['accept'] = 2   # Без замечаний
             buttons['reject'] = 1   # Замечание
     return render(request, 'contract/detail.html', {

@@ -24,9 +24,9 @@ mime_available = set((
 ))
 
 
-class ApproverModelChoiceField(forms.ModelChoiceField):
-    def label_from_instance(self, obj):
-        return obj.get_fio()
+# class ApproverModelChoiceField(forms.ModelChoiceField):
+#    def label_from_instance(self, obj):
+#        return obj.get_fio()
 
 
 class ResumeForm(forms.Form):
@@ -86,8 +86,8 @@ class BillForm(forms.Form):
     billsum = forms.DecimalField(max_digits=11, decimal_places=2, min_value=decimal.Decimal('0.01'), localize=True, label=u'Сумма счета')
     payedsum = forms.DecimalField(max_digits=11, decimal_places=2, min_value=decimal.Decimal('0.00'), localize=True, label=u'Оплачено')
     topaysum = forms.DecimalField(max_digits=11, decimal_places=2, min_value=decimal.Decimal('0.00'), localize=True, label=u'Сумма к оплате')
-    mgr = ApproverModelChoiceField(queryset=Approver.objects.filter(role__pk=3), empty_label=None, label=u'Руководитель', widget=forms.RadioSelect)
-    # boss = ApproverModelChoiceField(queryset=Approver.objects.filter(role__pk=5), empty_label=None, label=u'Гендиректор', widget=forms.RadioSelect)
+    # mgr = ApproverModelChoiceField(queryset=Approver.objects.filter(role__pk=3), empty_label=None, label=u'Руководитель', widget=forms.RadioSelect)
+    ## boss = ApproverModelChoiceField(queryset=Approver.objects.filter(role__pk=5), empty_label=None, label=u'Гендиректор', widget=forms.RadioSelect)
 
     def clean(self):
         cleaned_data = super(BillForm, self).clean()
@@ -175,7 +175,7 @@ class BillReEditForm(forms.Form):
     Edit locked bill
     '''
     topaysum = forms.DecimalField(max_digits=11, decimal_places=2, min_value=decimal.Decimal('0.01'), localize=True, label=u'Сумма к оплате')
-    mgr = ApproverModelChoiceField(queryset=Approver.objects.filter(role__pk=3), empty_label=None, label=u'Руководитель', widget=forms.RadioSelect)
+    # mgr = ApproverModelChoiceField(queryset=Approver.objects.filter(role__pk=3), empty_label=None, label=u'Руководитель', widget=forms.RadioSelect)
     # boss = ApproverModelChoiceField(queryset=Approver.objects.filter(role__pk=5), empty_label=None, label=u'Гендиректор', widget=forms.RadioSelect)
 
     def __init__(self, *args, **kwargs):
