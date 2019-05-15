@@ -228,7 +228,7 @@ def __emailto(request, emails, bill_id, subj):
         utils.send_mail(
             emails,
             '%s: %d' % (subj, bill_id),
-            request.build_absolute_uri(reverse('bills.views.bill_view', kwargs={'id': bill_id})),
+            request.build_absolute_uri(reverse('bill_view', kwargs={'id': bill_id})),
         )
 
 

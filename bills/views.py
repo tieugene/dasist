@@ -270,7 +270,7 @@ def bill_edit(request, id):
        (bill.assign == approver) and
        (bill.get_state_id() == STATE_DRAFT) and
        (not bill.locked))):
-        return redirect('bills.views.bill_view', bill.pk)
+        return redirect('bill_view', bill.pk)
     if request.method == 'POST':
         form = forms.BillEditForm(request.POST, request.FILES)
         if form.is_valid():
@@ -645,7 +645,7 @@ def bill_mail(request, id):
         utils.send_mail(
             ['ti.eugene@gmail.com'],
             'Новый счет на подпись: %s' % id,
-            'Вам на подпись поступил новый счет: %s' % request.build_absolute_uri(reverse('bills.views.bill_view', kwargs={'id': bill.pk})),
+            'Вам на подпись поступил новый счет: %s' % request.build_absolute_uri(reverse('bill_view', kwargs={'id': bill.pk})),
         )
     return redirect('bill_view', bill.pk)
 

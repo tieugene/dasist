@@ -641,4 +641,4 @@ def contract_toarch(request, id):
         contract.delete()
         return redirect('contract_list')
     else:
-        return redirect('contract.views.contract_view', contract.pk)
+        return redirect('contract_view', contract.pk)

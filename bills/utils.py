@@ -72,15 +72,15 @@ def bill_toscan_json(request, id):
 #            events=j
 #        )
         bill.delete()
-        return redirect('bills.views.bill_list')
+        return redirect('bill_list')
     else:
-        return redirect('bills.views.bill_view', bill.pk)
+        return redirect('bill_view', bill.pk)
 
 
 # def send_mail_old():
 #    arglist = ['mail', '-s', 'DasIst.Bills: %s: %d' % (subj, bill_id), email]
 #    sp = subprocess.Popen(args=arglist, stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.PIPE)
-#    stdout_data = sp.communicate(input=request.build_absolute_uri(reverse('bills.views.bill_view', kwargs={'id': bill_id})))
+#    stdout_data = sp.communicate(input=request.build_absolute_uri(reverse('bill_view', kwargs={'id': bill_id})))
 
 
 # def send_mail_fail(request, id):
@@ -88,11 +88,11 @@ def bill_toscan_json(request, id):
 #    @param id: bill id
 #    '''
 #    subj = 'DasIst.Bills: Новый счет: %s' % id
-#    body = 'Новый счет на подпись: %s' % request.build_absolute_uri(reverse('bills.views.bill_view', kwargs={'id': id}))
+#    body = 'Новый счет на подпись: %s' % request.build_absolute_uri(reverse('bill_view', kwargs={'id': id}))
 #    arglist = ['mailx', '-s', subj.encode('utf-8'), '-S' 'ttycharset=UTF-8' '-S' 'sendcharsets=UTF-8' '-S' 'encoding=8bit', 'ti.eugene@gmail.com']    # cyrillic depricated
 #    sp = subprocess.Popen(args=arglist, stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.PIPE)
 #    stdout_data = sp.communicate(input=body.encode('utf-8'))
-#    return redirect('bills.views.bill_list')
+#    return redirect('bill_list')
 
 
 def mailto_example(request, id):
@@ -122,4 +122,4 @@ def mailto_example(request, id):
         print 'successfully sent the mail'
     except:
         print 'failed to send mail'
-    return redirect('bills.views.bill_view', bill.pk)
+    return redirect('bill_view', bill.pk)
