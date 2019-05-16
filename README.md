@@ -13,7 +13,7 @@
 * python-pillow
 * ghostscript
 * poppler-utils (pdfimages)
-* django-autocomplete-light
+* django-autocomplete-light (https://github.com/yourlabs/django-autocomplete-light)
 * Magnific-popup: http://dimsemenov.com/plugins/magnific-popup/
 
 = Starting =
